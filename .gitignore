@@ -1,0 +1,4 @@
+.DS_Store
+*.py[oc]
+docs/build/
+build/
