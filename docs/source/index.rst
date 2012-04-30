@@ -25,6 +25,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-* `The Tor Project <torproject>`_
+* `The Tor Project`__
+
+__ torproject_
 
 .. _torproject: https://www.torproject.org
