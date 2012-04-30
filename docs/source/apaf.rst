@@ -16,6 +16,8 @@ Basic properties of the APAF are well-described by Arturo Filastò on the tor-de
 mailing list. [#]_ The core model consists in a basic library which interfaces
 with tor, and a basic application server.
 
+*21:15 < rransom> What security properties should APAF provide? What attacks (or
+classes of attacks) should APAF prevent or resist?*
 
 Core Library
 ------------
@@ -27,19 +29,11 @@ library, making it bounce queries over the current tor proxy instance.
 Configuration
 -------------
 
-*Customizing the application and tor setup can be done wither via web interface
-or a simple GUI.*
-
-Configuring the application via web interface is probably the most elegant
-and lightweight solution, even though it leads to authentication issues.
-So, I see two options here:
- - Just check if the request comes from localhost, otherwise deny all
-   administration pages.
- - Create a login page, using the web framework's authentication environment.
-
- The first one seems pretty easy with flask, but don't know wether there could
- be some security concerns. Also, coming from 127.0.0.1 will be ok, but not the
- .onion alias :S
+The application can be customized using the browser. By default the
+configuration page shall be accessible only from localhost, after authenticating
+with a standard login form.
+The restricted access of only localhost to the configuration section shall be
+unckecked.
 
 .. [#] : https://lists.torproject.org/pipermail/tor-dev/2012-March/003416.html
 .. [#] : https://lists.torproject.org/pipermail/tor-dev/2012-April/003475.html
