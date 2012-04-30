@@ -7,6 +7,9 @@
 Welcome to APAF's documentation!
 ================================
 
+The Anonymous Python Application Framework (APAF) is a project built for the
+`torproject`_ during the Google Summer of code 2k12.
+
 Contents:
 
 .. toctree::
@@ -22,4 +25,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+* `The Tor Project <torproject>`_
 
+.. _torproject: https://www.torproject.org
