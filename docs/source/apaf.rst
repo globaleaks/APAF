@@ -30,6 +30,16 @@ Configuration
 *Customizing the application and tor setup can be done wither via web interface
 or a simple GUI.*
 
+Configuring the application via web interface is probably the most elegant
+and lightweight solution, even though it leads to authentication issues.
+So, I see two options here:
+ - Just check if the request comes from localhost, otherwise deny all
+   administration pages.
+ - Create a login page, using the web framework's authentication environment.
+
+ The first one seems pretty easy with flask, but don't know wether there could
+ be some security concerns. Also, coming from 127.0.0.1 will be ok, but not the
+ .onion alias :S
 
 .. [#] : https://lists.torproject.org/pipermail/tor-dev/2012-March/003416.html
 .. [#] : https://lists.torproject.org/pipermail/tor-dev/2012-April/003475.html
