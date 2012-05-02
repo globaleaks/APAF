@@ -16,8 +16,31 @@ Basic properties of the APAF are well-described by Arturo Filastò on the tor-de
 mailing list. [#]_ The core model consists in a basic library which interfaces
 with tor, and a basic application server.
 
+Threat Model
+------------
+
 *21:15 < rransom> What security properties should APAF provide? What attacks (or
 classes of attacks) should APAF prevent or resist?*
+This section describes the classes of attacks the APAF should prevent/resist.
+
+Exposing to the net
+    The APAF shall guarantee the **every** outgoing connection passes through tor.
+    Incoming connections may be blocked if not coming from the tor network,
+    depending on the configuration.
+    Prevent XSSes?
+
+Monkeypatch
+    Other stdlibrary modules **must** be affected fom the monkeypatch.
+    DNS leaking can be a problem. There is a huge number of functions using DNS
+    queries: `socket.gethostbyname`, `socket.getaddrinfo`,
+    `socket.gethostbyaddr`; probably are connected, take a look at the source.
+
+Configuration
+    Configuration files should never be accessible "as they are" from outside.
+    The configuration shall be a python file, or a ConfigParser?
+
+Authentication
+    Web Framework are tested for this, should we trust them?
 
 Core Library
 ------------
