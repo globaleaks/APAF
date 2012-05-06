@@ -8,12 +8,9 @@ This sections explains the choices made for these tasks:
 
 Networking Framework
 ---------------------
-
-Possible networking framworks may be:
-    - Tornado
-    - Flask
-    - tor2web (just jocking)
-    - SimpleHttpServer
+Flask is probably the best choice, due to its popularity, its wide set of
+plugins that can eventually extend the apaf itself, and the blueprint concept,
+which is pretty safe in realtion to an administration page.
 
 Tor Controller
 --------------
