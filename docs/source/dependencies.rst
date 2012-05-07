@@ -8,9 +8,14 @@ This sections explains the choices made for these tasks:
 
 Networking Framework
 ---------------------
-Flask is probably the best choice, due to its popularity, its wide set of
-plugins that can eventually extend the apaf itself, and the blueprint concept,
-which is pretty safe in realtion to an administration page.
+The decision to use `Twisted <http://twistedmatrix.com>`_ has been taken after a
+discussion on IRC on the 6th of may on `#tor-dev`. Here the most important
+motivations: ::
+
+    Twisted is an event driven web framework, which not only supports multiple
+    protocols, but despite its memory leaks and the weight of the library, it is
+    widely used inside the tor community, hence maintenance and extendibility are
+    worth its cons.
 
 Tor Controller
 --------------
