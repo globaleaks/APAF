@@ -17,22 +17,13 @@ motivations: ::
     widely used inside the tor community, hence maintenance and extendibility are
     worth its cons.
 
+
 Tor Controller
 --------------
-
-*Personally, I am not sure whether a tor controller is really neeeded for the
-application. Are we going to show statistics about the connection?*
-
-Currently avaibles tor controllers are:
-    - `TorCtl <https://gitweb.torproject.org/torctl.git/>`_ is pretty mature,
-      even though its model IMHO is not really pythonic.
-    - `Txtorcon <http://readthedocs.org/docs/txtorcon/en/latest/>`_ is a really
-      cool controller, but brings with itself twisted libraries.
-    - `Stem <https://gitweb.torproject.org/stem.git>`_ is immature, and the
-      first version is going to be relased for this Summer of Code. But one of
-      the developers, `atagar`, seems avaible for collaboration and focusing on
-      the most critical parts.
-
+The `Txtorcon <http://readthedocs.org/docs/txtorcon/en/latest/>`_ is a really
+cool controller based on twisted. Even though it is not considered mature, it
+acts on the same framework we are going to use, hence is probably the best
+choice for interfacing with a new tor process.
 
 
 Packing Everything
@@ -41,3 +32,17 @@ Packing Everything
 PyInstaller is probably the best choice if you want to build a single executable
 of your application across multiple OSes. This implies a `hook/` directory in
 the project tree.
+
+
+.. note ::
+    pyInstaller wont' provide any 64 bit version for osx.
+
+
+The latest stable of pyInstaller seems to do not have any hooks-twisted.py.
+Anyway an echo server has been built without too many problems on my
+machine. [1]_
+
+
+
+.. [1] this was tested on osx with pyInstaller 1.5.1 and python2.7. Note that
+         anyway the final executable was not working.
