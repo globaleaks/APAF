@@ -48,7 +48,9 @@ For OSX they use py2app. The current version of Miro only supports >= 10.5.
 The procedure for packaging an application is:
 
 `./setup_binarykit.sh`
+
 `./setup_sandbox.sh`
+
 `./build.sh`
 
 Unfortunately because of the fact that 10.7 does not include universal binary related stuff
@@ -57,26 +59,31 @@ it can only build on 10.5 and 10.6.
 
 Inside of the `miro/tv/osx` directory there are a few interesting scripts:
 
-setup_binarykit.sh - Is used to fetch the binaries to be included in the package
-setup_sandbox.sh - Is used to create a "sandbox" (not in the security sense of the term but
+`setup_binarykit.sh` - Is used to fetch the binaries to be included in the package
+
+`setup_sandbox.sh` - Is used to create a "sandbox" (not in the security sense of the term but
 in the sense of working directory) for applying patches to the to be built stuff.
-build.sh - The actual build script to create the .app with py2app
-Miro.py - The Mac OS X specific version of Miro to launch the application and provide all the
+
+`build.sh` - The actual build script to create the .app with py2app
+
+`Miro.py` - The Mac OS X specific version of Miro to launch the application and provide all the
 fancy UI to make it look pretty on OSX.
 
 For making pretty OSXy UI they use import from Foundation *, that is PyObjC http://en.wikipedia.org/wiki/PyObjC.
 
 Size:
 On Mac OS X the size of the .dmg is 39M.
+
 The actual size of the .app is 105M and the major
 contributions to the size are:
- 30M    /Volumes/Miro/Miro.app/Contents/Helpers/ffmpeg
- 27M    /Volumes/Miro/Miro.app/Contents/Resources/lib/python2.7/
- 12M    /Volumes/Miro/Miro.app/Contents/Helpers/miro-segmenter
- 10M    /Volumes/Miro/Miro.app/Contents/Helpers/ffmpeg2theora
-7.3M    /Volumes/Miro/Miro.app/Contents/Components/Perian.component
-3.9M    /Volumes/Miro/Miro.app/Contents/Components/XiphQT.component
-3.4M    /Volumes/Miro/Miro.app/Contents/Frameworks/Python.framework
+
+    30M    /Volumes/Miro/Miro.app/Contents/Helpers/ffmpeg
+     27M    /Volumes/Miro/Miro.app/Contents/Resources/lib/python2.7/
+    12M    /Volumes/Miro/Miro.app/Contents/Helpers/miro-segmenter
+    10M    /Volumes/Miro/Miro.app/Contents/Helpers/ffmpeg2theora
+    7.3M    /Volumes/Miro/Miro.app/Contents/Components/Perian.component
+    3.9M    /Volumes/Miro/Miro.app/Contents/Components/XiphQT.component
+    3.4M    /Volumes/Miro/Miro.app/Contents/Frameworks/Python.framework
 
 For more on how they do builds on OSX: https://develop.participatoryculture.org/index.php/OSXBuildDocs
 
@@ -93,7 +100,7 @@ The actual windows UI application is located inside of `miro/tv/windows/plat/fro
 Size:
 The current version shipps an Installer, but previous versions used to be
 
-Miro-5.0.exe                                       01-May-2012 15:20   49M
+`Miro-5.0.exe                                       01-May-2012 15:20   49M`
 
 Linux
 .....
