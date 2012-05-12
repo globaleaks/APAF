@@ -17,6 +17,7 @@ Contents:
 
    apaf
    dependencies
+   threat_model
 
 
 Indices and tables
