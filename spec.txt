@@ -1,0 +1,227 @@
+Filename: anonymous-python-application-framework.txt
+Title: APAF: Anonymous Python Application Framework
+Author: Arturo Filastò, Michele Orrù
+Created: 16 March 2012
+
+# Overview
+
+  Tor Hidden Services are underused compared to their potential, the goal
+  of APAF is to provide an easy system to allow network related python
+  application developers to build their software in a way that it runs as
+  a Tor Hidden Service (Tor HS).
+  The framework will allow developers to easily build .exe, .app, statically
+  linked linux binaries that contain the python interpreter and the Tor daemon.
+  This will allow the end user to easily start running that service on their
+  machine, by simply downloading a package. This is similar to what is done with the
+  Tor Browser Bundle (TBB).
+
+# Motivation
+
+  One of the reasons for which Tor HS are not used that much is that there is
+  no simple way for an application developer to ship their application with a
+  Tor binary and automatically configure a Tor HS.
+  This leads to users not being able to easily run Tor Hidden Services on their
+  desktop machines limiting the diffusion of HSs.
+
+  An example use case is a person that wishes to run a temporary chat server on
+  their home machine. With APAF an chat server developer could package such a
+  python application and the end user will be able to run it by downloading a package
+  and executing it.
+
+# Build System
+
+  The core component of APAF is it's build system. Application developers will
+  specify a manifest file that details all of the application dependencies,
+  what kind of priviledges are required for execution, description and all
+  metadata associated with the application.
+
+  The primary focus of the build system will be Windows and Mac OS X. Build for
+  linux distributions will be done with native tools (i.e. dpkg for
+  Debian/Ubuntu, rpm for Red Hat, etc.).
+
+  APAF compiles all the dependencies for all the target systems.
+  At bare mininum the dependencies that will be bundled with an APAF based
+  application are:
+
+  * the Python interpreter (cpython)
+  * Tor
+  * Python modules reqiured by system libraries (i.e. Twisted, zope.interface, etc.)
+
+  The build system must be configurable and extensible. It should allow easy bundling of
+  third party applications such as p7zip, gpg, etc.
+
+  The output of the build process will be:
+  - Win32: MyApplication.exe
+  - OSX: MyApplication.app (inside an Application.dmg container)
+
+  in future:
+  - Linux: Deb build or statically linked binary
+
+  The buildsystem should download the latest release of Tor for the appropriate platform
+  and extract the required files into the build structure, in order to be packaged
+  within the application.
+  Note: Another possibility is that it could build Tor from source for the desired target
+  platforms, but this may require some additional effort.
+
+
+  XXX
+  Determine what build system should be used. The two main options are
+  Pyinstaller or py2exe+py2app.
+
+  ## Pyinstaller
+
+  _PyInstaller_ is a program that converts (packages) Python programs into
+  stand-alone executables, under Windows, Linux, Mac OS X, Solaris and AIX. Its
+  main advantages over similar tools are that PyInstaller works with any version
+  of Python since 2.2, it builds smaller executables thanks to transparent
+  compression, it is fully multi-platform, and use the OS support to load the
+  dynamic libraries, thus ensuring full compatibility.
+
+  Pro:
+  XXX
+
+  Contra:
+  XXX
+
+  ## py2exe+py2app
+
+  _py2exe_ is a Python Distutils extension which converts Python scripts into
+  executable Windows programs, able to run without requiring a Python
+  installation.
+
+  _py2app_ is a Python setuptools command which will allow you to make standalone
+  application bundles and plugins from Python scripts. py2app is similar in
+  purpose and design to py2exe for Windows.
+
+
+  Pro:
+  - Appears to be used by a much bigger community of people and a lot of major
+    applications use it.
+
+  Contra:
+  - Does not build for Linux
+
+  Links:
+  * Interesting project that does cross-platform builds: https://github.com/pculture/miro
+    - Miro OSX build system docs: https://develop.participatoryculture.org/index.php/OSXBuildDocs
+    - Miro Windows build system docs:
+      https://develop.participatoryculture.org/index.php/WindowsBuildDocs
+  * Pyinstaller manual: http://www.pyinstaller.org/export/d3398dd79b68901ae1edd761f3fe0f4ff19cfb1a/project/doc/Manual.html?format=raw
+  * py2exe tutorial: http://www.py2exe.org/index.cgi/Tutorial
+  * py2app docs: http://svn.pythonmac.org/py2app/py2app/trunk/doc/index.html
+
+# What services that APAF expose to the network?
+
+  APAF will expose two kinds of service:
+
+  1) The administration web application for the user
+  2) The applications to be run as Tor Hidden Services
+
+  These two network services must only be listening on localhost and the
+  administration interface should require authentication. The password for
+  accessing the administration interface will be randomly generated at first
+  boot and shown to the user. It can later be changed from the admin panel.
+
+# What happens when I start APAF?
+
+  When APAF starts the user running it is presented with a splash screen that
+  displays the startup progress. The image in the splash screen should be customizable
+  by the application developer.
+
+  Another option would be to start the system browser and point it to
+  http://127.0.0.1:<APAF_port>/ and display the bootstrap process inside of the bundled
+  web based UI.
+
+  At first launch the APAF UI will provice a wizard for bootstrapping the setup of the
+  Tor Hidden Service.
+
+  By default APAF will come with a web application that is used for administering
+  and checking on the status of the running Tor HS. It should provide functionality
+  the following functionality:
+
+  * Check the current status of the Tor HS
+  * Start and stop the Hidden Service
+  * Select from the list of bundled applications the ones to run
+  * Test it's reachability from the Tor network (by doing a request over Tor to it's .onion address)
+  * Configure Tor (User Interface to edit torrc)
+
+# Web Applications
+
+  One of the first applications that will be used as an example for APAF will be
+  a simple python web application. The application will simply serve to the client
+  static files.
+  The basic scaffolding that this web application provides should allow developers
+  to build their own web application based on this example.
+
+# APAF Utility library
+
+  APAF will provide a python library to allow the application developer to
+  interact with the currently running APAF system. This allows a certain
+  application to:
+
+  * Understand what it's .onion address is
+  * Check the current status of the running Tor daemon
+  * Make TCP connections over Tor
+
+# Security
+
+  ## Threat model
+
+  What security properties should APAF provide? What attacks (or classes of
+  attacks) should APAF prevent or resist?
+
+  ### Tor Hidden Service disclosure
+
+  All of the security and anonymity properties of Tor Hidden Services must be
+  preserved. It must not be possible to understand who is running a certain Tor
+  Hidden Service and it must not be possible to determine that a certain Tor
+  user is running a Tor Hidden Service remotely.
+
+  Inside of this evaluation we do not include attacks that are piggy backed on
+  top of other attack vectors. This means for example that if an attacker uses
+  an XSS to understand that a certain user is listening on a certain port
+  therefore they are running APAF is not protected in this threat model.
+
+
+  ### Application
+
+  The default applications shipped with APAF shall protect again remote
+  unauthorized access even through other attack vectors. This means that it
+  should not be possible to exploit an XSS to gain control over the running
+  APAF system.
+
+  The application developer should also take care into protecting his
+  application from fingerprintability. This means that, for example, the
+  default HTTP server will atempt to behave and mimic the default HTTP server
+  configured with Tor HS (Apache or thttpd).
+
+
+  ### Outbound connection Torification
+
+  The applications shipped by default with APAF must provide full torification
+  of all outbound connection. The application developer is highly encouraged to
+  torify all their outgoing traffic, but this will not be enforced by the
+  application rather from their good sense.
+
+  ### Inbound traffic
+
+  The inbound traffic shall allow the user to set if they wish to expose their
+  service also through dark net -> to -> internet service (i.e. tor2web in the
+  case of HTTP).
+
+  ### Securization and sandboxing (for future)
+
+  APAF shall provide out of the box sandboxing for the running applications
+  based on their operating system. It will use for example sandbox-exec on OSX,
+  when available AppArmor or SeLinux and the windows equivalent of this. The
+  running application will drop privilidged and run inside of a chrooted
+  environment.
+
+# Documentation
+
+  APAF must provide detailed documentation on:
+  - how to setup the build environment (eventually on multiple operating systems)
+  - how to customize your own enviroment for your own anonymous web application
+  - any specific documentation on particular procedures and/or internal structure
+  - user manual for running an AWAF built application
+
