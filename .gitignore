@@ -1,4 +1,11 @@
 .DS_Store
+
 *.py[oc]
+
+# distributing directories
 docs/build/
 build/
+dist/
+
+# virtualenv
+apaf-virtualenv
