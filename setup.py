@@ -15,18 +15,18 @@ DATA_FILES += [(root, [join(root, file) for file in files])
                for root, _, files in os.walk(join('contrib'))]
 
 
+# warning: building a .app from OSX greater than 10.6 does not work!
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
-#    modules=['_psutil_osx'],
 )
 
 OPTIONS_PY2EXE = dict(
-    packages = 'twisted.web'
 )
 
 
 setup(
     app=APP,
+    console=APP,
     data_files=DATA_FILES,
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
