@@ -1,11 +1,14 @@
 from setuptools import setup, find_packages
-import os.path
+from os.path import join
+import os
+
 
 # import py2exe
 
 APP = [os.path.join('apaf', 'run.py')]
 
-DATA_FILES = []
+DATA_FILES = [(root, [join(root, file) for file in files])
+              for root, _, files in os.walk(join('apaf', 'panel', 'static'))]
 
 OPTIONS_PY2APP = dict(
     argv_emulation = True,

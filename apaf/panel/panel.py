@@ -6,7 +6,7 @@ import os
 from handlers import TorHandler, AppHandler, StatusHandler
 
 LISTEN_PORT = 4242
-STATIC_DIR = os.path.join('panel', 'static')
+STATIC_DIR = os.path.join('apaf', 'panel', 'static')
 
 API = {
     'tor': TorHandler,
