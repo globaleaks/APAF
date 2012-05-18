@@ -12,7 +12,7 @@ import tempfile
 import functools
 
 from twisted.internet import reactor
-from panel import panel
+from apaf.panel import panel
 
 #import txtorcon
 

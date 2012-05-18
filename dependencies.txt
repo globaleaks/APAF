@@ -2,3 +2,4 @@ twsited
 zope.interface
 txtorcon
 pyYAML
+python-gnupg
