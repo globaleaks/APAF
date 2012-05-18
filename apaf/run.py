@@ -10,11 +10,17 @@
 
 import tempfile
 import functools
+import os
+from os.path import join
 
 from twisted.internet import reactor
+import txtorcon
+
 from apaf.panel import panel
 
-#import txtorcon
+
+# XXX: add these constraints to configuration files
+TOR_BINARY = join(os.getcwd(), 'contrib', 'tor', 'tor')
 
 def setup_failed(arg):
     print "SETUP FAILED",arg
@@ -34,7 +40,7 @@ def setup_complete(port):
 
 def setup_hidden_service(tor_process_protocol):
     config = txtorcon.TorConfig(tor_process_protocol.tor_protocol)
-    public_port = 80
+    public_port = 6666
     hs_endpoint = txtorcon.TCPHiddenServiceEndpoint(reactor, config, public_port)
 
     ## the important thing here is that "site" implements
@@ -45,9 +51,10 @@ def setup_hidden_service(tor_process_protocol):
 def updates(prog, tag, summary):
     print "%d%%: %s" % (prog, summary)
 
-#d = txtorcon.launch_tor(txtorcon.TorConfig(), reactor, progress_updates=updates)
+d = txtorcon.launch_tor(txtorcon.TorConfig(), reactor, progress_updates=updates,
+                        tor_binary=TOR_BINARY)
 panel.run()
-#d.addCallback(setup_hidden_service)
-#d.addErrback(setup_failed)
+d.addCallback(setup_hidden_service)
+d.addErrback(setup_failed)
 reactor.run()
 

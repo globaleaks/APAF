@@ -7,8 +7,13 @@ import os
 
 APP = [os.path.join('apaf', 'run.py')]
 
+# static files
 DATA_FILES = [(root, [join(root, file) for file in files])
               for root, _, files in os.walk(join('apaf', 'panel', 'static'))]
+# binary files
+DATA_FILES += [(root, [join(root, file) for file in files])
+               for root, _, files in os.walk(join('contrib'))]
+
 
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
