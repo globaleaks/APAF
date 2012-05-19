@@ -36,5 +36,5 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
-    packages=find_packages(),
+    packages=find_packages(exclude=['test']),
 )
