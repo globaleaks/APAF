@@ -19,6 +19,8 @@ Contents:
    dependencies
    threat_model
    api
+   build_win32
+   build_osx
 
 
 Indices and tables

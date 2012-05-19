@@ -19,11 +19,10 @@ import txtorcon
 from apaf.panel import panel
 
 
-# XXX: add these constraints to configuration files
-TOR_BINARY = join(os.getcwd(), 'contrib', 'tor', 'tor')
+tor_binary = join(config._root_dir, 'contrib', 'tor', 'tor')
 
 def setup_failed(arg):
-    print "SETUP FAILED",arg
+    print "SETUP FAILED", arg
     reactor.stop()
 
 from twisted.web import server, resource
