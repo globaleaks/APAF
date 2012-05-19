@@ -2,8 +2,13 @@ from setuptools import setup, find_packages
 from os.path import join
 import os
 
+from apaf.config import config
 
-# import py2exe
+if config.platform == 'win32':
+    import py2exe
+elif config.platform == 'darwin':
+    import py2app
+
 
 APP = [os.path.join('apaf', 'run.py')]
 
