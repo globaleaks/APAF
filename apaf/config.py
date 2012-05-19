@@ -26,13 +26,23 @@ class Config(object):
     panel_hs_port = 80
 
     def __init__(self):
-        if not os.path.exists(os.path.dirname(self.config_file)):
-            os.mkdir(os.path.dirname(self.config_file))
+        """
+        Load the configuration from the cfg file.
+        If apaf's configuration and status directories are not ready, create
+        them.
+        """
+        # check for directory path
+        if not os.path.exists(self._conf_dir):
+            os.mkdir(self._conf_dir)
+        if not os.path.exists(self.tor_data):
+            os.mkdir(slef.tor_data)
+
         if not os.path.exists(self.config_file):
             with open(self.config_file, 'w') as cfg:
                 # XXX. add keys with their default values.
                 cfg.write('dio: cane\n')
 
+        # load configuration
         with open(self.config_file, 'r') as cfg:
             for key, value in (yaml.load(cfg) or dict()).iteritems():
                 setattr(self, key, value)
