@@ -152,3 +152,6 @@ mv TorBrowser_en-US.app/Contents/MacOS/tor .
 
 Build Apaf Application
 ----------------------
+
+cd APAF
+python2.7-32 setup.py py2app
