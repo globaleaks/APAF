@@ -15,25 +15,46 @@ dependencies in a Windows environment.
 
 Requirements
 -------------
-See `requirements.txt` file.
+* Python 2.7.3
+ * http://www.python.org/download/releases/2.7.3/
+* Twisted 12.0
+ * http://twistedmatrix.com/trac/
+* Setuptools 0.6-c11 
+ * TODO:URL
+* Psutils 0.4.1
+ * http://code.google.com/p/psutil/
+* Py2exe 0.6.9
+ * TODO:URL
+* Six 1.1.0
+ * TODO:URL
+* PyGeoIP 0.2.3
+ * TODO:URL
+* Ipaddr 2.1.10
+ * TODO:URL
+* PyWin Build 20217
+ * TODO:URL
+* 7zip 9.20
+ * http://downloads.sourceforge.net/sevenzip/7z920.exe
+* Gpg 4 win 2.1.1 
+ * http://www.gpg4win.org/download.html
+* Git 1.7.3+
+ * http://git-scm.com/download/win
 
-Installing Python
+Install Python
 ------------------
-Download Python 2.7 at http://www.python.org/download/releases/2.7.3/ (direct
-link at http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi )
+Download Python 2.7 from http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi
 
-Verify signature of application:
+Verify signature of application: http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi.asc
 
-http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi.asc
+Install the software following the wizard.
 
-Install the software.
-
-
-Setuptools
+Install Setuptools
 ----------
 
-http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
-And then install pip. ::
+Download http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
+
+Install Pip
+----------
 
     cd C:\Python27\Scripts
     C:\Python27\Scripts> easy_install.exe pip
@@ -55,16 +76,12 @@ Twisted
 -------
 Install Twisted
 
-http://twistedmatrix.com/trac/
-
 http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.0.0.win32-py2.7.msi
-
 
 Psutils
 -------
 Required for txtorconn
 
-http://code.google.com/p/psutil/
 http://psutil.googlecode.com/files/psutil-0.4.1.win32-py2.7.exe
 
 
@@ -100,10 +117,14 @@ http://git-scm.com/download/win
 Then open a new Git shell from `Start>Git>Git Bash`.
 
 
-Txtorcon
---------
+Install Txtorcon
+----------------
 Txtorcon is not avaible on the Python Package Index, so you need to install it
-manually with git. ::
+manually with git.
+
+Additionally there are some bugs preventi windows builds, so we must use this fork of txtorcon ::
+
+TODO: Maker, write here link to the bug/patch submitted
 
     $ git clone https://github.com/mmaker/txtorcon.git
 
@@ -111,15 +132,36 @@ Then install with pip: ::
     C:\Python27\Scripts> pip.exe install C:\path\of\user\txtorcon\
 
 
-APAF
-----
+Install APAF
+------------
 
 And finally! ::
 
     $ git clone https://github.com/mmaker/APAF.git
 
+Install 7zip
+-----------
+Download http://downloads.sourceforge.net/sevenzip/7z920.exe and install following the wizard.
 
-here you are ready to use the apaf. To build the single `.exe` file, run  ::
+It will place 7z.exe in "c:\Program Files\7-Zip\7z.exe"
+
+Install Tor
+-----------
+
+Download the latest version of Tor binaries for Windows.
+
+Go to download page https://www.torproject.org/download/download.html.en and download "Expert Bundle":
+https://www.torproject.org/dist/win32/tor-0.2.2.35-win32-1.exe
+
+Now decompress the tor binary with 7zip and move it to contrib/tor/ directory of APAF:
+
+    c:\Program Files\7-Zip\7z.exe x tor-0.2.2.35-win32-1.exe tor.exe
+    move tor.exe PATH_WHERE_IS_BUILD_ENVIRONMENT/contrib/tor 
+
+
+Build Apaf Application
+----------------------
+Here you are ready to use the apaf. To build the single `.exe` file, run  ::
 
     C:\path\of\user\APAF> C:\Python27\python.exe setup.py py2exe
 
