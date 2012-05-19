@@ -59,55 +59,60 @@ Install Pip
     cd C:\Python27\Scripts
     C:\Python27\Scripts> easy_install.exe pip
 
-Now use `pip` to install some extra dependencies. ::
+Install psutil
+--------------
+Required for txtorconn
 
-    six geoip ipaddr psutil
+Download from http://psutil.googlecode.com/files/psutil-0.4.1.win32-py2.7.exe
 
+Install Py2Exe
+--------------
+Url for py2exe: http://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe/download
+
+
+Install PyWin32
+---------------
+Url for pywin32: http://sourceforge.net/projects/pywin32/files/pywin32/Build%20217/pywin32-217.win32-py2.7.exe/download
+
+Install Twisted
+---------------
+
+Donwload from http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.0.0.win32-py2.7.msi
+
+
+Install Zope.interface
+----------------------
+.. warning ::
+    Installing zope.interface with pip may lead to ImportError in building the
+    APAF with py2exe.
 
 .. note ::
     Tests on windows 7 show that, since easy_install behaves differently from
     pip.exe, using one instead of another during the setup of the environment
     may lead to problems afterwards when building the executable.
 
-
-
-
-Twisted
--------
-Install Twisted
-
-http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.0.0.win32-py2.7.msi
-
-Psutils
--------
-Required for txtorconn
-
-http://psutil.googlecode.com/files/psutil-0.4.1.win32-py2.7.exe
-
-
-Py2Exe
--------
-Url for py2exe: http://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe/download
-
-
-PyWin32
--------
-Url for pywin32: http://sourceforge.net/projects/pywin32/files/pywin32/Build%20217/pywin32-217.win32-py2.7.exe/download
-
-
-Zope
------
 Install `zope.interface` using setuptools: ::
     C:\Python27\Scripts> easy_install.exe zope.interface
 
+Install Six
+-----------
+    cd C:\Python27\Scripts
+    C:\Python27\Scripts> pip.exe install six
 
-.. warning ::
-    Installing zope.interface with pip may lead to ImportError in building the
-    APAF with py2exe.
+Install pygeoip
+---------------
+    cd C:\Python27\Scripts
+    C:\Python27\Scripts> pip.exe install pygeoip
+
+Install ipaddr
+--------------
+    cd C:\Python27\Scripts
+    C:\Python27\Scripts> pip.exe install ipaddr
 
 
-Git
---
+
+Install Git
+-----------
 Since github lets you download a simple `.zip`  of the latest revision of your
 application, git is not indispensable. But certainly it will be comfortable to
 stay up to date with the software development
@@ -129,10 +134,11 @@ TODO: Maker, write here link to the bug/patch submitted
     $ git clone https://github.com/mmaker/txtorcon.git
 
 Then install with pip: ::
-    C:\Python27\Scripts> pip.exe install C:\path\of\user\txtorcon\
+    cd C:\Python27\Scripts
+    C:\Python27\Scripts> pip.exe install C:\path\of\txtorcon\
 
 
-Install APAF
+Install Apaf
 ------------
 
 And finally! ::
