@@ -1,29 +1,53 @@
+"""
+The basic apaf panel, accessible as it is from
+"""
+import os
+import os.path
+import sys
+
 from twisted.internet import reactor
 from twisted.web import server, resource, static
 from twisted.python import log
-import os
+import txtorcon
 
-from handlers import TorHandler, AppHandler, StatusHandler
+import apaf
+from apaf.config import config
+from apaf.panel import handlers
 
-LISTEN_PORT = 4242
+PANEL_DIR = os.path.join(config.tor_data, 'panel')
 STATIC_DIR = os.path.join('apaf', 'panel', 'static')
 
 API = {
-    'tor': TorHandler,
-    'app': AppHandler,
-    'status': StatusHandler
+    'tor': handlers.TorHandler,
+    'app': handlers.AppHandler,
+    'status': handlers.StatusHandler
 }
 
-def run():
+def start_panel(torconfig):
+    """
+    Set up the panel service, which lets the user customize apaf and choose
+    which services are going to run.
+
+    :param torconfig: an instance of txtorcon.TorConfig representing the
+                      configuration file.
+    """
     root = static.File(STATIC_DIR)
 
     for path, handler in API.items():
         root.putChild(path, handler())
-    print "Listening on port %s" % LISTEN_PORT
-    reactor.listenTCP(LISTEN_PORT, server.Site(root))
+    reactor.listenTCP(config.panel_port, server.Site(root))
+
+    ## create the hidden service of the panel ##
+    if not os.path.exists(PANEL_DIR):
+        os.mkdir(PANEL_DIR)
+    panel_hs = txtorcon.HiddenService(torconfig, config.tor_data,
+            ['%d 127.0.0.1:%d' % (config.panel_port, config.panel_hs_port)])
+    apaf.hiddenservices['panel'] = panel_hs
+
 
 
 if __name__ == '__main__':
-    run()
+    log.startLogging(sys.stdout)
+    start_panel()
     reactor.run()
 

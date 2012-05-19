@@ -1,65 +1,71 @@
-#!/usr/bin/env python
+"""
+The main file of the apaf.
+If assolves three tasks: start a tor instance, start the panel, start services.
+"""
 
-##
-## Here we set up a Twisted Web server and then launch a slave tor
-## with a configured hidden service directed at the Web server we set
-## up. This uses TCPHiddenServiceEndpoint, which gives you slightly
-## less control over how things are set up, but may be easier. See
-## also the :ref:`launch_tor.py` example.
-##
-
-import tempfile
 import functools
 import os
-from os.path import join
+import os.path
+import sys
+import tempfile
 
 from twisted.internet import reactor
+from twisted.internet.endpoints import TCP4ServerEndpoint
+from twisted.web import server, resource
+from twisted.python import log
 import txtorcon
 
+import apaf
+from apaf import core
 from apaf.panel import panel
 from apaf.config import config
 
 
-tor_binary = join(config._root_dir, 'contrib', 'tor', 'tor')
+tor_binary = (os.path.join(config._root_dir, 'contrib', 'tor') +
+              ('.exe' if config.platform == 'win32' else ''))
 
-def setup_failed(arg):
-    print "SETUP FAILED", arg
-    reactor.stop()
+def setup_complete(proto):
+    for name, hs in apaf.hiddenservices.iteritems():
+        log.msg('%s service running at %s' % (name, hs.hostname))
 
-from twisted.web import server, resource
-class Simple(resource.Resource):
-    isLeaf = True
-    def render_GET(self, request):
-        return "<html>Hello, world! I'm a hidden service!</html>"
-site = server.Site(Simple())
-
-def setup_complete(port):
-    print "I have set up a hidden service, advertised at:"
-    print "http://%s:%d" % (port.onion_uri, port.onion_port)
-    print "locally listening on",port.getHost()
-
-def setup_hidden_service(tor_process_protocol):
-    config = txtorcon.TorConfig(tor_process_protocol.tor_protocol)
-    public_port = 6666
-    hs_endpoint = txtorcon.TCPHiddenServiceEndpoint(reactor, config, public_port)
-
-    ## the important thing here is that "site" implements
-    ## IProtocolFactory -- this could be any service at all,
-    ## obviously.
-    hs_endpoint.listen(site).addCallback(setup_complete).addErrback(setup_failed)
 
 def updates(prog, tag, summary):
-    print "%d%%: %s" % (prog, summary)
+    log.msg("%d%%: %s" % (prog, summary))
 
+def setup_failed(arg):
+    log.err('Setup failed. -%s-' %  arg)
+    reactor.stop()
+
+def start_tor(torconfig):
+    d = txtorcon.launch_tor(torconfig, reactor,
+                            progress_updates=updates,
+                            tor_binary=tor_binary)
+    d.addCallback(setup_complete)
+    d.addErrback(setup_failed)
 
 def main():
-    d = txtorcon.launch_tor(txtorcon.TorConfig(), reactor, progress_updates=updates,
-                            tor_binary=tor_binary)
-    panel.run()
-    d.addCallback(setup_hidden_service)
-    d.addErrback(setup_failed)
+    """
+    Start the apaf.
+    """
+    ## start the logger. ##
+    log.startLogging(sys.stdout)
+
+    torconfig = txtorcon.TorConfig()
+    apaf.hiddenservices = dict()
+
+    ## start apaf. ##
+    panel.start_panel(torconfig)
+    core.start_services(torconfig)
+    torconfig.HiddenServices = apaf.hiddenservices.values()
+    torconfig.save()
+
+    start_tor(torconfig)
+
+    ##  Start the reactor. ##
     reactor.run()
 
 
 if __name__ == '__main__':
     main()
+    import webbrowser
+    webbrowser.open(apaf.hiddenservices['panel'])

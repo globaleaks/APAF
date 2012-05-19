@@ -19,10 +19,13 @@ class Config(object):
 
     platform = sys.platform
     config_file = os.path.join(_conf_dir, 'apaf.cfg')
+    log_file = os.path.join(_conf_dir, 'apaf.log')
     binary_kits = os.path.join(_root_dir, 'contrib')
+    tor_data = os.path.join(_conf_dir, 'tordata')
+    panel_port = 4242
+    panel_hs_port = 80
 
     def __init__(self):
-
         if not os.path.exists(os.path.dirname(self.config_file)):
             os.mkdir(os.path.dirname(self.config_file))
         if not os.path.exists(self.config_file):
