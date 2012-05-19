@@ -1,5 +1,5 @@
-twsited
-zope.interface
-txtorcon
-pyYAML
-python-gnupg
+twsited>=12.0.0
+zope.interface>=4.0.0
+txtorcon>=0.2
+pyYAML>=3.10
+# python-gnupg
