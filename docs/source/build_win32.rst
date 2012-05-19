@@ -40,8 +40,14 @@ Requirements
 * Git 1.7.3+
  * http://git-scm.com/download/win
 
+Install GnuPG
+-------------
+Install GnuPG as a tool to to verify the various software download:
+
+http://files.gpg4win.org/Beta/gpg4win-2.1.1-34299-beta.exe
+
 Install Python
-------------------
+--------------
 Download Python 2.7 from http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi
 
 Verify signature of application: http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi.asc
@@ -49,12 +55,12 @@ Verify signature of application: http://www.python.org/ftp/python/2.7.3/python-2
 Install the software following the wizard.
 
 Install Setuptools
-----------
+------------------
 
 Download http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
 
 Install Pip
-----------
+-----------
 
     cd C:\Python27\Scripts
     C:\Python27\Scripts> easy_install.exe pip
@@ -109,8 +115,6 @@ Install ipaddr
     cd C:\Python27\Scripts
     C:\Python27\Scripts> pip.exe install ipaddr
 
-
-
 Install Git
 -----------
 Since github lets you download a simple `.zip`  of the latest revision of your
@@ -146,7 +150,7 @@ And finally! ::
     $ git clone https://github.com/mmaker/APAF.git
 
 Install 7zip
------------
+------------
 Download http://downloads.sourceforge.net/sevenzip/7z920.exe and install following the wizard.
 
 It will place 7z.exe in "c:\Program Files\7-Zip\7z.exe"
@@ -163,7 +167,6 @@ Now decompress the tor binary with 7zip and move it to contrib/tor/ directory of
 
     c:\Program Files\7-Zip\7z.exe x tor-0.2.2.35-win32-1.exe tor.exe
     move tor.exe PATH_WHERE_IS_BUILD_ENVIRONMENT/contrib/tor 
-
 
 Build Apaf Application
 ----------------------
