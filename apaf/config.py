@@ -19,6 +19,7 @@ class Config(object):
 
     platform = sys.platform
     config_file = os.path.join(_conf_dir, 'apaf.cfg')
+    binary_kits = os.path.join(_root_dir, 'contrib')
 
     def __init__(self):
 
