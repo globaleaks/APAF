@@ -31,9 +31,9 @@ Requirements
 * PyGeoIP 0.2.3
 * Ipaddr 2.1.10
 
-* 7zip 9.20
- * http://www.7-zip.org/download.html
-* Git 1.7.3
+* 7zip 9.20 (kekaosx)
+ * http://www.kekaosx.com/en/
+* Git 1.7.3+
  * http://git-scm.com/download/mac
 
 Install Python
@@ -96,8 +96,15 @@ Install Apaf
 TODO mmaker
 
 
+Install 7zip
+-----------
+Download 7zip for OSX shipped with http://www.kekaosx.com/en/ and install following procedures
+
+It will place 7zip binary in /Applications/Keka.app//Contents/Resources/keka7z
+
+
 Extract Tor binary
---------
+------------------
 In order to extract the Mac OS X tor's binary we need to download TBB that's packaged as a zip file:
 
 cd APAF_BUILD_DIRECTORY/
@@ -106,8 +113,11 @@ wget --no-check-certificate https://www.torproject.org/dist/torbrowser/osx/TorBr
 
 Then extract the Tor binary with the following command line by using 7zip for OSX:
 
-7z x  TorBrowser-2.2.35-12-osx-i386-en-US.zip  TorBrowser_en-US.app/Contents/MacOS/tor
+/Applications/Keka.app//Contents/Resources/keka7z x  TorBrowser-2.2.35-12-osx-i386-en-US.zip  TorBrowser_en-US.app/Contents/MacOS/tor
 
 Then move the binary in the current directory:
 
 mv TorBrowser_en-US.app/Contents/MacOS/tor .
+
+Build Apaf Application
+----------------------
