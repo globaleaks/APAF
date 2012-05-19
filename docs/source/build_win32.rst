@@ -145,8 +145,8 @@ Download http://downloads.sourceforge.net/sevenzip/7z920.exe and install followi
 
 It will place 7z.exe in "c:\Program Files\7-Zip\7z.exe"
 
-Install Tor
------------
+Extract Tor binary
+------------------
 
 Download the latest version of Tor binaries for Windows.
 
