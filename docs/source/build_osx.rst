@@ -21,20 +21,20 @@ Requirements
 * Twisted 12.0
  * http://twistedmatrix.com/trac/
 * Setuptools 0.6-c11
- * TODO
+ * http://pypi.python.org/pypi/setuptools
 * Psutils 0.4.1
  * http://code.google.com/p/psutil/
 * Py2app 0.6.4
  * http://pypi.python.org/pypi/py2app/
  * https://bitbucket.org/ronaldoussoren/py2app
 * Six 1.1.0
- * TODO
+ * http://pypi.python.org/pypi/six
 * PyGeoIP 0.2.3
- * TODO
+ * http://code.google.com/p/pygeoip/
 * Ipaddr 2.1.10
- * TODO
+ * http://code.google.com/p/ipaddr-py/
 * PyYAML 3.10
- * TODO
+ * http://pyyaml.org/wiki/PyYAML
 * 7zip 9.20 (kekaosx)
  * http://www.kekaosx.com/en/
 * GPGTools 2012-03-18
@@ -155,3 +155,5 @@ Build Apaf Application
 
 cd APAF
 python2.7-32 setup.py py2app
+
+Now in dist/ you will find "run.app" .
