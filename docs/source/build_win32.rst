@@ -20,21 +20,21 @@ Requirements
 * Twisted 12.0
  * http://twistedmatrix.com/trac/
 * Setuptools 0.6-c11 
- * TODO:URL
+ * http://pypi.python.org/pypi/setuptools
 * Psutils 0.4.1
  * http://code.google.com/p/psutil/
 * Py2exe 0.6.9
- * TODO:URL
+ * http://www.py2exe.org/
 * Six 1.1.0
- * TODO:URL
+ * http://pypi.python.org/pypi/six
 * PyGeoIP 0.2.3
- * TODO:URL
+ * http://code.google.com/p/pygeoip/
 * Ipaddr 2.1.10
- * TODO:URL
-* PyWin Build 20217
- * TODO:URL
+ * http://code.google.com/p/ipaddr-py/
+* PyWin32 Build 20217
+ * http://pypi.python.org/pypi/pywin32
 * PyYAML 3.10
- * 
+ * http://pyyaml.org/wiki/PyYAML
 * 7zip 9.20
  * http://downloads.sourceforge.net/sevenzip/7z920.exe
 * Gpg 4 win 2.1.1 
@@ -162,10 +162,10 @@ Download the latest version of Tor binaries for Windows.
 Go to download page https://www.torproject.org/download/download.html.en and download "Expert Bundle":
 https://www.torproject.org/dist/win32/tor-0.2.2.35-win32-1.exe
 
-Now decompress the tor binary with 7zip and move it to contrib/tor/ directory of APAF:
+Now decompress the tor binary with 7zip and move it to contrib/ directory of APAF:
 
     c:\Program Files\7-Zip\7z.exe x tor-0.2.2.35-win32-1.exe tor.exe
-    move tor.exe PATH_WHERE_IS_BUILD_ENVIRONMENT/contrib/tor 
+    move tor.exe PATH_WHERE_IS_BUILD_ENVIRONMENT/contrib 
 
 Build Apaf Application
 ----------------------
