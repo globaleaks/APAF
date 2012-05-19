@@ -33,6 +33,8 @@ Requirements
  * TODO
 * Ipaddr 2.1.10
  * TODO
+* PyYAML 3.10
+ * TODO
 * 7zip 9.20 (kekaosx)
  * http://www.kekaosx.com/en/
 * GPGTools 2012-03-18
@@ -78,7 +80,7 @@ python2.7-32 /Library/Frameworks/Python.framework/Versions/2.7/bin/easy_install-
 
 Install Twisted
 ----------
-http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.0.0.win32-py2.7.msi
+python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install twisted
 
 Install Zope.interface
 ----------------------
@@ -97,17 +99,34 @@ Install ipaddr
 --------------
 python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install ipaddr
 
+Install pyYAML
+--------------
+python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install pyYAML
+
 Install Git
 -----------
-TODO: Procedure for installation
+Since github lets you download a simple `.zip`  of the latest revision of your
+application, git is not indispensable. 
+But certainly it will be comfortable to stay up to date with the software development
+
+http://git-scm.com/download/mac
 
 Install TxTorConn
 -----------------
-TODO mmaker
+Txtorcon is not avaible on the Python Package Index, so you need to install it manually with git.
+
+Additionally there are some bugs (https://github.com/meejah/txtorcon/pull/4) preventing builds, so we must use this fork of txtorcon ::
+
+    $ git clone https://github.com/mmaker/txtorcon.git
+
+Then install with pip: ::
+    python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install ./txtorcon
 
 Install Apaf
 ----------
-TODO mmaker
+Download Apaf from Github:
+
+    $ git clone https://github.com/mmaker/APAF.git
 
 Install 7zip
 -----------
@@ -119,7 +138,7 @@ Extract Tor binary
 ------------------
 In order to extract the Mac OS X tor's binary we need to download TBB that's packaged as a zip file:
 
-cd APAF_BUILD_DIRECTORY/
+cd APAF/
 cd contrib/tor/
 wget --no-check-certificate https://www.torproject.org/dist/torbrowser/osx/TorBrowser-2.2.35-12-osx-i386-en-US.zip
 
