@@ -21,20 +21,30 @@ Requirements
 * Twisted 12.0
  * http://twistedmatrix.com/trac/
 * Setuptools 0.6-c11
- * 
+ * TODO
 * Psutils 0.4.1
  * http://code.google.com/p/psutil/
 * Py2app 0.6.4
  * http://pypi.python.org/pypi/py2app/
  * https://bitbucket.org/ronaldoussoren/py2app
 * Six 1.1.0
+ * TODO
 * PyGeoIP 0.2.3
+ * TODO
 * Ipaddr 2.1.10
-
+ * TODO
 * 7zip 9.20 (kekaosx)
  * http://www.kekaosx.com/en/
+* GPGTools 2012-03-18
+ * http://www.gpgtools.org/
 * Git 1.7.3+
  * http://git-scm.com/download/mac
+
+Install GnuPG
+-------------
+Install GnuPG as a tool to to verify the various software download:
+
+https://github.com/downloads/GPGTools/GPGTools/GPGTools-20120318.dmg
 
 Install Python
 ------------------
