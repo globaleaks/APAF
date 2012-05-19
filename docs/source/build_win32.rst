@@ -33,6 +33,8 @@ Requirements
  * TODO:URL
 * PyWin Build 20217
  * TODO:URL
+* PyYAML 3.10
+ * 
 * 7zip 9.20
  * http://downloads.sourceforge.net/sevenzip/7z920.exe
 * Gpg 4 win 2.1.1 
@@ -61,7 +63,6 @@ Download http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win3
 
 Install Pip
 -----------
-
     cd C:\Python27\Scripts
     C:\Python27\Scripts> easy_install.exe pip
 
@@ -75,16 +76,13 @@ Install Py2Exe
 --------------
 Url for py2exe: http://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe/download
 
-
 Install PyWin32
 ---------------
 Url for pywin32: http://sourceforge.net/projects/pywin32/files/pywin32/Build%20217/pywin32-217.win32-py2.7.exe/download
 
 Install Twisted
 ---------------
-
 Donwload from http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.0.0.win32-py2.7.msi
-
 
 Install Zope.interface
 ----------------------
@@ -115,6 +113,11 @@ Install ipaddr
     cd C:\Python27\Scripts
     C:\Python27\Scripts> pip.exe install ipaddr
 
+Install pyYAML
+--------------
+    cd C:\Python27\Scripts
+    C:\Python27\Scripts> pip.exe install pyYAML
+
 Install Git
 -----------
 Since github lets you download a simple `.zip`  of the latest revision of your
@@ -128,12 +131,9 @@ Then open a new Git shell from `Start>Git>Git Bash`.
 
 Install Txtorcon
 ----------------
-Txtorcon is not avaible on the Python Package Index, so you need to install it
-manually with git.
+Txtorcon is not avaible on the Python Package Index, so you need to install it manually with git.
 
-Additionally there are some bugs preventi windows builds, so we must use this fork of txtorcon ::
-
-TODO: Maker, write here link to the bug/patch submitted
+Additionally there are some bugs (https://github.com/meejah/txtorcon/pull/4) preventing builds, so we must use this fork of txtorcon ::
 
     $ git clone https://github.com/mmaker/txtorcon.git
 
@@ -144,8 +144,7 @@ Then install with pip: ::
 
 Install Apaf
 ------------
-
-And finally! ::
+Download Apaf from Github:
 
     $ git clone https://github.com/mmaker/APAF.git
 
