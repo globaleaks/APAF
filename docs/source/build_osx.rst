@@ -70,38 +70,40 @@ Install Twisted
 ----------
 http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.0.0.win32-py2.7.msi
 
-Install zope.interface
-----------
+Install Zope.interface
+----------------------
 python2.7-32 /Library/Frameworks/Python.framework/Versions/2.7/bin/easy_install-2.7 \
 http://pypi.python.org/packages/source/z/zope.interface/zope.interface-4.0.0.tar.gz
 
 Install Six
-----------
+-----------
 python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install six
 
 Install pygeoip
-----------
+---------------
 python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install pygeoip
 
 Install ipaddr
-----------
+--------------
 python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install ipaddr
 
+Install Git
+-----------
+TODO: Procedure for installation
+
 Install TxTorConn
-----------
+-----------------
 TODO mmaker
 
 Install Apaf
 ----------
 TODO mmaker
 
-
 Install 7zip
 -----------
 Download 7zip for OSX shipped with http://www.kekaosx.com/en/ and install following procedures
 
 It will place 7zip binary in /Applications/Keka.app//Contents/Resources/keka7z
-
 
 Extract Tor binary
 ------------------
