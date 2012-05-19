@@ -139,7 +139,7 @@ Extract Tor binary
 In order to extract the Mac OS X tor's binary we need to download TBB that's packaged as a zip file:
 
 cd APAF/
-cd contrib/tor/
+cd contrib/
 wget --no-check-certificate https://www.torproject.org/dist/torbrowser/osx/TorBrowser-2.2.35-12-osx-i386-en-US.zip
 
 Then extract the Tor binary with the following command line by using 7zip for OSX:
