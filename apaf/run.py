@@ -17,6 +17,7 @@ from twisted.internet import reactor
 import txtorcon
 
 from apaf.panel import panel
+from apaf.config import config
 
 
 tor_binary = join(config._root_dir, 'contrib', 'tor', 'tor')
@@ -50,10 +51,15 @@ def setup_hidden_service(tor_process_protocol):
 def updates(prog, tag, summary):
     print "%d%%: %s" % (prog, summary)
 
-d = txtorcon.launch_tor(txtorcon.TorConfig(), reactor, progress_updates=updates,
-                        tor_binary=TOR_BINARY)
-panel.run()
-d.addCallback(setup_hidden_service)
-d.addErrback(setup_failed)
-reactor.run()
 
+def main():
+    d = txtorcon.launch_tor(txtorcon.TorConfig(), reactor, progress_updates=updates,
+                            tor_binary=tor_binary)
+    panel.run()
+    d.addCallback(setup_hidden_service)
+    d.addErrback(setup_failed)
+    reactor.run()
+
+
+if __name__ == '__main__':
+    main()
