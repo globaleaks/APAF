@@ -24,11 +24,11 @@ DATA_FILES += [(root, [join(root, file) for file in files])
 # warning: building a .app from OSX greater than 10.6 does not work!
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
-    install_requires=['py2app>=0.6.4'],
+#    install_requires=['py2app>=0.6.4'],
 )
 
 OPTIONS_PY2EXE = dict(
-   install_requires=['py2exe>=0.6.9', 'pywin32'],
+#   install_requires=['py2exe>=0.6.9', 'pywin32'],
 )
 
 
