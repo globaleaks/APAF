@@ -1,6 +1,9 @@
 .DS_Store
 
 *.py[oc]
+.*.swp
+
+_trial_tmp/
 
 # distributing directories
 docs/build/
