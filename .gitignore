@@ -3,7 +3,7 @@
 *.py[oc]
 .*.swp
 
-_trial_tmp/
+_trial_temp/
 
 # distributing directories
 docs/build/
