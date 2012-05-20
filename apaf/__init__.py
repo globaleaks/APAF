@@ -6,4 +6,4 @@ __license__ = """
 """
 
 # hidden
-hiddeservices = []
+hiddenservices = dict()

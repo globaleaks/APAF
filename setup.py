@@ -33,19 +33,18 @@ OPTIONS_PY2APP = dict(
 
 ## WINDOWS otions. ##
 OPTIONS_PY2EXE = dict(
-    bundle_files = None ,
+    bundle_files = 1,
 #   install_requires=['py2exe>=0.6.9', 'pywin32'],
 )
 
 PLATFORM_OPTIONS['win32'] = dict(
     zipfile = None,
     console = APP,
-    windows = APP,
+#    windows = APP,    # run as window, not console application.
 )
 
 
 setup(
-    name='apaf',
     version=__version__,
     author=__author__,
     app=APP,
