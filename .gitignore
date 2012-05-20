@@ -9,6 +9,7 @@ _trial_temp/
 docs/build/
 build/
 dist/
+apaf.egg-info/
 
 # virtualenv
 apaf-virtualenv

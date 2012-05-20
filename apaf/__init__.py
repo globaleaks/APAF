@@ -5,5 +5,5 @@ __email__ = 'maker.py@gmail.com'
 __license__ = """
 """
 
-# hidden
+# service : hidden service map.
 hiddenservices = dict()
