@@ -43,6 +43,13 @@ class Service(object):
         """
         raise NotImplementedError('Author not defined.')
 
+    @property
+    def icon(self):
+        """
+        The service logo.
+        """
+        raise NotImplementedError
+
     def onStart(self):
         """
         Called before starting the hidden service.
