@@ -3,7 +3,7 @@ Services logic.
 """
 import imp
 
-import twiste.python import log
+from twisted.python import log
 import txtorcon
 
 import apaf
@@ -85,6 +85,6 @@ def start_services(torconfig):
 
         service_hs = txtorcon.HiddenService(
                 torconfig, join(config.tor_data, service),
-                ['%d 127.0.0.1:%d' % (config.panel_port+port, )]
+                ['%d 127.0.0.1:%d' % (config.panel_port+port, )])
         apaf.hiddenservices[service]
 

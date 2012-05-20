@@ -8,5 +8,8 @@ import yaml
 import gnupg
 
 # library
+from apaf import hiddenservices
 import apaf.config
 import apaf.panel
+import apaf.core
+import apaf.build
