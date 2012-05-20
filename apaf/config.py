@@ -24,6 +24,7 @@ class Config(object):
     tor_data = os.path.join(_conf_dir, 'tordata')
     panel_port = 4242
     panel_hs_port = 80
+    logo = ''
 
     def __init__(self):
         """
