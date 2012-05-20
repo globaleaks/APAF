@@ -36,7 +36,7 @@ class Config(object):
         if not os.path.exists(self._conf_dir):
             os.mkdir(self._conf_dir)
         if not os.path.exists(self.tor_data):
-            os.mkdir(slef.tor_data)
+            os.mkdir(self.tor_data)
 
         if not os.path.exists(self.config_file):
             with open(self.config_file, 'w') as cfg:
