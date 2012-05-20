@@ -58,13 +58,14 @@ class Config(object):
             self.__dict__[name] = value
 
     def __delattr__(self, name):
-        raise ValueError("Refusing to remove " + name)
+        raise AttributeError("Refusing to remove " + name)
 
     def repl(self):
         return str(vars(self))
 
     def commit(self):
-        yaml.dump(vars(self), stream=self.config_file)
+        with open(self.config_file, 'w') as cfg:
+            yaml.dump(vars(self), stream=cfg)
 
 
 config = Config()
