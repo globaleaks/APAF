@@ -8,23 +8,24 @@ import yaml
 import os
 import os.path
 
-
 class Config(object):
     """
     Configuration class
     """
     _root_dir = os.path.abspath(__file__).rsplit('APAF', 1)[0] + 'APAF'
-    _conf_dir = (os.path.expanduser('~/.apaf/')  if sys.platform != 'win32'
-                 else os.path.expanduser('~/Apaf'))
+    _data_dir = os.path.join(_root_dir, 'datadir')
+    _conf_dir = os.path.join(_data_dir, 'config')
 
     platform = sys.platform
     config_file = os.path.join(_conf_dir, 'apaf.cfg')
     log_file = os.path.join(_conf_dir, 'apaf.log')
-    binary_kits = os.path.join(_root_dir, 'contrib')
+    binary_kits = os.path.join(_data_dir, 'contrib')
     tor_data = os.path.join(_conf_dir, 'tordata')
+    services_dir = os.path.join(_data_dir, 'services')
+    logo = ''     # logo for the application
     panel_port = 4242
     panel_hs_port = 80
-    logo = ''
+    services = dict()    # list of services to be started.
 
     def __init__(self):
         """

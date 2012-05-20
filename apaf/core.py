@@ -81,8 +81,8 @@ def start_services(torconfig):
     for port, service in enumerate(config.services):
         # load service
         try:
-            service_mod = imp.load_module(service,
-                                        *imp.find_module(service, ['services']))
+            service_mod = imp.load_module(
+                    service, *imp.find_module(config.service_dir, ['services']))
         except ImportError:
             log.err('Cannot import service %s' % service)
         except Exception as e:
@@ -90,8 +90,8 @@ def start_services(torconfig):
 
         # create hidden service
 
-        service_hs = txtorcon.HiddenService(
-                torconfig, join(config.tor_data, service),
-                ['%d 127.0.0.1:%d' % (config.panel_port+port, )])
-        apaf.hiddenservices[service]
+#        service_hs = txtorcon.HiddenService(
+#                torconfig, join(config.tor_data, service),
+#                ['%d 127.0.0.1:%d' % (config.panel_port+port, )])
+#        apaf.hiddenservices[service]
 

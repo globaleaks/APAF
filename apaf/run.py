@@ -21,7 +21,7 @@ from apaf.panel import panel
 from apaf.config import config
 
 
-tor_binary = (os.path.join(config._root_dir, 'contrib', 'tor') +
+tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
@@ -40,7 +40,7 @@ def start_tor(torconfig):
     d = txtorcon.launch_tor(torconfig, reactor,
                             progress_updates=updates,
                             tor_binary=tor_binary)
-    d.addCallback(setup_complete)
+    #d.addCallback(setup_complete)
     d.addErrback(setup_failed)
 
 def main():
@@ -67,4 +67,4 @@ def main():
 if __name__ == '__main__':
     main()
     import webbrowser
-    webbrowser.open(apaf.hiddenservices['panel'])
+#    webbrowser.open(apaf.hiddenservices['panel'].hostname)

@@ -10,7 +10,7 @@ from twisted.web import server, resource, static
 from twisted.python import log
 import txtorcon
 
-import apaf
+from apaf import hiddenservices
 from apaf.config import config
 from apaf.panel import handlers
 
@@ -42,7 +42,7 @@ def start_panel(torconfig):
         os.mkdir(PANEL_DIR)
     panel_hs = txtorcon.HiddenService(torconfig, config.tor_data,
             ['%d 127.0.0.1:%d' % (config.panel_port, config.panel_hs_port)])
-    apaf.hiddenservices['panel'] = panel_hs
+    hiddenservices['panel'] = panel_hs
 
 
 
