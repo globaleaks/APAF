@@ -28,12 +28,16 @@ PLATFORM_OPTIONS = defaultdict(dict)
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
     iconfile = config.logo,
+
 #    install_requires=['py2app>=0.6.4'],
 )
 
 ## WINDOWS otions. ##
 OPTIONS_PY2EXE = dict(
     bundle_files = 1,
+    compressed = True,
+    optimize = 2,
+
 #   install_requires=['py2exe>=0.6.9', 'pywin32'],
 )
 
