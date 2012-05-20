@@ -49,13 +49,12 @@ def main():
     """
     ## start the logger. ##
     log.startLogging(sys.stdout)
-
     torconfig = txtorcon.TorConfig()
-    apaf.hiddenservices = dict()
 
     ## start apaf. ##
     panel.start_panel(torconfig)
     core.start_services(torconfig)
+
     torconfig.HiddenServices = apaf.hiddenservices.values()
     torconfig.save()
 
