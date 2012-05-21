@@ -1,25 +1,16 @@
 #!/usr/bin/env python
+"""
+The blobber module generates an autoextracting python file given the input
+directory dir.
+"""
+from __future__ import with_statement
 
 import os
 import tarfile
 import base64
-import sys
 import StringIO
 
-if len(sys.argv) < 2:
-    print "Usage ./blobber.py <directory> <output (default=bloobone.py)>"
-    sys.exit(1)
-
-filename=None
-if sys.argv[1].startswith("~"):
-    directory = os.path.expanduser(sys.argv[1])
-else:
-    directory = sys.argv[1]
-
-if len(sys.argv) > 2:
-    filename = sys.argv[2]
-
-def create_blobbone(directory, filename="blobbone.py"):
+def create_blobbone(directory, filename):
     tar_obj = StringIO.StringIO()
     tar = tarfile.open(mode='w:gz', fileobj=tar_obj)
     tar.add(directory)
@@ -38,18 +29,21 @@ def create_blobbone(directory, filename="blobbone.py"):
     "tar.extractall()\n"
     "tar.close()\n")
 
-    f2 = open(filename, 'wb')
-    f2.write(header_code)
-    f2.write('blob = r"""')
-    base64.encode(tar_obj, f2)
-    f2.write('"""\n')
-    f2.write(uncompacting_code)
-    f2.close()
-    print "Blobbone created. Run python %s to decompress it." % filename
+    with open(filename, 'wb') as f:
+        f.write(header_code)
+        f.write('blob = r"""')
+        base64.encode(tar_obj, f)
+        f.write('"""\n')
+        f.write(uncompacting_code)
 
 if __name__ == "__main__":
-    if filename:
-        create_blobbone(directory, filename)
-    else:
-        create_blobbone(directory)
+    import sys
 
+    if len(sys.argv) not in (2, 3):
+        print "Usage ./blobber.py <directory> <output (default=bloobone.py)>"
+        sys.exit(1)
+
+    directory = sys.argv[1]
+    filename = 'blobbone.py' if len(sys.argv) == 2 else sys.argv[-1]
+    create_blobbone(directory, filename)
+    print "Blobbone created. Run python %s to decompress it." % filename
