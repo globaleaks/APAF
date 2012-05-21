@@ -15,32 +15,19 @@ dependencies in a Windows environment.
 
 Requirements
 -------------
-* Python 2.7.3
- * http://www.python.org/download/releases/2.7.3/
-* Twisted 12.0
- * http://twistedmatrix.com/trac/
-* Setuptools 0.6-c11 
- * http://pypi.python.org/pypi/setuptools
-* Psutils 0.4.1
- * http://code.google.com/p/psutil/
-* Py2exe 0.6.9
- * http://www.py2exe.org/
-* Six 1.1.0
- * http://pypi.python.org/pypi/six
-* PyGeoIP 0.2.3
- * http://code.google.com/p/pygeoip/
-* Ipaddr 2.1.10
- * http://code.google.com/p/ipaddr-py/
-* PyWin32 Build 20217
- * http://pypi.python.org/pypi/pywin32
-* PyYAML 3.10
- * http://pyyaml.org/wiki/PyYAML
-* 7zip 9.20
- * http://downloads.sourceforge.net/sevenzip/7z920.exe
-* Gpg 4 win 2.1.1 
- * http://www.gpg4win.org/download.html
-* Git 1.7.3+
- * http://git-scm.com/download/win
+* Python 2.7.3 http://www.python.org/download/releases/2.7.3/
+* Twisted 12.0  http://twistedmatrix.com/trac/
+* Setuptools 0.6-c11 http://pypi.python.org/pypi/setuptools
+* Psutils 0.4.1 http://code.google.com/p/psutil/
+* Py2exe 0.6.9 http://www.py2exe.org/
+* Six 1.1.0 http://pypi.python.org/pypi/six
+* PyGeoIP 0.2.3 http://code.google.com/p/pygeoip/
+* Ipaddr 2.1.10  http://code.google.com/p/ipaddr-py/
+* PyWin32 Build 20217 http://pypi.python.org/pypi/pywin32
+* PyYAML 3.10 http://pyyaml.org/wiki/PyYAML
+* 7zip 9.20 http://downloads.sourceforge.net/sevenzip/7z920.exe
+* Gpg 4 win 2.1.1  http://www.gpg4win.org/download.html [in future]
+* Git 1.7.3+ http://git-scm.com/download/win
 
 Install GnuPG
 -------------
@@ -165,7 +152,7 @@ https://www.torproject.org/dist/win32/tor-0.2.2.35-win32-1.exe
 Now decompress the tor binary with 7zip and move it to contrib/ directory of APAF:
 
     c:\Program Files\7-Zip\7z.exe x tor-0.2.2.35-win32-1.exe tor.exe
-    move tor.exe PATH_WHERE_IS_BUILD_ENVIRONMENT/contrib 
+    move tor.exe PATH_WHERE_IS_BUILD_ENVIRONMENT/contrib
 
 Build Apaf Application
 ----------------------
