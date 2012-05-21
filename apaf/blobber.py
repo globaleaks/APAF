@@ -26,8 +26,8 @@ def create_blobbone(directory, filename):
     "base64.decode(encoded_obj, tar_obj)\n"
     "tar_obj.seek(0)\n"
     "tar = tarfile.open('r:gz', fileobj=tar_obj)\n"
-    "tar.extractall()\n"
-    "tar.close()\n")
+    "tar.extractall(path='%s')\n"
+    "tar.close()\n" % os.path.dirname(filename))
 
     with open(filename, 'wb') as f:
         f.write(header_code)
