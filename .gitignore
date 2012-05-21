@@ -11,5 +11,8 @@ build/
 dist/
 apaf.egg-info/
 
+# private comfiguration files
+datadir/config/
+
 # virtualenv
 apaf-virtualenv

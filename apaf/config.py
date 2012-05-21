@@ -63,7 +63,7 @@ class Config(object):
     def __delattr__(self, name):
         raise AttributeError("Refusing to remove " + name)
 
-    def repl(self):
+    def __repl__(self):
         return str(vars(self))
 
     def commit(self):
