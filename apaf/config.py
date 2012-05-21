@@ -22,6 +22,7 @@ class Config(object):
     binary_kits = os.path.join(_data_dir, 'contrib')
     tor_data = os.path.join(_conf_dir, 'tordata')
     services_dir = os.path.join(_data_dir, 'services')
+    static_dir = os.path.join(_data_dir, 'static')
     logo = ''     # logo for the application
     panel_port = 4242
     panel_hs_port = 80

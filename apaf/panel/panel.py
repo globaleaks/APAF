@@ -15,7 +15,6 @@ from apaf.config import config
 from apaf.panel import handlers
 
 PANEL_DIR = os.path.join(config.tor_data, 'panel')
-STATIC_DIR = os.path.join('apaf', 'panel', 'static')
 
 API = {
     'tor': handlers.TorHandler,
@@ -31,7 +30,7 @@ def start_panel(torconfig):
     :param torconfig: an instance of txtorcon.TorConfig representing the
                       configuration file.
     """
-    root = static.File(STATIC_DIR)
+    root = static.File(config.static_dir)
 
     for path, handler in API.items():
         root.putChild(path, handler())
