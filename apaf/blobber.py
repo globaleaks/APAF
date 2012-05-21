@@ -11,6 +11,12 @@ import base64
 import StringIO
 
 def create_blobbone(directory, filename):
+    """
+    Create an autoextracting python executable containing the given data.
+    Tested with files up to 20 MB !
+    :param directory: the directory to compress
+    :param filename: the target filename for the compressed data.
+    """
     tar_obj = StringIO.StringIO()
     tar = tarfile.open(mode='w:gz', fileobj=tar_obj)
     tar.add(directory)

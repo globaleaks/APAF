@@ -63,6 +63,22 @@ def main():
     ##  Start the reactor. ##
     reactor.run()
 
+def main_win32():
+    """
+    Custom main for windows.
+    """
+    # if the compressed zip file does not exists, create it in the current
+    # directory of the user.
+    if not os.path.exists(config._data_dir):
+        from apaf import win32blob  # import the python autoextracter
+
+    main()
+
+def main_darwin():
+    """
+    Custom main for OSX.
+    """
+
 
 if __name__ == '__main__':
     main()
