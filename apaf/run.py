@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.

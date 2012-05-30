@@ -14,13 +14,14 @@ from apaf import hiddenservices
 from apaf.config import config
 from apaf.panel import handlers
 
-PANEL_DIR = os.path.join(config.tor_data, 'panel')
+PANEL_DIR = os.path.join(config.services_dir, 'panel')
 
-API = {
-    'tor': handlers.TorHandler,
-    'app': handlers.AppHandler,
-    'status': handlers.StatusHandler
-}
+API = dict(
+    tor =  handlers.TorHandler,
+    app =  handlers.AppHandler,
+    status =  handlers.StatusHandler,
+    service = handlers.ServiceHandler,
+)
 
 def start_panel(torconfig):
     """
@@ -32,7 +33,7 @@ def start_panel(torconfig):
     """
     root = static.File(config.static_dir)
 
-    for path, handler in API.items():
+    for path, handler in API.iteritems():
         root.putChild(path, handler())
     reactor.listenTCP(config.panel_port, server.Site(root))
 

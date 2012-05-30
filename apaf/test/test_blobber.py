@@ -28,5 +28,4 @@ class TestBlobber(unittest.TestCase):
     def test_uncompatting(self):
         blobber.create_blobbone(config._data_dir, self.dest)
         imp.load_module(self.filename,
-                        *imp.find_module(self.filename, [self.tmpdir])
-)
+                        *imp.find_module(self.filename, [self.tmpdir]))

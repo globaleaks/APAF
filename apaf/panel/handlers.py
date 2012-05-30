@@ -1,6 +1,8 @@
 import json
 from twisted.web.resource import Resource
 
+import apaf
+
 class MenuHandler(Resource):
     def getChild(self, path, request):
         pass
@@ -46,4 +48,9 @@ class StatusHandler(Resource):
         ret = {'options': ['show', 'update', 'other']}
         return json.dumps(ret)
 
-
+class ServiceHandler(Resource):
+    def render_GET(self, request):
+        return json.dumps(
+            [{'num': i, 'name': name, 'desc':'description', 'url':hs.hostname,
+              'active': bool(hs)}
+              for i, (name, hs) in enumerate(apaf.hiddenservices.iteritems())])
