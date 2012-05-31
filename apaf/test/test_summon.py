@@ -13,3 +13,4 @@ import apaf.config
 import apaf.panel
 import apaf.core
 import apaf.build
+import apaf.utils
