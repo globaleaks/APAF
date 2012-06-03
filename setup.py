@@ -3,8 +3,8 @@ from collections import defaultdict
 from os.path import join
 import os
 
+import apaf
 from apaf.config import config
-from apaf import __version__, __author__
 
 if config.platform == 'win32':
     import py2exe
@@ -49,8 +49,11 @@ PLATFORM_OPTIONS['win32'] = dict(
 
 
 setup(
-    version=__version__,
-    author=__author__,
+    name='apaf',
+    version=apaf.__version__,
+    author=apaf.__author__,
+    author_email=apaf.__email__,
+    url=apaf.__url__,
     app=APP,
     data_files=DATA_FILES,
     options=dict(py2app=OPTIONS_PY2APP,

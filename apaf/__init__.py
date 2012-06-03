@@ -2,6 +2,7 @@
 __version__ = '0x0.1'
 __author__ = u'Michele Orr\xc3\xb9'
 __email__ = 'maker.py@gmail.com'
+__url__ = 'https://github.com/mmaker/apaf'
 __license__ = """
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
                     Version 2, December 2004
