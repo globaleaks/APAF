@@ -56,7 +56,7 @@ def main():
     panel.start_panel(torconfig)
     core.start_services(torconfig)
 
-    torconfig.HiddenServices = apaf.hiddenservices.values()
+    torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices.values()]
     torconfig.save()
 
     start_tor(torconfig)

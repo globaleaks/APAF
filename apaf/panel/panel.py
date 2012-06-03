@@ -8,20 +8,43 @@ import sys
 from twisted.internet import reactor
 from twisted.web import server, resource, static
 from twisted.python import log
+from zope.interface import implements
 import txtorcon
 
 from apaf import hiddenservices
+from apaf.core import Service
 from apaf.config import config
 from apaf.panel import handlers
 
-PANEL_DIR = os.path.join(config.services_dir, 'panel')
+class PanelService(object):
+    implements(Service)
 
-API = dict(
-    tor =  handlers.TorHandler,
-    app =  handlers.AppHandler,
-    status =  handlers.StatusHandler,
-    service = handlers.ServiceHandler,
-)
+    name = 'panel'
+    desc = 'Administration panel and apaf manager.'
+    port = None
+    icon = None
+
+    _paneldir = os.path.join(config.services_dir, 'panel')
+    _api = dict(
+        tor =  handlers.TorHandler,
+        app =  handlers.AppHandler,
+        status =  handlers.StatusHandler,
+        service = handlers.ServiceHandler,
+    )
+
+    def onStart(self):
+        self.root  = static.File
+        root = static.File(config.static_dir)
+        for path, handler in self._api.iteritems():
+            root.putChild(path, handler())
+
+
+        ## create the hidden service of the panel ##
+        if not os.path.exists(self._paneldir):
+            os.mkdir(self._paneldir)
+
+        # listen on localhost :: XXX: shall be editable ::
+        reactor.listenTCP(config.panel_port, server.Site(root))
 
 def start_panel(torconfig):
     """
@@ -31,19 +54,12 @@ def start_panel(torconfig):
     :param torconfig: an instance of txtorcon.TorConfig representing the
                       configuration file.
     """
-    root = static.File(config.static_dir)
-
-    for path, handler in API.iteritems():
-        root.putChild(path, handler())
-    reactor.listenTCP(config.panel_port, server.Site(root))
-
-    ## create the hidden service of the panel ##
-    if not os.path.exists(PANEL_DIR):
-        os.mkdir(PANEL_DIR)
+    panel = PanelService()
+    panel.onStart()
     panel_hs = txtorcon.HiddenService(torconfig, config.tor_data,
             ['%d 127.0.0.1:%d' % (config.panel_port, config.panel_hs_port)])
-    hiddenservices['panel'] = panel_hs
-
+    panel.hs = panel_hs
+    hiddenservices['panel'] = panel
 
 
 if __name__ == '__main__':

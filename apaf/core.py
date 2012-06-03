@@ -4,63 +4,35 @@ Services logic.
 import imp
 
 from twisted.python import log
+from zope.interface import Interface, Attribute
 import txtorcon
 
 import apaf
 from apaf.config import config
 
-class Service(object):
+class Service(Interface):
     """
     A Service class exposes callback methods and information to the apaf
     environment system, which takes care to load them.
     """
+    name = Attribute('Name of the hidden service')
+    desc = Attribute('A brief description of the service.')
+    author = Attribute('The author of the service')
+    port = Attribute('the port og which the service wants to be exposed')
+    hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
+                   ' the service class from the apaf.')
 
-    @property
-    def name(self):
-        """
-        Name of the hidden service Must be the same as the module name.
-        """
-        raise NotImplementedError('Name not defined.')
-
-    @property
-    def desc(self):
-        """
-        A brief description of the service.
-        """
-        raise NotImplementedError('Name not defined.')
-
-    @property
-    def author(self):
-        """
-        The author of the service.
-        """
-        raise NotImplementedError('Desc not defined.')
-
-    @property
-    def port(self):
-        """
-        The port on which the service wants to be exposed.
-        """
-        raise NotImplementedError('Author not defined.')
-
-    @property
-    def icon(self):
-        """
-        The service logo.
-        """
-        raise NotImplementedError
+    icon = Attribute('The service logo')
 
     def onStart(self):
         """
         Called before starting the hidden service.
         """
-        pass
 
     def onStop(self):
         """
         Called in case of explicit stop from the user.
         """
-        pass
 
     def onFailure(self, exception):
         """
@@ -68,7 +40,6 @@ class Service(object):
         :param exception: The instance of the exception raised.
         :ret: None.
         """
-        pass
 
 def start_services(torconfig):
     """
