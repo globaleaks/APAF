@@ -23,9 +23,7 @@ class Config(object):
     tor_data = os.path.join(_conf_dir, 'tordata')
     services_dir = os.path.join(_data_dir, 'services')
     static_dir = os.path.join(_data_dir, 'static')
-    logo = ''     # logo for the application
-    panel_port = 4242
-    panel_hs_port = 80
+    base_port = 4242
     services = dict()    # list of services to be started.
 
     def __init__(self):

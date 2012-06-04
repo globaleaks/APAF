@@ -2,15 +2,16 @@
 Services logic.
 """
 import imp
+import os.path
 
 from twisted.python import log
-from zope.interface import Interface, Attribute
+from zope.interface import Interface, Attribute, implements
 import txtorcon
 
 import apaf
 from apaf.config import config
 
-class Service(Interface):
+class IService(Interface):
     """
     A Service class exposes callback methods and information to the apaf
     environment system, which takes care to load them.
@@ -41,6 +42,32 @@ class Service(Interface):
         :ret: None.
         """
 
+
+class Service(object):
+    implements(IService)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<Service class on hiddenservice %s>' % self.hs
+
+    def __nonzero__(self):
+        # XXX. return always True.
+        return True
+
+def add_service(torconfig, service, port=None):
+    """
+    Create a new hiddenservice and adds it to the `hiddenservices` list.
+    : param service : the service to be run.
+    """
+    port = port or config.base_port + len(apaf.hiddenservices)
+
+    service.hs = txtorcon.HiddenService(
+        torconfig, os.path.join(config.tor_data, service.name),
+        ['%d 127.0.0.1:%d' % (service.port, port)])
+    apaf.hiddenservices.append(service)
+
 def start_services(torconfig):
     """
     For each service active in the configuration xand avaible in the
@@ -59,10 +86,10 @@ def start_services(torconfig):
         except Exception as e:
             log.err('Error loading service %s -\n %s' % (service, e))
 
+        service = getattr(service_mod, 'ServiceDescriptor', None)
+        if not service:
+            log.err('Unable to find class Service in ', repr(service_mod))
+            continue
+
         # create hidden service
-
-#        service_hs = txtorcon.HiddenService(
-#                torconfig, join(config.tor_data, service),
-#                ['%d 127.0.0.1:%d' % (config.panel_port+port, )])
-#        apaf.hiddenservices[service]
-
+        add_service(torconfig, service)

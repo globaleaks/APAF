@@ -12,16 +12,15 @@ from zope.interface import implements
 import txtorcon
 
 from apaf import hiddenservices
-from apaf.core import Service
+from apaf.core import Service, add_service
 from apaf.config import config
 from apaf.panel import handlers
 
-class PanelService(object):
-    implements(Service)
+class PanelService(Service):
 
     name = 'panel'
     desc = 'Administration panel and apaf manager.'
-    port = None
+    port = 80
     icon = None
 
     _paneldir = os.path.join(config.services_dir, 'panel')
@@ -44,7 +43,7 @@ class PanelService(object):
             os.mkdir(self._paneldir)
 
         # listen on localhost :: XXX: shall be editable ::
-        reactor.listenTCP(config.panel_port, server.Site(root))
+        reactor.listenTCP(config.base_port, server.Site(root))
 
 def start_panel(torconfig):
     """
@@ -56,11 +55,8 @@ def start_panel(torconfig):
     """
     panel = PanelService()
     panel.onStart()
-    panel_hs = txtorcon.HiddenService(torconfig, config.tor_data,
-            ['%d 127.0.0.1:%d' % (config.panel_port, config.panel_hs_port)])
-    panel.hs = panel_hs
-    hiddenservices['panel'] = panel
 
+    add_service(torconfig, panel)
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)

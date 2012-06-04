@@ -6,6 +6,8 @@ import os
 import apaf
 from apaf.config import config
 
+ICONFILE = None
+
 if config.platform == 'win32':
     import py2exe
 elif config.platform == 'darwin':
@@ -27,7 +29,7 @@ PLATFORM_OPTIONS = defaultdict(dict)
 # warning: building a .app from OSX greater than 10.6 does not work!
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
-    iconfile = config.logo,
+    iconfile = ICONFILE,
 
 #    install_requires=['py2app>=0.6.4'],
 )

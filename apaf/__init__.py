@@ -20,5 +20,5 @@ __license__ = """
 """
 
 
-# service : hidden service map.
-hiddenservices = dict()
+# list of active hiddenservices
+hiddenservices = []

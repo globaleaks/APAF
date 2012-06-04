@@ -26,8 +26,8 @@ tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
-    for name, hs in apaf.hiddenservices.iteritems():
-        log.msg('%s service running at %s' % (name, hs.hostname))
+    for service in apaf.hiddenservices:
+        log.msg('%s service running at %s' % (service, service.hs.hostname))
 
 
 def updates(prog, tag, summary):
@@ -41,7 +41,7 @@ def start_tor(torconfig):
     d = txtorcon.launch_tor(torconfig, reactor,
                             progress_updates=updates,
                             tor_binary=tor_binary)
-    #d.addCallback(setup_complete)
+    d.addCallback(setup_complete)
     d.addErrback(setup_failed)
 
 def main():
@@ -56,7 +56,7 @@ def main():
     panel.start_panel(torconfig)
     core.start_services(torconfig)
 
-    torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices.values()]
+    torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices]
     torconfig.save()
 
     start_tor(torconfig)
@@ -84,4 +84,4 @@ def main_darwin():
 if __name__ == '__main__':
     main()
     import webbrowser
-#    webbrowser.open(apaf.hiddenservices['panel'].hostname)
+    webbrowser.open(apaf.hiddenservices[0].hs.hostname)
