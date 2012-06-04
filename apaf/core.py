@@ -46,6 +46,13 @@ class IService(Interface):
 class Service(object):
     implements(IService)
 
+    name = 'Unknown'
+    desc = ''
+    author = ''
+    icon = None
+    port = None
+    hs = None
+
     def __str__(self):
         return self.name
 
