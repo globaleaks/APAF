@@ -63,6 +63,13 @@ class Service(object):
         # XXX. return always True.
         return True
 
+    @property
+    def url(self):
+        """
+        Return the hidden service url on which the service can be reached.
+        """
+        return self.hs.hostname
+
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.

@@ -49,8 +49,14 @@ class StatusHandler(Resource):
         return json.dumps(ret)
 
 class ServiceHandler(Resource):
+    def _base_attrs(self, service):
+        """
+        Returns a dictionary containig a summary of what the service is and on
+        which url is running on.
+        """
+        keys = ['name', 'desc', 'url']
+        return {name:getattr(service, name, None) for name in keys}
+
     def render_GET(self, request):
-        return json.dumps(
-            [{'num': i, 'name': name, 'desc':'description', 'url':hs.hostname,
-              'active': bool(hs)}
-              for i, (name, hs) in enumerate(apaf.hiddenservices.iteritems())])
+        return json.dumps([self._base_attrs(service)
+            for service in apaf.hiddenservices])

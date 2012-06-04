@@ -45,13 +45,6 @@
            </tr>
          </thead>
          <tbody>
-           <tr>
-             <td>1</td>
-             <td>Foo</td>
-             <td>Foo</td>
-             <td>foo</td>
-             <td>foo</td>
-           </tr>
          </tbody>
        </table>
 
@@ -66,13 +59,12 @@
           $.get('service', function(data) {
               services = eval( '(' + data + ')' );
               console.log(services);
-              for (var i in services)
+              for (var i=0; i != services.length; i++)
                   $('#hstable').append('<tr>')
-                               .append('<td>' + services[i].num + '</td>')
+                               .append('<td>' + (i+1) + '</td>')
                                .append('<td>' + services[i].name + '</td>')
                                .append('<td>' + services[i].desc + '</td>')
                                .append('<td>' + services[i].url + '</td>')
-                               .append('<td>' + services[i].active + '</td>')
                                .append('</tr>');
           });
       }
