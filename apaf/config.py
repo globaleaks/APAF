@@ -22,7 +22,7 @@ class Config(object):
     binary_kits = os.path.join(_data_dir, 'contrib')
     tor_data = os.path.join(_conf_dir, 'tordata')
     services_dir = os.path.join(_data_dir, 'services')
-    static_dir = os.path.join(_data_dir, 'static')
+    static_dir = os.path.join(services_dir, 'panel', 'static')
     base_port = 4242
     services = dict()    # list of services to be started.
 
