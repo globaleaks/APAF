@@ -1,15 +1,17 @@
 from setuptools import setup, find_packages
+from distutils import log
 from collections import defaultdict
 from os.path import join
 import os
 
 import apaf
-from apaf.config import config
+from apaf  import config
+from apaf.utils.osx_support import OSXPatchCommand
 
 ICONFILE = None
 
 if config.platform == 'win32':
-    from py2exe.build_exe impoer py2exe as _py2exe
+    from py2exe.build_exe import py2exe as _py2exe
 
     class py2exe(_py2exe):
         def create_binaries(self, *args, **kwargs):
@@ -26,7 +28,20 @@ elif config.platform == 'darwin':
     import py2app
 
 
+
 APP = [os.path.join('apaf', 'run.py')]
+
+# static files
+DATA_FILES = [join('datadir','services'), join('datadir', 'contrib')]
+#DATA_FILES = reduce(lambda final_list, item: final_list + item, 
+#    [[join(root,item) for item in files] for root, _, files in os.walk(join('datadir', 'static'))]
+#)
+             
+# binary files
+"""
+DATA_FILES += reduce(lambda final_list, item: final_list + item,
+    [[join(root,file) for file in files] for root, _, files in os.walk(join('datadir', 'contrib'))]
+)
 
 # static files
 DATA_FILES = [(root, [join(root, file) for file in files])
@@ -35,6 +50,13 @@ DATA_FILES = [(root, [join(root, file) for file in files])
 DATA_FILES += [(root, [join(root, file) for file in files])
                for root, _, files in os.walk(join('contrib'))]
 
+"""
+# files needed to create app Bundle on os x (icon, status bar icon ...)
+if config.platform == 'darwin':
+    DATA_FILES += reduce(lambda final_list, item: final_list + item,
+        [[join(root,file) for file in files] for root, _, files in os.walk(join('datadir', 'osx_bundle'))]
+    )
+
 
 PLATFORM_OPTIONS = defaultdict(dict)
 ## DARWIN options. ##
@@ -42,7 +64,9 @@ PLATFORM_OPTIONS = defaultdict(dict)
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
     iconfile = ICONFILE,
-
+    plist={
+        "LSUIElement":0, # Agent Only App (No icon in dock)
+    }
 #    install_requires=['py2app>=0.6.4'],
 )
 
@@ -61,6 +85,11 @@ PLATFORM_OPTIONS['win32'] = dict(
 #    windows = APP,    # run as window, not console application.
 )
 
+PLATFORM_OPTIONS['darwin'] = dict(
+    cmdclass={
+        'osx_patch': OSXPatchCommand
+    },
+)
 
 setup(
     name='apaf',
@@ -73,7 +102,7 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
-    entry_points=dict(console_scripts=['apaf = apaf.run:main']),
+    entry_points=dict(console_scripts=['apaf = apaf.run :main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]
 )

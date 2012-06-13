@@ -4,23 +4,32 @@ The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.
 """
 
+from apaf import config
+from twisted.internet import _threadedselect
+_threadedselect.install()
+
 import functools
 import os
 import os.path
 import sys
 import tempfile
 
-from twisted.internet import reactor
+import apaf
+
+from apaf import core
+from apaf.panel import panel
+
+
+
+from twisted.internet import reactor, protocol
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.web import server, resource
 from twisted.python import log
 import txtorcon
 
-import apaf
-from apaf import core
-from apaf.panel import panel
-from apaf import config
 
+
+from PyObjCTools import AppHelper
 
 tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
@@ -62,7 +71,10 @@ def main():
     start_tor(torconfig)
 
     ##  Start the reactor. ##
-    reactor.run()
+    if config.platform == 'darwin':
+        reactor.interleave(AppHelper.callAfter)
+    else:
+        reactor.run()
 
 def main_win32():
     """
@@ -79,12 +91,21 @@ def main_darwin():
     """
     Custom main for OSX.
     """
-    main()
+    from AppKit import NSApplication
+    from apaf.utils.osx_support import ApafAppWrapper
+    
+    app = NSApplication.sharedApplication()
+    delegate = ApafAppWrapper.alloc().init()
+    delegate.setMainFunction_andReactor_(main, reactor)
+    app.setDelegate_(delegate)
+
+    AppHelper.runEventLoop()
+    
 
 
 if __name__ == '__main__':
     strmain = 'main_'+config.platform
     vars().get(strmain, main)()
 
-    import webbrowser
-    webbrowser.open(apaf.hiddenservices[0].hs.hostname)
+    #import webbrowser
+    #webbrowser.open(apaf.hiddenservices[0].hs.hostname)

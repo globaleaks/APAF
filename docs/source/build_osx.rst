@@ -124,36 +124,31 @@ Then install with pip: ::
 
 Install Apaf
 ----------
-Download Apaf from Github:
+Download Apaf from Github::
 
     $ git clone https://github.com/mmaker/APAF.git
 
-Install 7zip
------------
-Download 7zip for OSX shipped with http://www.kekaosx.com/en/ and install following procedures
-
-It will place 7zip binary in /Applications/Keka.app//Contents/Resources/keka7z
 
 Extract Tor binary
 ------------------
-In order to extract the Mac OS X tor's binary we need to download TBB that's packaged as a zip file:
+In order to extract the Mac OS X tor's binary we need to download TBB that's packaged as a zip file::
+	cd APAF/datadir/contrib/
+	wget --no-check-certificate https://www.torproject.org/dist/torbrowser/osx/TorBrowser-2.2.35-12-osx-i386-en-US.zip
 
-cd APAF/
-cd contrib/
-wget --no-check-certificate https://www.torproject.org/dist/torbrowser/osx/TorBrowser-2.2.35-12-osx-i386-en-US.zip
+Then extract the Tor binary with the following command line by using 7zip for OSX::
+	$ unzip TorBrowser-2.2.35-12-osx-i386-en-US.zip
 
-Then extract the Tor binary with the following command line by using 7zip for OSX:
-
-/Applications/Keka.app//Contents/Resources/keka7z x  TorBrowser-2.2.35-12-osx-i386-en-US.zip  TorBrowser_en-US.app/Contents/MacOS/tor
-
-Then move the binary in the current directory:
-
-mv TorBrowser_en-US.app/Contents/MacOS/tor .
+Then move the binary in the current directory::
+	$mv TorBrowser_en-US.app/Contents/MacOS/tor .
 
 Build Apaf Application
 ----------------------
+::
+	cd ../../
+	python2.7-32 setup.py py2app
+	
 
-cd APAF
-python2.7-32 setup.py py2app
+Now in dist/ you will find "apaf.app"
 
-Now in dist/ you will find "run.app" .
+
+

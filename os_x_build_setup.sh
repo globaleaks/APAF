@@ -3,6 +3,8 @@
 # APAF build system OS X install script
 #
 
+export VERSIONER_PYTHON_PREFER_32_BIT=yes
+
 if ! which git; then
 	#exit if we do not have git
 	echo "Couldn't start without git please download it from: http://git-scm.com/download/mac"
@@ -24,6 +26,8 @@ virtualenv apaf-env
 . apaf-env/bin/activate
 echo `which python`
 
+easy_install pyobjc-core
+easy_install pyobjc
 
 pip install psutil py2app twisted six pygeoip ipaddr pyYAML
 easy_install http://pypi.python.org/packages/source/z/zope.interface/zope.interface-4.0.0.tar.gz
@@ -40,7 +44,7 @@ unzip TorBrowser-2*
 
 # move up
 cd ..
-mv TorBrowser_en-US.app/Contents/MacOS/tor datadir/contrib/
+mv src/TorBrowser_en-US.app/Contents/MacOS/tor datadir/contrib/
 rm -rf src/
 
 
