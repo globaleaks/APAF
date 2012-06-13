@@ -5,8 +5,12 @@ If assolves three tasks: start a tor instance, start the panel, start services.
 """
 
 from apaf import config
-from twisted.internet import _threadedselect
-_threadedselect.install()
+if config.platform == 'darwin':
+    from twisted.internet import _threadedselect
+    _threadedselect.install()
+    from PyObjCTools import AppHelper
+    from AppKit import NSNotificationCenter, NSApplication
+    from apaf.utils.osx_support import ApafAppWrapper, TorFinishedLoadNotification
 
 import functools
 import os
@@ -19,8 +23,6 @@ import apaf
 from apaf import core
 from apaf.panel import panel
 
-
-
 from twisted.internet import reactor, protocol
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.web import server, resource
@@ -29,12 +31,12 @@ import txtorcon
 
 
 
-from PyObjCTools import AppHelper
 
 tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
+    NSNotificationCenter.defaultCenter().postNotificationName_object_(TorFinishedLoadNotification, None)
     for service in apaf.hiddenservices:
         log.msg('%s service running at %s' % (service, service.hs.hostname))
 
@@ -91,9 +93,6 @@ def main_darwin():
     """
     Custom main for OSX.
     """
-    from AppKit import NSApplication
-    from apaf.utils.osx_support import ApafAppWrapper
-    
     app = NSApplication.sharedApplication()
     delegate = ApafAppWrapper.alloc().init()
     delegate.setMainFunction_andReactor_(main, reactor)

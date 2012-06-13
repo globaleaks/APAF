@@ -8,6 +8,7 @@ from AppKit import *
 from PyObjCTools import AppHelper
 
 APP_NAME = 'apaf' # @TODO must me in some other place in a config from which setup() also can read it (must m ethe same :P)
+TorFinishedLoadNotification = 'TorFinishedLoadNotification'
 
 #
 # OS X specific patch command it is needed under OS X 10.7 (lion)
@@ -49,6 +50,7 @@ class ApafAppWrapper(NSObject):
     statusbar = None
     runApaf = None
     reactor = None
+    menuitem = None
 
     def setMainFunction_andReactor_(self, func, reactor):
         NSLog("set app")
@@ -59,34 +61,45 @@ class ApafAppWrapper(NSObject):
         statusbar = NSStatusBar.systemStatusBar()
         # Create the statusbar item
         self.statusitem = statusbar.statusItemWithLength_(NSVariableStatusItemLength)
-        
+        # set title
         self.statusitem.setTitle_("apaf")
         # Let it highlight upon clicking
         self.statusitem.setHighlightMode_(1)
-        # Set a tooltip
+        # Set tooltip
         self.statusitem.setToolTip_('Anonymous Python Application Framework')
+        # set status image
         path = NSBundle.mainBundle().pathForResource_ofType_("status_bar_icon", "png")
-        print path
         image = NSImage.alloc().initWithContentsOfFile_(path)
         self.statusitem.setImage_(image)
-        #status_item.setImage_(image)
 
-        # Build a very simple menu
+        # Build menu
         self.menu = NSMenu.alloc().init()
-        # Sync event is bound to sync_ method
-        menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Open admin interface', 'openAdmin:', '')
+        self.menu.setAutoenablesItems_(0)
 
-        self.menu.addItem_(menuitem)
+        self.menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Loading...', 'openAdmin:', '')
+        self.menu.addItem_(self.menuitem)
+
+        self.menuitem.setEnabled_(0)
+        print "is it %d" % self.menuitem.isEnabled()
         # Default event
-        menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
-        self.menu.addItem_(menuitem)
+        quit = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
+        self.menu.addItem_(quit)
         # Bind it to the status item
         self.statusitem.setMenu_(self.menu)
-        #sel = objc.selector(self.setApafStart,signature='v@:')
-        #self.performSelectorInBackground_withObject_(sel, None)
+        
+        # listen for completed notification
+        sel = objc.selector(self.torHasLoaded,signature='v@:')
+
+        ns = NSNotificationCenter.defaultCenter()
+        ns.addObserver_selector_name_object_(self, sel, TorFinishedLoadNotification, None)
+
         self.runApaf()
         
-    
+    def torHasLoaded(self):
+        self.menuitem.setTitle_("Open service in browser")
+        self.menuitem.setEnabled_(1)
+        pass
+
     def applicationShouldTerminate_(self, sender):
         if self.reactor.running:
             self.reactor.addSystemEventTrigger(
