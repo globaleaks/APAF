@@ -4,7 +4,7 @@ Apaf module for handling the download and building of binary files.
 This must be refactored usign the apaf configuration and the
 twisted.client.HTTPDownaloader class.
 """
-from apaf.config import config
+from apaf import config
 import os.path
 
 # pgp = gnupg.PGP(gnupghome=HOME, gpgbinary=GPG_BINARY)

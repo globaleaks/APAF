@@ -19,7 +19,7 @@ import txtorcon
 import apaf
 from apaf import core
 from apaf.panel import panel
-from apaf.config import config
+from apaf import config
 
 
 tor_binary = (os.path.join(config.binary_kits, 'tor') +
@@ -70,7 +70,7 @@ def main_win32():
     """
     # if the compressed zip file does not exists, create it in the current
     # directory of the user.
-    if not os.path.exists(config._data_dir):
+    if not os.path.exists(config.data_dir):
         from apaf import win32blob  # import the python autoextracter
 
     main()
@@ -79,9 +79,12 @@ def main_darwin():
     """
     Custom main for OSX.
     """
+    main()
 
 
 if __name__ == '__main__':
-    main()
+    strmain = 'main_'+config.platform
+    vars().get(strmain, main)()
+
     import webbrowser
     webbrowser.open(apaf.hiddenservices[0].hs.hostname)

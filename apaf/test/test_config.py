@@ -2,7 +2,7 @@ import unittest
 import tempfile
 import os
 
-from apaf.config import config
+from apaf import config
 
 class TestConfig(unittest.TestCase):
 
@@ -25,14 +25,14 @@ class TestConfig(unittest.TestCase):
     def test_commit(self):
         config.config_file = tempfile.mktemp(suffix='apaf_cfg')
 
-        config.commit()
+        config.custom.commit()
         self.assertTrue(os.path.exists(config.config_file))
 
 
     def test_setattr(self):
         try:
-            config.__foo_bar = 'spam'
-            config._foo = 1
+            config.custom.__foo_bar = 'spam'
+            config.custom._foo = 1
         except ValueError:
             pass # as expected
         else:
@@ -40,8 +40,7 @@ class TestConfig(unittest.TestCase):
 
     def test_delattr(self):
         try:
-            del config.platform
-            del config.cheese_and_spam
+            del config.custom.cheese_and_spam
         except AttributeError:
              pass  # as expected
         else:

@@ -9,7 +9,19 @@ from apaf.config import config
 ICONFILE = None
 
 if config.platform == 'win32':
-    import py2exe
+    from py2exe.build_exe impoer py2exe as _py2exe
+
+    class py2exe(_py2exe):
+        def create_binaries(self, *args, **kwargs):
+            """
+            Generate the blob module for static files, too.
+            """
+            from apaf.blobber import create_blobbone
+            create_blobbone(config._datadir,
+                            join(config._root_dir, 'win32blob.py'))
+
+            _py2exe.create_binaries(self, *args, **kwargs)
+
 elif config.platform == 'darwin':
     import py2app
 

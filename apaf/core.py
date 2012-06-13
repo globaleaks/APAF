@@ -9,7 +9,7 @@ from zope.interface import Interface, Attribute, implements
 import txtorcon
 
 import apaf
-from apaf.config import config
+from apaf import config
 
 class IService(Interface):
     """
@@ -70,12 +70,21 @@ class Service(object):
         """
         return self.hs.hostname
 
+    def onStart(self):
+        raise NotImplementedError
+
+    def onStop(self):
+        pass
+
+    def onFailure(self):
+        raise NotImplementedError
+
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.
     : param service : the service to be run.
     """
-    port = port or config.base_port + len(apaf.hiddenservices)
+    port = port or config.custom.base_port + len(apaf.hiddenservices)
 
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
@@ -90,11 +99,11 @@ def start_services(torconfig):
     :param torconfig: an instance of txtorcon.TorConfig representing the
                       configuration file.
     """
-    for port, service in enumerate(config.services):
+    for port, service in enumerate(config.custom.services):
         # load service
         try:
             service_mod = imp.load_module(
-                    service, *imp.find_module(config.service_dir, ['services']))
+                    service, *imp.find_module(config.services_dir, ['services']))
         except ImportError:
             log.err('Cannot import service %s' % service)
         except Exception as e:

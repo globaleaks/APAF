@@ -13,7 +13,7 @@ import txtorcon
 
 from apaf import hiddenservices
 from apaf.core import Service, add_service
-from apaf.config import config
+from apaf import config
 from apaf.panel import handlers
 
 class PanelService(Service):
@@ -43,7 +43,7 @@ class PanelService(Service):
             os.mkdir(self._paneldir)
 
         # listen on localhost :: XXX: shall be editable ::
-        reactor.listenTCP(config.base_port, server.Site(root))
+        reactor.listenTCP(config.custom.base_port, server.Site(root))
 
 def start_panel(torconfig):
     """
