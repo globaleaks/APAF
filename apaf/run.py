@@ -36,7 +36,8 @@ tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
-    NSNotificationCenter.defaultCenter().postNotificationName_object_(TorFinishedLoadNotification, None)
+    if config.platform == 'darwin':
+        NSNotificationCenter.defaultCenter().postNotificationName_object_(TorFinishedLoadNotification, None)
     for service in apaf.hiddenservices:
         log.msg('%s service running at %s' % (service, service.hs.hostname))
 
@@ -106,5 +107,5 @@ if __name__ == '__main__':
     strmain = 'main_'+config.platform
     vars().get(strmain, main)()
 
-    #import webbrowser
-    #webbrowser.open(apaf.hiddenservices[0].hs.hostname)
+    import webbrowser
+    webbrowser.open(apaf.hiddenservices[0].hs.hostname)

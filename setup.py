@@ -28,29 +28,11 @@ elif config.platform == 'darwin':
     import py2app
 
 
-
 APP = [os.path.join('apaf', 'run.py')]
 
 # static files
 DATA_FILES = [join('datadir','services'), join('datadir', 'contrib')]
-#DATA_FILES = reduce(lambda final_list, item: final_list + item, 
-#    [[join(root,item) for item in files] for root, _, files in os.walk(join('datadir', 'static'))]
-#)
-             
-# binary files
-"""
-DATA_FILES += reduce(lambda final_list, item: final_list + item,
-    [[join(root,file) for file in files] for root, _, files in os.walk(join('datadir', 'contrib'))]
-)
 
-# static files
-DATA_FILES = [(root, [join(root, file) for file in files])
-              for root, _, files in os.walk(join('apaf', 'panel', 'static'))]
-# binary files
-DATA_FILES += [(root, [join(root, file) for file in files])
-               for root, _, files in os.walk(join('contrib'))]
-
-"""
 # files needed to create app Bundle on os x (icon, status bar icon ...)
 if config.platform == 'darwin':
     DATA_FILES += reduce(lambda final_list, item: final_list + item,
@@ -102,7 +84,7 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
-    entry_points=dict(console_scripts=['apaf = apaf.run :main']),
+    entry_points=dict(console_scripts=['apaf = apaf.run:main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]
 )
