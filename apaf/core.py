@@ -70,6 +70,15 @@ class Service(object):
         """
         return self.hs.hostname
 
+    def onStart(self):
+        raise NotImplementedError
+
+    def onStop(self):
+        pass
+
+    def onFailure(self):
+        raise NotImplementedError
+
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.
