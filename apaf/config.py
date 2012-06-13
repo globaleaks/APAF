@@ -8,21 +8,44 @@ import yaml
 import os
 import os.path
 
+
+def _get_datadir():
+    """
+    Looks up for the data directory checking whether the application path
+    is avaible. The first attempt is done on /etc, following on ~/.config,
+    then checking for environment variables, and finally on the package path itself.
+    See  issue #16.
+    """
+    homedir = os.path.expanduser(os.path.join('~', '.apaf', 'datadir'))
+    if os.path.exists(homedir):
+        return homedir
+
+    etcdir = 'etc/apaf/datadir'
+    if os.path.exists(etcdir):
+        return etcdir
+
+    bundledir = os.environ.get('RESOURCEPATH')
+    if bundledir:
+        return bundledir
+
+    return os.path.join(package_dir, '..', 'datadir')
+
+package_dir = os.path.abspath(os.path.dirname(__file__))
+platform = sys.platform
+data_dir = _get_datadir()
+conf_dir = os.path.join(data_dir, 'config')
+config_file = os.path.join(conf_dir, 'apaf.cfg')
+log_file = os.path.join(conf_dir, 'apaf.log')
+binary_kits = os.path.join(data_dir, 'contrib')
+tor_data = os.path.join(conf_dir, 'tordata')
+services_dir = os.path.join(data_dir, 'services')
+static_dir = os.path.join(services_dir, 'panel', 'static')
+
+
 class Config(object):
     """
     Configuration class
     """
-    _root_dir = os.path.abspath(__file__).rsplit('APAF', 1)[0] + 'APAF'
-    _data_dir = os.path.join(_root_dir, 'datadir')
-    _conf_dir = os.path.join(_data_dir, 'config')
-
-    platform = sys.platform
-    config_file = os.path.join(_conf_dir, 'apaf.cfg')
-    log_file = os.path.join(_conf_dir, 'apaf.log')
-    binary_kits = os.path.join(_data_dir, 'contrib')
-    tor_data = os.path.join(_conf_dir, 'tordata')
-    services_dir = os.path.join(_data_dir, 'services')
-    static_dir = os.path.join(services_dir, 'panel', 'static')
     base_port = 4242
     services = dict()    # list of services to be started.
 
@@ -33,18 +56,18 @@ class Config(object):
         them.
         """
         # check for directory path
-        if not os.path.exists(self._conf_dir):
-            os.mkdir(self._conf_dir)
-        if not os.path.exists(self.tor_data):
-            os.mkdir(self.tor_data)
+        if not os.path.exists(conf_dir):
+            os.mkdir(conf_dir)
+        if not os.path.exists(tor_data):
+            os.mkdir(tor_data)
 
-        if not os.path.exists(self.config_file):
-            with open(self.config_file, 'w') as cfg:
+        if not os.path.exists(config_file):
+            with open(config_file, 'w') as cfg:
                 # XXX. add keys with their default values.
                 cfg.write('dio: cane\n')
 
         # load configuration
-        with open(self.config_file, 'r') as cfg:
+        with open(config_file, 'r') as cfg:
             for key, value in (yaml.load(cfg) or dict()).iteritems():
                 setattr(self, key, value)
 
@@ -65,8 +88,8 @@ class Config(object):
         return str(vars(self))
 
     def commit(self):
-        with open(self.config_file, 'w') as cfg:
+        with open(config_file, 'w') as cfg:
             yaml.dump(vars(self), stream=cfg)
 
 
-config = Config()
+custom = Config()
