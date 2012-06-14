@@ -9,25 +9,6 @@ from apaf  import config
 from apaf.utils.osx_support import OSXPatchCommand
 
 ICONFILE = None
-
-if config.platform == 'win32':
-    from py2exe.build_exe import py2exe as _py2exe
-
-    class py2exe(_py2exe):
-        def create_binaries(self, *args, **kwargs):
-            """
-            Generate the blob module for static files, too.
-            """
-            from apaf.blobber import create_blobbone
-            create_blobbone(config._datadir,
-                            join(config._root_dir, 'win32blob.py'))
-
-            _py2exe.create_binaries(self, *args, **kwargs)
-
-elif config.platform == 'darwin':
-    import py2app
-
-
 APP = [os.path.join('apaf', 'run.py')]
 
 # static files
@@ -43,13 +24,22 @@ if config.platform == 'darwin':
 PLATFORM_OPTIONS = defaultdict(dict)
 ## DARWIN options. ##
 # warning: building a .app from OSX greater than 10.6 does not work!
+if config.platform == 'darwin':
+    import py2app
+
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
     iconfile = ICONFILE,
     plist={
-        "LSUIElement":0, # Agent Only App (No icon in dock)
+        'LSUIElement':0, # Agent Only App (No icon in dock)
     }
 #    install_requires=['py2app>=0.6.4'],
+)
+
+PLATFORM_OPTIONS['darwin'] = dict(
+    cmdclass={
+        'osx_patch': OSXPatchCommand
+    },
 )
 
 ## WINDOWS otions. ##
@@ -57,9 +47,22 @@ OPTIONS_PY2EXE = dict(
     bundle_files = 1,
     compressed = True,
     optimize = 2,
-
 #   install_requires=['py2exe>=0.6.9', 'pywin32'],
 )
+
+if config.platform == 'win32':
+    from py2exe.build_exe import py2exe as _py2exe
+
+    class py2exe(_py2exe):
+        def create_binaries(self, *args, **kwargs):
+            """
+            Generate the blob module for static files, too.
+            """
+            from apaf.blobber import create_blobbone
+            create_blobbone(config._datadir,
+                            join(config._root_dir, 'win32blob.py'))
+
+            _py2exe.create_binaries(self, *args, **kwargs)
 
 PLATFORM_OPTIONS['win32'] = dict(
     zipfile = None,

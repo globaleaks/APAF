@@ -3,25 +3,11 @@
 The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.
 """
-
-from apaf import config
-if config.platform == 'darwin':
-    from twisted.internet import _threadedselect
-    _threadedselect.install()
-    from PyObjCTools import AppHelper
-    from AppKit import NSNotificationCenter, NSApplication
-    from apaf.utils.osx_support import ApafAppWrapper, TorFinishedLoadNotification
-
 import functools
 import os
 import os.path
 import sys
 import tempfile
-
-import apaf
-
-from apaf import core
-from apaf.panel import panel
 
 from twisted.internet import reactor, protocol
 from twisted.internet.endpoints import TCP4ServerEndpoint
@@ -29,8 +15,10 @@ from twisted.web import server, resource
 from twisted.python import log
 import txtorcon
 
-
-
+import apaf
+from apaf import core
+from apaf import config
+from apaf.panel import panel
 
 tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
@@ -74,10 +62,10 @@ def main():
     start_tor(torconfig)
 
     ##  Start the reactor. ##
-    if config.platform == 'darwin':
-        reactor.interleave(AppHelper.callAfter)
-    else:
-        reactor.run()
+    #if config.platform == 'darwin':
+    #    reactor.interleave(AppHelper.callAfter)
+    #else:
+    reactor.run()
 
 def main_win32():
     """
@@ -94,13 +82,21 @@ def main_darwin():
     """
     Custom main for OSX.
     """
+    from PyObjCTools import AppHelper
+    from AppKit import NSNotificationCenter, NSApplication
+    from apaf.utils.osx_support import ApafAppWrapper, TorFinishedLoadNotification
+    from twisted.internet import _threadedselect
+    try:
+        _threadedselect.install()
+    except Exception as e:
+        log.err(e)
+
     app = NSApplication.sharedApplication()
     delegate = ApafAppWrapper.alloc().init()
     delegate.setMainFunction_andReactor_(main, reactor)
     app.setDelegate_(delegate)
 
     AppHelper.runEventLoop()
-    
 
 
 if __name__ == '__main__':
