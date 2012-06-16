@@ -5,15 +5,16 @@ import re
 import os
 from Foundation import *
 from AppKit import *
+from AppKit import NSNotificationCenter
 from PyObjCTools import AppHelper
 
 APP_NAME = 'apaf' # @TODO must me in some other place in a config from which setup() also can read it (must m ethe same :P)
 TorFinishedLoadNotification = 'TorFinishedLoadNotification'
 
-#
-# OS X specific patch command it is needed under OS X 10.7 (lion)
-#
 class OSXPatchCommand(Command):
+    """
+    OSX specific patch command. ## XXX. needed or not just for lion?
+    """
     description = "Patch for OS X 10.7 (lion) bug -> Python.framework not copied inside app bundle"
     user_options = []
     def initialize_options(self):
@@ -31,22 +32,20 @@ class OSXPatchCommand(Command):
 
         # folder of the app bundle
         frameFolder = "dist/%s.app/Contents/Frameworks/Python.framework/Versions/%s" % (APP_NAME, version)
-          
+
         # copy it if it does't exists
         if not os.path.exists(frameFolder):
             os.makedirs(frameFolder)
             os.system("cp %s/Python %s" % (pythonFrameworkPath, frameFolder))
             os.system("chmod +x dist/%s.app/Contents/Resources/contrib/tor" % APP_NAME)
 
-    # -- class OSXPatchCommand
-
-import objc, re, os
-from Foundation import *
-from AppKit import *
-from PyObjCTools import AppHelper
-
 
 class ApafAppWrapper(NSObject):
+    """
+    Wrapper around the standard apaf runner;
+    creates a new icon around the notification centre and controls the apaf.
+    """
+
     statusbar = None
     runApaf = None
     reactor = None
@@ -86,15 +85,15 @@ class ApafAppWrapper(NSObject):
         self.menu.addItem_(quit)
         # Bind it to the status item
         self.statusitem.setMenu_(self.menu)
-        
+
         # listen for completed notification
-        sel = objc.selector(self.torHasLoaded,signature='v@:')
+        sel = objc.selector(self.torHasLoaded, signature='v@:')
 
         ns = NSNotificationCenter.defaultCenter()
         ns.addObserver_selector_name_object_(self, sel, TorFinishedLoadNotification, None)
 
         self.runApaf()
-        
+
     def torHasLoaded(self):
         self.menuitem.setTitle_("Open service in browser")
         self.menuitem.setEnabled_(1)
