@@ -5,8 +5,7 @@ from os.path import join
 import os
 
 import apaf
-from apaf  import config
-from apaf.utils.osx_support import OSXPatchCommand
+from apaf import config
 
 ICONFILE = None
 APP = [os.path.join('apaf', 'run.py')]
@@ -14,18 +13,20 @@ APP = [os.path.join('apaf', 'run.py')]
 # static files
 DATA_FILES = [join('datadir','services'), join('datadir', 'contrib')]
 
-# files needed to create app Bundle on os x (icon, status bar icon ...)
-if config.platform == 'darwin':
-    DATA_FILES += reduce(lambda final_list, item: final_list + item,
-        [[join(root,file) for file in files] for root, _, files in os.walk(join('datadir', 'osx_bundle'))]
-    )
-
-
 PLATFORM_OPTIONS = defaultdict(dict)
+
 ## DARWIN options. ##
-# warning: building a .app from OSX greater than 10.6 does not work!
 if config.platform == 'darwin':
+    import operator
     import py2app
+    from apaf.utils.osx_support import OSXPatchCommand
+
+    # files needed to create app Bundle on os x (icon, status bar icon ...)
+    DATA_FILES += reduce(operator.add,
+        [[join(root,file) for file in files]
+         for root, _, files in os.walk(join('datadir', 'osx_bundle'))])
+else:
+    OSXPatchCommand = None
 
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
@@ -70,11 +71,6 @@ PLATFORM_OPTIONS['win32'] = dict(
 #    windows = APP,    # run as window, not console application.
 )
 
-PLATFORM_OPTIONS['darwin'] = dict(
-    cmdclass={
-        'osx_patch': OSXPatchCommand
-    },
-)
 
 setup(
     name='apaf',
