@@ -1,7 +1,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Services Page</title>
+    <title>About APAF</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="APAF index page">
     <meta name="author" content="Michele Orrù">
@@ -31,23 +31,9 @@
 
   <body>
     <div class="container">
-       <h1>Services Page</h1>
+       <h1>APAF</h1>
        <hr />
-       <p>This list shows the list of services with a small description of what
-          they are doing nad which hidden service they are running on.</p>
-        <table class="table table-striped" href='#' id='hstable'>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Comment</th>
-              <th>Hidden Service Url</th>
-              <th>Active</th>
-           </tr>
-         </thead>
-         <tbody>
-         </tbody>
-       </table>
+       <p></p>
 
     </div> <!-- /container -->
 
@@ -55,22 +41,6 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.7.2.js"></script>
-    <script>
-      $(document).ready(function() {
-          $.get('service', function(data) {
-              services = eval( '(' + data + ')' );
-              console.log(services);
-              for (var i=0; i != services.length; i++)
-                  $('#hstable').append('<tr>')
-                               .append('<td>' + (i+1) + '</td>')
-                               .append('<td>' + services[i].name + '</td>')
-                               .append('<td>' + services[i].desc + '</td>')
-                               .append('<td>' + services[i].url + '</td>')
-                               .append('</tr>');
-          });
-      }
-      );
-  </script>
 
 
   </body>
