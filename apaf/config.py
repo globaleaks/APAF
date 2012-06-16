@@ -12,9 +12,13 @@ import os.path
 def _get_datadir():
     """
     Looks up for the data directory checking whether the application path
-    is avaible. The first attempt is done on /etc, following on ~/.config,
-    then checking for environment variables, and finally on the package path itself.
-    See  issue #16.
+    is avaible. Path checking order:
+     (i)   /etc,
+     (ii)  ~/.config,
+     (iii) environment variables,
+     (iv)  package path,
+     (v)   current directory.
+    For more informations, see  issue #16.
     """
     homedir = os.path.expanduser(os.path.join('~', '.apaf', 'datadir'))
     if os.path.exists(homedir):
@@ -28,7 +32,16 @@ def _get_datadir():
     if bundledir:
         return bundledir
 
-    return os.path.join(package_dir, '..', 'datadir')
+    vanilladir = os.path.join(package_dir, '..', 'datadir')
+    if os.path.exists(vanilladir):
+        return vanilladir
+
+    curdir = os.path.join('datadir', )
+    if os.path.exists(curdir):
+        return curdir
+    else:
+        # import blobbone
+        return curdir
 
 package_dir = os.path.abspath(os.path.dirname(__file__))
 platform = sys.platform
