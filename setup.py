@@ -11,7 +11,8 @@ ICONFILE = None
 APP = [os.path.join('apaf', 'run.py')]
 
 # static files
-DATA_FILES = [join('datadir','services'), join('datadir', 'contrib')]
+DATA_FILES = [(root, [join(root, file) for file in files])
+              for root, _, files in os.walk(join('datadir'))]
 
 PLATFORM_OPTIONS = defaultdict(dict)
 
