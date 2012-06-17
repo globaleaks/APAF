@@ -26,7 +26,7 @@ def _get_datadir():
 
     sysdir = '/usr/share/apaf/datadir'
     if os.path.exists(sysdir):
-        return etcdir
+        return sysdir
 
     bundledir = os.environ.get('RESOURCEPATH')
     if bundledir:
