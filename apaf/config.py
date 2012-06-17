@@ -24,8 +24,8 @@ def _get_datadir():
     if os.path.exists(homedir):
         return homedir
 
-    etcdir = 'etc/apaf/datadir'
-    if os.path.exists(etcdir):
+    sysdir = '/usr/share/apaf/datadir'
+    if os.path.exists(sysdir):
         return etcdir
 
     bundledir = os.environ.get('RESOURCEPATH')
@@ -43,6 +43,8 @@ def _get_datadir():
         # import blobbone
         return curdir
 
+
+appname = 'apaf'
 package_dir = os.path.abspath(os.path.dirname(__file__))
 platform = sys.platform
 data_dir = _get_datadir()

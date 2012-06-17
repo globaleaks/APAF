@@ -3,12 +3,14 @@ import subprocess
 import objc
 import re
 import os
+
 from Foundation import *
 from AppKit import *
 from AppKit import NSNotificationCenter
 from PyObjCTools import AppHelper
 
-APP_NAME = 'apaf' # @TODO must me in some other place in a config from which setup() also can read it (must m ethe same :P)
+from apaf import config
+
 TorFinishedLoadNotification = 'TorFinishedLoadNotification'
 
 class OSXPatchCommand(Command):
@@ -22,7 +24,7 @@ class OSXPatchCommand(Command):
     def finalize_options(self):
         pass
     def run(self):
-        if not os.path.exists("dist/%s.app/" % APP_NAME):
+        if not os.path.exists("dist/%s.app/" % config.appname):
             log.error("You have to run py2app first")
             return
         # getting Python.framework path
