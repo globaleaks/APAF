@@ -45,13 +45,6 @@ PLATFORM_OPTIONS['darwin'] = dict(
 )
 
 ## WINDOWS otions. ##
-OPTIONS_PY2EXE = dict(
-    bundle_files = 1,
-    compressed = True,
-    optimize = 2,
-#   install_requires=['py2exe>=0.6.9', 'pywin32'],
-)
-
 if config.platform == 'win32':
     from py2exe.build_exe import py2exe as _py2exe
 
@@ -72,6 +65,17 @@ PLATFORM_OPTIONS['win32'] = dict(
 #    windows = APP,    # run as window, not console application.
 )
 
+OPTIONS_PY2EXE = dict(
+    bundle_files = 1,
+    compressed = True,
+    optimize = 2,
+#   install_requires=['py2exe>=0.6.9', 'pywin32'],
+)
+
+## linux options ##
+if config.platform == 'linux2':
+    DATA_FILES = [(join('share', config.appname, dest), source)
+                  for dest, source in DATA_FILES]
 
 setup(
     name='apaf',
