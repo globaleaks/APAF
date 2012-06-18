@@ -104,8 +104,13 @@ def main_darwin():
 
 
 if __name__ == '__main__':
-    strmain = 'main_'+config.platform
-    vars().get(strmain, main)()
+    import sys
+
+    if sys.argv[1] == '-d':
+        main()
+    else:
+        strmain = 'main_'+config.platform
+        vars().get(strmain, main)()
 
     import webbrowser
     webbrowser.open(apaf.hiddenservices[0].hs.hostname)

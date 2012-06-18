@@ -9,6 +9,7 @@ from twisted.internet import reactor
 from twisted.web import server, resource, static
 from twisted.python import log
 from zope.interface import implements
+from cyclone import web
 import txtorcon
 
 from apaf import hiddenservices
@@ -17,33 +18,31 @@ from apaf import config
 from apaf.panel import handlers
 
 class PanelService(Service):
-
     name = 'panel'
     desc = 'Administration panel and apaf manager.'
     port = 80
     icon = None
 
     _paneldir = os.path.join(config.services_dir, 'panel')
-    _api = dict(
-        tor =  handlers.TorHandler,
-        app =  handlers.AppHandler,
-        status =  handlers.StatusHandler,
-        service = handlers.ServiceHandler,
-    )
+    handlers = [
+        (r'/services', handlers.ServiceHandler),
+        (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
+        (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
+        (r'/services/(.*)/stop', handlers.ServiceHandler, {'action':'stop'}),
+        #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
+    ]
 
     def onStart(self):
-        self.root  = static.File
-        root = static.File(config.static_dir)
-        for path, handler in self._api.iteritems():
-            root.putChild(path, handler())
-
-
-        ## create the hidden service of the panel ##
+        # create the hidden service directory of the panel
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
+        self.app = web.Application(
+                self.handlers,
+                debug = True,
+        )
 
         # listen on localhost :: XXX: shall be editable ::
-        reactor.listenTCP(config.custom.base_port, server.Site(root))
+        reactor.listenTCP(config.custom.base_port, self.app)
 
 def start_panel(torconfig):
     """
