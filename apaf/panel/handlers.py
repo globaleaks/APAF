@@ -1,62 +1,80 @@
 import json
-from twisted.web.resource import Resource
 
+from cyclone import web, escape, auth
 import apaf
 
-class MenuHandler(Resource):
-    def getChild(self, path, request):
+class PanelHandler(web.RequestHandler):
+    """
+    A simple RequestHandler with utils for the panel
+    """
+    def get_logged_user(self):
         pass
 
-class TorHandler(Resource):
-    def __init__(self):
-        Resource.__init__(self)
-        self.putChild('start', app_start_handler())
-        self.putChild('stop', app_stop_handler())
-        self.putChild('status', app_status_handler())
+    def initialize(self, action):
+        self.action = action
 
-    def render_GET(self, request):
-        ret = {'options': ['start', 'stop', 'status', 'restart']}
-        return json.dumps(ret)
-
-class app_start_handler(Resource):
-    def render_GET(self, request):
-        ret = {'Result': True}
-        return json.dumps(ret)
-
-class app_stop_handler(Resource):
-    def render_GET(self, request):
-        ret = {'Result': True}
-        return json.dumps(ret)
-
-class app_status_handler(Resource):
-    def render_GET(self, request):
-        ret = {'Result': True}
-        return json.dumps(ret)
-
-class AppHandler(Resource):
-    def __init__(self):
-        Resource.__init__(self)
-        self.putChild('start', app_start_handler())
-        self.putChild('stop', app_stop_handler())
-        self.putChild('status', app_status_handler())
-    def render_GET(self, request):
-        ret = {'options': ['start', 'stop', 'status', 'restart', 'address']}
-        return json.dumps(ret)
-
-class StatusHandler(Resource):
-    def render_GET(self, request):
-        ret = {'options': ['show', 'update', 'other']}
-        return json.dumps(ret)
-
-class ServiceHandler(Resource):
-    def _base_attrs(self, service):
+    def set_default_headers(self):
         """
-        Returns a dictionary containig a summary of what the service is and on
+        Panel API is performed entirely via json calls.
+        """
+        #self.set_header("Content-Type", "application/json")
+
+class AuthHandler(PanelHandler, auth.OAuthMixin):
+    pass
+
+class ServiceHandler(PanelHandler):
+    _actions = ['state', 'start', 'stop']
+
+    @property
+    def services(self):
+        """
+        Return a dictionary service-name:service-class of all instantiated
+        services.
+        """
+        return {service.name:service for service in apaf.hiddenservices}
+
+   # cache decorator here.
+    def _get_service(self, name=None):
+        if not name in self.services:
+            raise web.HTTPError(404)
+        else:
+            return self.services[name]
+
+    def state(self, service):
+        """
+        Process GET request:
+            * /services/<service>/
+        Return a dictionary containig a summary of what the service is and on
         which url is running on.
         """
         keys = ['name', 'desc', 'url']
         return {name:getattr(service, name, None) for name in keys}
 
-    def render_GET(self, request):
-        return json.dumps([self._base_attrs(service)
-            for service in apaf.hiddenservices])
+    def start(self, service):
+        """
+        Process GET request:
+            * /services/<service>/start
+        """
+
+    def stop(self, service):
+        """
+        Process GET request:
+            * /services/<service>/stop
+        """
+
+    # @web.authenticated
+    def get(self, service=None):
+        """
+        Processes GET requests:
+          * /services/
+          * /services/<service>/
+          * /services/<service>/start
+          * /services/<service>/stop
+        """
+        if not service:
+            resp = self.services.keys()
+        elif self.action in self._actions:
+            service = self._get_service(service)
+            resp = getattr(self, self.action)(service)
+
+        self.finish(escape.json_encode(resp))
