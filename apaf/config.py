@@ -61,8 +61,10 @@ class Config(object):
     """
     Configuration class
     """
-    base_port = 4242
-    services = dict()    # list of services to be started.
+    _defaults = dict(
+        base_port=4242,
+        services=list(),    # list of services to be started
+    )
 
     def __init__(self):
         """
@@ -75,22 +77,19 @@ class Config(object):
             os.mkdir(conf_dir)
         if not os.path.exists(tor_data):
             os.mkdir(tor_data)
-
         if not os.path.exists(config_file):
-            with open(config_file, 'w') as cfg:
-                # XXX. add keys with their default values.
-                cfg.write('dio: cane\n')
-
-        # load configuration
-        with open(config_file, 'r') as cfg:
-            for key, value in (yaml.load(cfg) or dict()).iteritems():
-                setattr(self, key, value)
+            self.reset()
+        else:
+            # load configuration
+            with open(config_file, 'r') as cfg:
+                for key, value in (yaml.load(cfg) or dict()).iteritems():
+                    setattr(self, key, value)
 
     def __setattr__(self, name, value):
         """
         Mask the standard setattr method to deny dunder variables assignment.
         """
-        if name.startswith('_') and not name[0].isdigit():
+        if not name[0].isalpha():
             raise ValueError('Configuration variables must start with an ascii'
                               'lowercase letter.')
         else:
@@ -99,12 +98,25 @@ class Config(object):
     def __delattr__(self, name):
         raise AttributeError("Refusing to remove " + name)
 
+    def __contains__(self, elt):
+        """
+        Return true if elt is present in config, false otherwise.
+        """
+        return elt in vars(self)
+
     def __repl__(self):
-        return str(vars(self))
+        return repr(vars(self))
 
     def commit(self):
         with open(config_file, 'w') as cfg:
             yaml.dump(vars(self), stream=cfg)
 
+    def reset(self):
+        """
+        Restores default configuration.
+        """
+        for key, value in self._defaults.items()[:]:
+            setattr(self, key, value)
+        self.commit()
 
 custom = Config()
