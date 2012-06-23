@@ -7,8 +7,12 @@ class PanelHandler(web.RequestHandler):
     """
     A simple RequestHandler with utils for the panel
     """
-    def get_logged_user(self):
-        pass
+    def get_current_user(self):
+        """
+        Return the current user authenticated.
+        """
+        user_json = self.get_secure_cookie("user")
+        return escape.json_decode(user_json) if user_json else None
 
     def initialize(self, action=None):
         self.action = action
@@ -45,8 +49,30 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
         ** just oauth login?
         ***
     """
-    pass
+    _actions = ['login', 'logout']
 
+    def initialize(self, action):
+        if action not in self._actions:
+            raise ValueError('Unexpected action')
+        else:
+            self.action = action
+
+    @web.asynchronous
+    def get(self):
+        if self.action == 'login':
+            if self.get_argument("openid.mode", None):
+                self.get_authenticated_user(self._on_auth)
+                return
+            self.authenticate_redirect()
+        elif self.action == 'logout':
+            self.clear_cookie('user')
+            return self.result(True)
+
+    def _on_auth(self, user):
+        if not user:
+            raise cyclone.web.HTTPError(500, "Authentication failed")
+        self.set_secure_cookie("user", escape.json_encode(user))
+        self.redirect("/")
 
 class ConfigHandler(PanelHandler):
     """
@@ -138,3 +164,4 @@ class ServiceHandler(PanelHandler):
             resp = getattr(self, self.action)(service)
 
         self.finish(escape.json_encode(resp))
+
