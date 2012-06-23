@@ -5,6 +5,7 @@ import os
 import os.path
 import sys
 
+from twisted.internet import reactor
 from twisted.web import server, resource, static
 from twisted.python import log
 from zope.interface import implements
@@ -31,14 +32,6 @@ class PanelService(Service):
         (r'/config', handlers.ConfigHandler),
         #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
     ]
-
-    def getFactory(self, debug=True):
-        """
-        Return a twisted Factory instance, to use when starting and/or for
-        debugging.
-
-        XXX. put this onto IService class, may be useful.
-        """
 
     def onStart(self):
         # create the hidden service directory of the panel

@@ -99,17 +99,19 @@ class Config(object):
         raise AttributeError("Refusing to remove " + name)
 
     def __contains__(self, elt):
-        """
-        Return true if elt is present in config, false otherwise.
-        """
         return elt in vars(self)
 
+    def __iter__(self):
+        # yield from vars(self).
+        for x in vars(self).iteritems(): yield x
+
     def __repl__(self):
-        return repr(vars(self))
+        return repr(dict(self))
 
     def commit(self):
         with open(config_file, 'w') as cfg:
-            yaml.dump(vars(self), stream=cfg)
+            yaml.dump(dict(self), stream=cfg)
+        return True
 
     def reset(self):
         """

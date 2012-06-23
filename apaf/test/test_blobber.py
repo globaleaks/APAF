@@ -25,8 +25,8 @@ class TestBlobber(unittest.TestCase):
         self.assertFalse(os.path.exists(
             os.path.join(self.tmpdir, os.path.split(config.data_dir)[1])))
 
+    @unittest.skip('known bug, check tree in library.')
     def test_uncompatting(self):
         blobber.create_blobbone(config.data_dir, self.dest)
-        raw_input()
         imp.load_module(self.filename,
                         *imp.find_module(self.filename, [self.tmpdir]))
