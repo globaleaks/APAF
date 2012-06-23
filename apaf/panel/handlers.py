@@ -10,17 +10,70 @@ class PanelHandler(web.RequestHandler):
     def get_logged_user(self):
         pass
 
-    def initialize(self, action):
+    def initialize(self, action=None):
         self.action = action
+
+    def error(self, msg):
+        """
+        Performs JSON response:
+         * {"error" : error message }
+
+        :param msg: error message
+        """
+        self.finish(escape.json_encode({'error':msg}))
+
+    def result(self, boolean):
+        """
+        Performs JSON response:
+         * {"result" : true}
+         * {"result": false}
+        :param boolean: the boolean to be returned
+        """
+        self.finish(escape.json_encode({'result':boolean}))
+
 
     def set_default_headers(self):
         """
         Panel API is performed entirely via json calls.
         """
-        #self.set_header("Content-Type", "application/json")
+        self.set_header("Content-Type", "application/json")
 
 class AuthHandler(PanelHandler, auth.OAuthMixin):
+    """
+    Authentication:
+        ** shall check if requests come from localhost?
+        ** just oauth login?
+        ***
+    """
     pass
+
+class ConfigHandler(PanelHandler):
+    """
+    Controller for editing config.custom.
+    """
+    def get(self):
+        """
+        Process GET requests:
+            * /config
+        Return a dictionary item:value for each item configurable from the
+        panel.
+        """
+        resp = vars(apaf.config.custom)
+        return self.finish(escape.json_encode(resp))
+
+    def put(self):
+        """
+        Processes PUT requests:
+            * /config
+        Processes a dictionary key:value, and put it on the configuration file.
+        """
+        req = escape.json_decode(self.request.body)
+        if not all(x in config.custom for x in req):
+           return self.error('invalid config file')
+
+        for key, value in req.iteritems():
+            config.custom[key] = value
+        return self.result(config.custom.commit())
 
 class ServiceHandler(PanelHandler):
     _actions = ['state', 'start', 'stop']

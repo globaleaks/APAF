@@ -5,7 +5,6 @@ import os
 import os.path
 import sys
 
-from twisted.internet import reactor
 from twisted.web import server, resource, static
 from twisted.python import log
 from zope.interface import implements
@@ -29,20 +28,24 @@ class PanelService(Service):
         (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
         (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
         (r'/services/(.*)/stop', handlers.ServiceHandler, {'action':'stop'}),
+        (r'/config', handlers.ConfigHandler),
         #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
     ]
+
+    def getFactory(self, debug=True):
+        """
+        Return a twisted Factory instance, to use when starting and/or for
+        debugging.
+
+        XXX. put this onto IService class, may be useful.
+        """
 
     def onStart(self):
         # create the hidden service directory of the panel
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
-        self.app = web.Application(
-                self.handlers,
-                debug = True,
-        )
 
-        # listen on localhost :: XXX: shall be editable ::
-        reactor.listenTCP(config.custom.base_port, self.app)
+        return web.Application(self.handlers, debug=True)
 
 def start_panel(torconfig):
     """
@@ -53,9 +56,8 @@ def start_panel(torconfig):
                       configuration file.
     """
     panel = PanelService()
-    panel.onStart()
-
     add_service(torconfig, panel)
+
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)

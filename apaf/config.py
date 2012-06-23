@@ -115,7 +115,7 @@ class Config(object):
         """
         Restores default configuration.
         """
-        for key, value in self._defaults.items()[:]:
+        for key, value in self._defaults.iteritems():
             setattr(self, key, value)
         self.commit()
 

@@ -5,6 +5,7 @@ import imp
 import os.path
 
 from twisted.python import log
+from twisted .internet import reactor
 from zope.interface import Interface, Attribute, implements
 import txtorcon
 
@@ -86,10 +87,14 @@ def add_service(torconfig, service, port=None):
     """
     port = port or config.custom.base_port + len(apaf.hiddenservices)
 
+    prot = reactor.listenTCP(port, service.onStart())
+
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
         ['%d 127.0.0.1:%d' % (service.port, port)])
     apaf.hiddenservices.append(service)
+
+    return prot
 
 def start_services(torconfig):
     """
