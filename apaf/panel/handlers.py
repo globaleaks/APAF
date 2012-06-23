@@ -1,7 +1,7 @@
-import json
-
 from cyclone import web, escape, auth
+
 import apaf
+from apaf import config
 
 class PanelHandler(web.RequestHandler):
     """
@@ -47,6 +47,7 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
     """
     pass
 
+
 class ConfigHandler(PanelHandler):
     """
     Controller for editing config.custom.
@@ -58,8 +59,7 @@ class ConfigHandler(PanelHandler):
         Return a dictionary item:value for each item configurable from the
         panel.
         """
-        resp = vars(apaf.config.custom)
-        return self.finish(escape.json_encode(resp))
+        return self.finish(escape.json_encode(dict(config.custom)))
 
     def put(self):
         """
@@ -67,13 +67,20 @@ class ConfigHandler(PanelHandler):
             * /config
         Processes a dictionary key:value, and put it on the configuration file.
         """
-        req = escape.json_decode(self.request.body)
-        if not all(x in config.custom for x in req):
+        if 'Settings' not in self.request.headers:
+            return self.error('invalid query')
+
+        settings = escape.json_decode(self.request.headers['Settings'])
+        if not all(x in config.custom for x in settings):
            return self.error('invalid config file')
 
-        for key, value in req.iteritems():
-            config.custom[key] = value
-        return self.result(config.custom.commit())
+        try:
+           for key, value in settings.iteritems():
+               config.custom.key = value
+           self.result(config.custom.commit())
+        except KeyErorr as err:
+           self.error(err)
+
 
 class ServiceHandler(PanelHandler):
     _actions = ['state', 'start', 'stop']
