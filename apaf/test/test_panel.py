@@ -1,5 +1,4 @@
-from functools import partial
-import urllib
+from functools import partial, wraps
 
 import txtorcon
 from twisted.trial import unittest
@@ -12,7 +11,7 @@ from apaf.panel import panel
 from apaf.core import add_service
 from apaf import config
 
-def page(path, **settings):
+def page(path, raises=False, **settings):
     """
     Decorator helper for unittest.
     Uses asyncronous callbacks from twisted to get the page referred with path,
@@ -21,9 +20,13 @@ def page(path, **settings):
     url =  'http://127.0.0.1:%d%s' % (6660, path)
 
     def inner(func):
+        @wraps(func)
         def wrap(self):
             d = client.getPage(url, **settings)
-            d.addCallback(partial(func, self))
+            if raises:
+                d.addErrback(partial(func, self))
+            else:
+                d.addCallback(partial(func, self))
             return d
         return wrap
     return inner
@@ -38,7 +41,8 @@ class TestPanel(unittest.TestCase):
         self.prot = add_service(torconfig, panel.PanelService(), 6660)
         self.addCleanup(self.prot.loseConnection)
 
-    @page('/services')
+class TestServices(TestPanel):
+    @page('/services/')
     def test_get_services(self, response):
         self.assertTrue(response)
         response = json_decode(response)
@@ -54,6 +58,7 @@ class TestPanel(unittest.TestCase):
                         ['name', 'url','desc']))
 
 
+class TestConfig(TestPanel):
     @page('/config')
     def test_get_config(self, response):
         self.assertTrue(response)
@@ -61,10 +66,29 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(dict(config.custom), response)
 
     @page('/config', method='PUT',
-            headers={'settings': json_encode(dict(base_port=6666))})
+          headers={'settings': json_encode(dict(base_port=6666))})
     def test_put_config(self, response):
         self.assertTrue(response)
         self.assertEqual(json_decode(response), {'result':True})
 
+class TestAuth(TestPanel):
+    @page('/auth/login')
+    def test_login(self, response):
+        pass
+    test_login.skip = 'not implemented'
+
+    @page('/auth/logout')
+    def test_logout(self, response):
+        pass
+    test_logout.skip = 'not implemented'
+
+class TestMiscellanous(TestPanel):
+
+    @page('/foo/bar', raises=True)
+    def test_notfound(self, error):
+        self.assertEqual(error.value.status, '404')
+
+
 if __name__ == '__main__':
-    unittest.main()
+    from unittest import main
+    main()
