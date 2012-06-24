@@ -96,6 +96,12 @@ class Service(object):
     def failure(self, exc):
         raise NotImplementedError
 
+    def stop(self):
+        return self.udp.stopListening()
+
+    def start(self):
+        self.upd.startListening()
+
 def new_port():
     """
     Generates a new port.
@@ -109,7 +115,8 @@ def add_service(torconfig, service, port=None):
     Create a new hiddenservice and adds it to the `hiddenservices` list.
     : param service : the service to be run.
     """
-    service.udp = reactor.listenTCP(port or new_port(), service.factory)
+    port = port or new_port()
+    service.udp = reactor.listenTCP(port, service.factory)
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
         ['%d 127.0.0.1:%d' % (service.port, port)])

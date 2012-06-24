@@ -1,4 +1,6 @@
-from cyclone import web, escape, auth
+from twisted.internet import defer
+from cyclone import web, auth
+from cyclone.escape import json_encode, json_decode
 
 import apaf
 from apaf import config
@@ -12,7 +14,7 @@ class PanelHandler(web.RequestHandler):
         Return the current user authenticated.
         """
         user_json = self.get_secure_cookie("user")
-        return escape.json_decode(user_json) if user_json else None
+        return json_decode(user_json) if user_json else None
 
     def initialize(self, action=None):
         self.action = action
@@ -24,7 +26,7 @@ class PanelHandler(web.RequestHandler):
 
         :param msg: error message
         """
-        self.finish(escape.json_encode({'error':msg}))
+        json_encode({'error':msg})
 
     def result(self, boolean):
         """
@@ -33,7 +35,7 @@ class PanelHandler(web.RequestHandler):
          * {"result": false}
         :param boolean: the boolean to be returned
         """
-        self.finish(escape.json_encode({'result':boolean}))
+        json_encode({'result':boolean})
 
 
     def set_default_headers(self):
@@ -71,7 +73,7 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
     def _on_auth(self, user):
         if not user:
             raise cyclone.web.HTTPError(500, "Authentication failed")
-        self.set_secure_cookie("user", escape.json_encode(user))
+        self.set_secure_cookie("user", json_encode(user))
         self.redirect("/")
 
 class ConfigHandler(PanelHandler):
@@ -85,7 +87,7 @@ class ConfigHandler(PanelHandler):
         Return a dictionary item:value for each item configurable from the
         panel.
         """
-        return self.finish(escape.json_encode(dict(config.custom)))
+        return self.finish(json_encode(dict(config.custom)))
 
     def put(self):
         """
@@ -96,7 +98,7 @@ class ConfigHandler(PanelHandler):
         if 'Settings' not in self.request.headers:
             return self.error('invalid query')
 
-        settings = escape.json_decode(self.request.headers['Settings'])
+        settings = json_decode(self.request.headers['Settings'])
         if not all(x in config.custom for x in settings):
            return self.error('invalid config file')
 
@@ -120,7 +122,7 @@ class ServiceHandler(PanelHandler):
         return {service.name:service for service in apaf.hiddenservices}
 
    # cache decorator here.
-    def _get_service(self, name=None):
+    def _get_service(self, name):
         if not name in self.services:
             raise web.HTTPError(404)
         else:
@@ -142,13 +144,26 @@ class ServiceHandler(PanelHandler):
             * /services/<service>/start
         """
 
+    @web.asynchronous
     def stop(self, service):
         """
         Process GET request:
             * /services/<service>/stop
         """
+        if service.name == 'panel':    # xxx. PanelService.name
+            return self.result(False)
 
-    # @web.authenticated
+        def callback(result):
+            return lambda *args: self.result(result)
+
+        stop = service.stop()
+        if stop is not None:
+            deferred = defer.DeferredList([stop, self.notifyFinish()])
+        else:
+            deferred = self.notifyFinish()
+        deferred.addCallback(self.result, True)
+        deferred.addErrback(self.result, False)
+
     def get(self, service=None):
         """
         Processes GET requests:
@@ -158,10 +173,10 @@ class ServiceHandler(PanelHandler):
           * /services/<service>/stop
         """
         if not service:
-            resp = self.services.keys()
+            resp = json_encode(self.services.keys())
         elif self.action in self._actions:
             service = self._get_service(service)
             resp = getattr(self, self.action)(service)
 
-        self.finish(escape.json_encode(resp))
+        return self.write(json_encode(resp))
 
