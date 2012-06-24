@@ -38,10 +38,19 @@ class TestPanel(unittest.TestCase):
         Set up an asyncronous get trasport.
         """
         torconfig = txtorcon.TorConfig()
-        self.prot = add_service(torconfig, panel.PanelService(), 6660)
-        self.addCleanup(self.prot.loseConnection)
+        self.service = panel.PanelService()
+        add_service(torconfig, self.service, 6660)
+        self.addCleanup(self.service.udp.loseConnection)
 
 class TestServices(TestPanel):
+    """
+    Test requests:
+        * GET /services
+        * GET /services/<name>/
+        * GET /services/<name>/start
+        * GET /services/<name>/stop
+    """
+
     @page('/services/')
     def test_get_services(self, response):
         self.assertTrue(response)
@@ -59,6 +68,11 @@ class TestServices(TestPanel):
 
 
 class TestConfig(TestPanel):
+    """
+    Test requests:
+        * GET /config
+        * PUT /config {settings:{something}}
+    """
     @page('/config')
     def test_get_config(self, response):
         self.assertTrue(response)
@@ -72,6 +86,12 @@ class TestConfig(TestPanel):
         self.assertEqual(json_decode(response), {'result':True})
 
 class TestAuth(TestPanel):
+    """
+    Tests requests:
+        * GET /auth/login
+        * GET /auth/logout
+    """
+
     @page('/auth/login')
     def test_login(self, response):
         pass
@@ -83,7 +103,9 @@ class TestAuth(TestPanel):
     test_logout.skip = 'not implemented'
 
 class TestMiscellanous(TestPanel):
-
+    """
+    A collection of various tests concerning error handling in Panel.
+    """
     @page('/foo/bar', raises=True)
     def test_notfound(self, error):
         self.assertEqual(error.value.status, '404')
