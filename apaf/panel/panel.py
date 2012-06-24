@@ -38,7 +38,7 @@ class PanelService(Service):
         #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
     ]
 
-    def onStart(self):
+    def get_factory(self):
         # create the hidden service directory of the panel
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)

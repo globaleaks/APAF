@@ -21,24 +21,35 @@ class IService(Interface):
     desc = Attribute('A brief description of the service.')
     author = Attribute('The author of the service')
     port = Attribute('the port og which the service wants to be exposed')
-    hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
-                   ' the service class from the apaf.')
-
     icon = Attribute('The service logo')
 
-    def onStart(self):
+    hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
+                   ' the service class from the apaf.')
+    tcp = Attribute('A twisted.internet.udp.Port instance, reflecting the port'
+                    ' on which the service is listening to')
+    factory = Attribute('A twisted.internet.protocol.Factory instance running'
+                         ' the service.')
+
+    def get_factory(self):
         """
         Called before starting the hidden service.
+        :ret : a twisted.internet.protocol.Factory instance,
+               which will be usd for starting the service.
         """
 
-    def onStop(self):
+    def start(self):
         """
-        Called in case of explicit stop from the user.
+        Callback: called after the hiddenservice starts/resumes.
         """
 
-    def onFailure(self, exception):
+    def stop(self):
         """
-        Called in case of exception.
+        Callback: called in case of explicit stop from the user.
+        """
+
+    def failure(self, exception):
+        """
+        Callback: called in case of exception.
         :param exception: The instance of the exception raised.
         :ret: None.
         """
@@ -52,7 +63,9 @@ class Service(object):
     author = ''
     icon = None
     port = None
-    hs = None
+
+    def __init__(self):
+        self._factory = None
 
     def __str__(self):
         return self.name
@@ -71,30 +84,36 @@ class Service(object):
         """
         return self.hs.hostname
 
-    def onStart(self):
+    @property
+    def factory(self):
+        if self._factory is None:
+            self._factory = self.get_factory()
+        return self._factory
+
+    def get_factory(self):
         raise NotImplementedError
 
-    def onStop(self):
-        pass
-
-    def onFailure(self):
+    def failure(self, exc):
         raise NotImplementedError
+
+def new_port():
+    """
+    Generates a new port.
+    :ret : an integer between config.base_port and 9999.
+    """
+    # XXX
+    return config.custom.base_port + len(apaf.hiddenservices)
 
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.
     : param service : the service to be run.
     """
-    port = port or config.custom.base_port + len(apaf.hiddenservices)
-
-    prot = reactor.listenTCP(port, service.onStart())
-
+    service.udp = reactor.listenTCP(port or new_port(), service.factory)
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
         ['%d 127.0.0.1:%d' % (service.port, port)])
     apaf.hiddenservices.append(service)
-
-    return prot
 
 def start_services(torconfig):
     """
