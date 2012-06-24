@@ -59,12 +59,21 @@ class TestServices(TestPanel):
         self.assertEqual(len(response), 1)
 
     @page('/services/panel')
-    def test_get_service_panel(self, response):
+    def test_get_services_panel(self, response):
         self.assertTrue(response)
         response = json_decode(response)
         self.assertTrue(isinstance(response, dict))
         self.assertTrue(all(x in response for x in
                         ['name', 'url','desc']))
+
+    @page('/services/panel/stop')
+    def test_get_services_panel_stop(self, response):
+        self.assertEquals(json_decode(response), {'result':True})
+
+    @page('/services/almudena/start', raises=True)
+    def test_get_services_notfound_stop(self, error):
+        self.assertEquals(error.value.status, '404')
+
 
 
 class TestConfig(TestPanel):

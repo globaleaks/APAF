@@ -1,10 +1,10 @@
-import unittest
+from twisted.trial import unittest
 
-from apaf.core import Service
+from apaf import core
 
 class TestService(unittest.TestCase):
     def setUp(self):
-        self.service = Service()
+        self.service = core.Service()
 
     def test_metadata(self):
         attributes = ['port', 'name', 'desc', 'author', 'icon']
@@ -20,6 +20,15 @@ class TestService(unittest.TestCase):
         self.assertRaises(NotImplementedError, self.service.get_factory)
         self.assertRaises(NotImplementedError, self.service.failure, None)
 
+    def test_newport(self):
+        """
+        Assert new ports are not so trivial.
+        """
+        self.assertNotEqual(core.new_port(), core.new_port())
+    test_newport.skip = 'Not implemented'
+
+
 
 if __name__ == '__main__':
-    unittest.main()
+    from unittest import main
+    main()

@@ -25,10 +25,10 @@ class PanelService(Service):
 
     _paneldir = os.path.join(config.services_dir, 'panel')
     handlers = [
-        (r'/services', handlers.ServiceHandler),
-        (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
         (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
         (r'/services/(.*)/stop', handlers.ServiceHandler, {'action':'stop'}),
+        (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
+        (r'/services', handlers.ServiceHandler),
 
         (r'/auth/login', handlers.AuthHandler, {'action':'login'}),
         (r'/auth/logout', handlers.AuthHandler, {'action':'logout'}),
