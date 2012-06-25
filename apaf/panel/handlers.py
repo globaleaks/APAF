@@ -26,7 +26,7 @@ class PanelHandler(web.RequestHandler):
 
         :param msg: error message
         """
-        json_encode({'error':msg})
+        return json_encode({'error':msg})
 
     def result(self, boolean):
         """
@@ -35,7 +35,7 @@ class PanelHandler(web.RequestHandler):
          * {"result": false}
         :param boolean: the boolean to be returned
         """
-        json_encode({'result':boolean})
+        return json_encode({'result':boolean})
 
 
     def set_default_headers(self):
@@ -66,6 +66,7 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
                 self.get_authenticated_user(self._on_auth)
                 return
             self.authenticate_redirect()
+
         elif self.action == 'logout':
             self.clear_cookie('user')
             return self.result(True)
@@ -87,7 +88,7 @@ class ConfigHandler(PanelHandler):
         Return a dictionary item:value for each item configurable from the
         panel.
         """
-        return self.finish(json_encode(dict(config.custom)))
+        return self.write(json_encode(dict(config.custom)))
 
     def put(self):
         """
@@ -105,9 +106,9 @@ class ConfigHandler(PanelHandler):
         try:
            for key, value in settings.iteritems():
                config.custom.key = value
-           self.result(config.custom.commit())
+           self.write(self.result(config.custom.commit()))
         except KeyErorr as err:
-           self.error(err)
+           self.write(self.error(err))
 
 
 class ServiceHandler(PanelHandler):
@@ -151,18 +152,13 @@ class ServiceHandler(PanelHandler):
             * /services/<service>/stop
         """
         if service.name == 'panel':    # xxx. PanelService.name
-            return self.result(False)
-
-        def callback(result):
-            return lambda *args: self.result(result)
+            self.finish(self.result(False))
 
         stop = service.stop()
-        if stop is not None:
-            deferred = defer.DeferredList([stop, self.notifyFinish()])
+        if stop:
+            stop.addCallback(self.finish, self.result(True))
         else:
-            deferred = self.notifyFinish()
-        deferred.addCallback(self.result, True)
-        deferred.addErrback(self.result, False)
+            self.finish(self.result(True))
 
     def get(self, service=None):
         """
@@ -177,6 +173,6 @@ class ServiceHandler(PanelHandler):
         elif self.action in self._actions:
             service = self._get_service(service)
             resp = getattr(self, self.action)(service)
-
-        return self.write(json_encode(resp))
+        if resp:
+            return self.finish(json_encode(resp))
 

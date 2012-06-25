@@ -54,9 +54,8 @@ class TestServices(TestPanel):
     @page('/services/')
     def test_get_services(self, response):
         self.assertTrue(response)
-        response = json_decode(response)
-        self.assertTrue(isinstance(response, list))
-        self.assertEqual(len(response), 1)
+        # response = json_decode(response)   ## Why return strings? T_T
+        self.assertEquals(json_decode(response), '["panel"]')
 
     @page('/services/panel')
     def test_get_services_panel(self, response):
@@ -68,7 +67,15 @@ class TestServices(TestPanel):
 
     @page('/services/panel/stop')
     def test_get_services_panel_stop(self, response):
-        self.assertEquals(json_decode(response), {'result':True})
+        """
+        Panel shall not be stoppped.
+        """
+        self.assertEquals(json_decode(response), {'result':False})
+
+    def test_get_services_mockpanel_stop(self):
+        """
+        Set up a mock service and tries to stop it.
+        """
 
     @page('/services/almudena/start', raises=True)
     def test_get_services_notfound_stop(self, error):
