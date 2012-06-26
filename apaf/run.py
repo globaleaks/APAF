@@ -24,6 +24,7 @@ tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
+    print repr(proto)
     if config.platform == 'darwin':
         from AppKit import NSNotificationCenter
         from apaf.utils.osx_support import TorFinishedLoadNotification

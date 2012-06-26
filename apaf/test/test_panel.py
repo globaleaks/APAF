@@ -55,7 +55,7 @@ class TestServices(TestPanel):
     def test_get_services(self, response):
         self.assertTrue(response)
         # response = json_decode(response)   ## Why return strings? T_T
-        self.assertEquals(json_decode(response), '["panel"]')
+        self.assertIn('panel', json_decode(response))
 
     @page('/services/panel')
     def test_get_services_panel(self, response):
@@ -124,6 +124,10 @@ class TestMiscellanous(TestPanel):
     """
     @page('/foo/bar', raises=True)
     def test_notfound(self, error):
+        self.assertEqual(error.value.status, '404')
+
+    @page('/services/spamcheesefoobar', raises=True)
+    def test_service_notfound(self, error):
         self.assertEqual(error.value.status, '404')
 
 
