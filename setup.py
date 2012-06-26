@@ -78,7 +78,8 @@ if config.platform == 'linux2':
                   for dest, source in DATA_FILES]
 
 setup(
-    name='apaf',
+    name=config.appname,
+    description=config.description,
     version=apaf.__version__,
     author=apaf.__author__,
     author_email=apaf.__email__,

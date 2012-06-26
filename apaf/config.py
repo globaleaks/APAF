@@ -45,6 +45,7 @@ def _get_datadir():
 
 
 appname = 'apaf'
+description = 'An Anonymous Web Application Framework'
 package_dir = os.path.abspath(os.path.dirname(__file__))
 platform = sys.platform
 data_dir = _get_datadir()

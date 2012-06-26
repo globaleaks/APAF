@@ -24,7 +24,6 @@ tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
-    print repr(proto)
     if config.platform == 'darwin':
         from AppKit import NSNotificationCenter
         from apaf.utils.osx_support import TorFinishedLoadNotification
@@ -48,6 +47,14 @@ def start_tor(torconfig):
                             tor_binary=tor_binary)
     d.addCallback(setup_complete)
     d.addErrback(setup_failed)
+
+def open_panel_browser():
+    """
+    Open the default web browser with the panel service.
+    """
+    import webbrowser
+    # xxx . should open localhost, not the .onion
+    webbrowser.open(apaf.hiddenservices[0].hs.hostname)
 
 def main():
     """
@@ -105,13 +112,15 @@ def main_darwin():
 
 
 if __name__ == '__main__':
-    import sys
+    from argparse import ArgumentParser
 
-    if sys.argv[1] == '-d':
+    parser = ArgumentParser(prog=config.appname, description=config.description)
+    parser.add_argument('--debug', action='store_true',  help='Run in debug mode.')
+    options = parser.parse_args()
+
+    if options.debug:
         main()
     else:
         strmain = 'main_'+config.platform
         vars().get(strmain, main)()
 
-    import webbrowser
-    webbrowser.open(apaf.hiddenservices[0].hs.hostname)
