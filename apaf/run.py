@@ -27,7 +27,7 @@ def setup_complete(proto):
     """
     Callback: fired once tor has been started.
     """
-    apaf.torctl = proto
+    apaf.torctl = proto.tor_protocol
     for service in apaf.hiddenservices:
         log.msg('%s service running at %s' % (service, service.hs.hostname))
 

@@ -1,4 +1,7 @@
+#-*- coding: UTF-8 -*-
+
 from twisted.internet import defer
+from txtorcon import torcontrolprotocol
 from cyclone import web, auth
 from cyclone.escape import json_encode, json_decode
 
@@ -42,7 +45,19 @@ class PanelHandler(web.RequestHandler):
         """
         Panel API is performed entirely via json calls.
         """
-        self.set_header("Content-Type", "application/json")
+        self.set_header('Content-Type', 'application/json')
+
+
+class IndexHandler(PanelHandler):
+    def get(self):
+        """
+        Process GET request:
+            * /
+        Returns a simple hello world message.
+        """
+        self.set_header('Content-Type', 'text/plain')
+        self.finish('Hello world')
+
 
 class AuthHandler(PanelHandler, auth.OAuthMixin):
     """
@@ -76,6 +91,7 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
             raise cyclone.web.HTTPError(500, "Authentication failed")
         self.set_secure_cookie("user", json_encode(user))
         self.redirect("/")
+
 
 class ConfigHandler(PanelHandler):
     """
@@ -176,3 +192,32 @@ class ServiceHandler(PanelHandler):
         if resp:
             return self.finish(json_encode(resp))
 
+
+class TorHandler(PanelHandler):
+    """
+    Return informations about the current tor status.
+    """
+    @web.asynchronous
+    def get(self, sp_keyword='status/...'):
+        """
+        Processes GET requests:
+            * /tor/<sp_keyword>
+
+        In case the GETINFO command returns a 552 error code, raise a 404.
+        (controlspec.txt) «If some of the listed keywords can't be found,
+        Tor replies with a "552 Unrecognized option" message.»
+
+        In case tor is not yet started, return a error message in JSON format.
+        """
+
+        if not apaf.torctl:
+            return self.finish(self.error('Tor is not started.'))
+
+        try:
+             apaf.torctl.get_info(sp_keyword).addCallback(
+                 lambda infos: self.finish(json_encode(infos)))
+        except torcontrolprotocol.TorProtocolError as err:
+            if err.code == 552:
+                raise web.HTTPError(404)
+            else:
+                self.finish(self.error('%s (code %d)' % (err.text, err.code)))

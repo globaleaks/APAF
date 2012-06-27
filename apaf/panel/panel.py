@@ -35,7 +35,10 @@ class PanelService(Service):
 
         (r'/config', handlers.ConfigHandler),
 
-#        (r'/tor', handlers.TorHandler),
+        (r'/tor', handlers.TorHandler),
+        (r'/tor/(.*)', handlers.TorHandler),
+
+        (r'/', handlers.IndexHandler),
 
         #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
     ]
