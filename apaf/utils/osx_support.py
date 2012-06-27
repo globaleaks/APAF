@@ -33,13 +33,13 @@ class OSXPatchCommand(Command):
         version = pythonFrameworkPath.split("/")[-1]
 
         # folder of the app bundle
-        frameFolder = "dist/%s.app/Contents/Frameworks/Python.framework/Versions/%s" % (APP_NAME, version)
+        frameFolder = "dist/%s.app/Contents/Frameworks/Python.framework/Versions/%s" % (config.appname, version)
 
         # copy it if it does't exists
         if not os.path.exists(frameFolder):
             os.makedirs(frameFolder)
             os.system("cp %s/Python %s" % (pythonFrameworkPath, frameFolder))
-            os.system("chmod +x dist/%s.app/Contents/Resources/contrib/tor" % APP_NAME)
+            os.system("chmod +x dist/%s.app/Contents/Resources/contrib/tor" % config.appname)
 
 
 class ApafAppWrapper(NSObject):

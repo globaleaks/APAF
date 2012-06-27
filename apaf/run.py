@@ -3,20 +3,7 @@
 The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.
 """
-import functools
-import os
-import os.path
-import sys
-import tempfile
 
-from twisted.internet import reactor, protocol
-from twisted.internet.endpoints import TCP4ServerEndpoint
-from twisted.web import server, resource
-from twisted.python import log
-import txtorcon
-
-import apaf
-from apaf import core
 from apaf import config
 from apaf.panel import panel
 
@@ -123,4 +110,3 @@ if __name__ == '__main__':
     else:
         strmain = 'main_'+config.platform
         vars().get(strmain, main)()
-
