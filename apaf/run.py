@@ -24,12 +24,10 @@ tor_binary = (os.path.join(config.binary_kits, 'tor') +
               ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
-    if config.platform == 'darwin':
-        from AppKit import NSNotificationCenter
-        from apaf.utils.osx_support import TorFinishedLoadNotification
-        NSNotificationCenter.defaultCenter().postNotificationName_object_(
-            TorFinishedLoadNotification, None)
-
+    """
+    Callback: fired once tor has been started.
+    """
+    apaf.torctl = proto
     for service in apaf.hiddenservices:
         log.msg('%s service running at %s' % (service, service.hs.hostname))
 
@@ -38,6 +36,9 @@ def updates(prog, tag, summary):
     log.msg("%d%%: %s" % (prog, summary))
 
 def setup_failed(arg):
+    """
+    Callback: fired whether launching tor has failed.
+    """
     log.err('Setup failed. -%s-' %  arg)
     reactor.stop()
 
