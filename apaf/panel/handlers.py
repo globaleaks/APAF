@@ -110,14 +110,31 @@ class ConfigHandler(PanelHandler):
         """
         Processes PUT requests:
             * /config
+        """
+        if not self.request.headers.get('Settings'):
+            return self.error('invalid query')
+        self._process(json_decode(self.request.headers['Settings']))
+
+    def post(self):
+        """
+        Processes POST requests:
+            * /config
+
+        <hellais> maker: sure. Though it's recommended to also create
+                  the equivalent POST based method since certain browsers/HTTP
+                  clients don't support PUT method
+        """
+        if not self.request.body:
+            return self.error('invalid query')
+        self._process(json_decode(self.request.body))
+
+
+    def _process(self, settings):
+        """
         Processes a dictionary key:value, and put it on the configuration file.
         """
-        if 'Settings' not in self.request.headers:
-            return self.error('invalid query')
-
-        settings = json_decode(self.request.headers['Settings'])
         if not all(x in config.custom for x in settings):
-           return self.error('invalid config file')
+           return self.write(self.error('invalid config file'))
 
         try:
            for key, value in settings.iteritems():
@@ -125,6 +142,7 @@ class ConfigHandler(PanelHandler):
            self.write(self.result(config.custom.commit()))
         except KeyErorr as err:
            self.write(self.error(err))
+        except Exception as err: print err
 
 
 class ServiceHandler(PanelHandler):
