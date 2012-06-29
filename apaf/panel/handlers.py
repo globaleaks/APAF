@@ -1,6 +1,7 @@
 #-*- coding: UTF-8 -*-
 
 from twisted.internet import defer
+from twisted.python import log
 from txtorcon import torcontrolprotocol
 from cyclone import web, auth
 from cyclone.escape import json_encode, json_decode
@@ -29,7 +30,7 @@ class PanelHandler(web.RequestHandler):
 
         :param msg: error message
         """
-        return json_encode({'error':msg})
+        return json_encode({'error': str(msg)})
 
     def result(self, boolean):
         """
@@ -134,15 +135,16 @@ class ConfigHandler(PanelHandler):
         Processes a dictionary key:value, and put it on the configuration file.
         """
         if not all(x in config.custom for x in settings):
-           return self.write(self.error('invalid config file'))
+            return self.write(self.error('invalid config file'))
 
         try:
-           for key, value in settings.iteritems():
-               config.custom[key] = value
-           self.write(self.result(config.custom.commit()))
-        except KeyErorr as err:
-           self.write(self.error(err))
-        except Exception as err: print err
+            for key, value in settings.iteritems():
+                config.custom[key] = value
+            self.write(self.result(config.custom.commit()))
+        except KeyError as err:
+            self.write(self.error(err))
+        except TypeError as err:
+            self.write(self.error(err))
 
 
 class ServiceHandler(PanelHandler):

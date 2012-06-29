@@ -5,6 +5,7 @@ from twisted.trial import unittest
 from twisted.internet import reactor
 from twisted.web import client
 from twisted.internet import tcp
+from twisted.python import log
 from cyclone.escape import json_decode, json_encode
 
 from apaf.panel import panel
@@ -30,6 +31,7 @@ def page(path, raises=False, **settings):
             return d
         return wrap
     return inner
+
 
 
 class TestPanel(unittest.TestCase):
@@ -100,6 +102,19 @@ class TestConfig(TestPanel):
     def test_put_config(self, response):
         self.assertTrue(response)
         self.assertEqual(json_decode(response), {'result':True})
+
+    @page('/config', method='PUT',
+          headers={'settings': json_encode(dict(cheese='spam'))})
+    def test_put_config_invalid_key(self, response):
+        self.assertTrue(response)
+        self.assertIn('error', response)
+
+    @page('/config', method='PUT',
+          headers={'settings': json_encode(dict(base_port='a string'))})
+    def test_put_config_invalid_value(self, response):
+        self.assertTrue(response)
+        self.assertIn('error', response)
+
 
 class TestAuth(TestPanel):
     """

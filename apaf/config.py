@@ -132,6 +132,7 @@ class Config(object):
         self.vars = deepcopy(self.defaults)
         self.commit()
 
+
 custom = Config(config_file=config_file,
                 defaults=dict(
                     base_port=4242,
