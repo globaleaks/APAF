@@ -121,7 +121,7 @@ class Config(object):
         return '<Config object %s>' % self.vars
 
     def commit(self):
-        with open(config_file, 'w') as cfg:
+        with open(self.config_file, 'w') as cfg:
             yaml.safe_dump(self.vars, stream=cfg)
         return True
 
@@ -136,5 +136,5 @@ class Config(object):
 custom = Config(config_file=config_file,
                 defaults=dict(
                     base_port=4242,
-                    services=list(),    # list of services to be started
+                    services=['staticwebserver'],    # list of services to be started
                 ))

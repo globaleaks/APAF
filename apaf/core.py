@@ -134,11 +134,11 @@ def start_services(torconfig):
         # load service
         try:
             service_mod = imp.load_module(
-                    service, *imp.find_module(config.services_dir, ['services']))
+                    service, *imp.find_module(service, [config.services_dir]))
         except ImportError:
-            log.err('Cannot import service %s' % service)
+            return log.err('Cannot import service %s' % service)
         except Exception as e:
-            log.err('Error loading service %s -\n %s' % (service, e))
+            return log.err('Error loading service %s -\n %s' % (service, e))
 
         service = getattr(service_mod, 'ServiceDescriptor', None)
         if not service:
@@ -146,4 +146,4 @@ def start_services(torconfig):
             continue
 
         # create hidden service
-        add_service(torconfig, service)
+        add_service(torconfig, service())
