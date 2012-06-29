@@ -28,15 +28,12 @@ class TestConfig(unittest.TestCase):
         config.custom.commit()
         self.assertTrue(os.path.exists(config.config_file))
 
+    def test_setitem(self):
+        def setitem(obj, key, value):
+            obj[key] = value
 
-    def test_setattr(self):
-        try:
-            config.custom.__foo_bar = 'spam'
-            config.custom._foo = 1
-        except ValueError:
-            pass # as expected
-        else:
-            self.fail('Cannot set items from config.')
+        self.assertRaises(KeyError,  setitem, config.custom, 'foobar', None)
+        self.assertRaises(TypeError, setitem, config.custom, 'services', '')
 
     def test_delattr(self):
         try:

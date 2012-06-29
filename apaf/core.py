@@ -108,7 +108,7 @@ def new_port():
     :ret : an integer between config.base_port and 9999.
     """
     # XXX
-    return config.custom.base_port + len(apaf.hiddenservices)
+    return config.custom['base_port'] + len(apaf.hiddenservices)
 
 def add_service(torconfig, service, port=None):
     """
@@ -130,7 +130,7 @@ def start_services(torconfig):
     :param torconfig: an instance of txtorcon.TorConfig representing the
                       configuration file.
     """
-    for port, service in enumerate(config.custom.services):
+    for port, service in enumerate(config.custom['services']):
         # load service
         try:
             service_mod = imp.load_module(

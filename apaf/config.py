@@ -1,5 +1,6 @@
 """
-Configuration handler for the APAF.
+Configuration manager for APAF.
+Holds global state variables and custom configurations.
 """
 from __future__ import with_statement
 
@@ -7,6 +8,7 @@ import sys
 import yaml
 import os
 import os.path
+from copy import deepcopy
 
 
 def _get_datadir():
@@ -36,6 +38,12 @@ def _get_datadir():
     if os.path.exists(vanilladir):
         return vanilladir
 
+    try:
+        import pkg_resources as pkg
+        # eggdir =   ## XXX: the .egg directory.
+    except ImportError:
+        log.err('Unable to import setuptools')
+
     curdir = os.path.join('datadir', )
     if os.path.exists(curdir):
         return curdir
@@ -57,69 +65,75 @@ tor_data = os.path.join(conf_dir, 'tordata')
 services_dir = os.path.join(data_dir, 'services')
 static_dir = os.path.join(services_dir, 'panel', 'static')
 
+# check for directory path
+if not os.path.exists(conf_dir):
+    os.mkdir(conf_dir)
+if not os.path.exists(tor_data):
+    os.mkdir(tor_data)
 
 class Config(object):
     """
     Configuration class
     """
-    _defaults = dict(
-        base_port=4242,
-        services=list(),    # list of services to be started
-    )
+    __slots__ = ('defaults', 'config_file', 'vars')
 
-    def __init__(self):
+    def __init__(self, defaults, config_file):
         """
         Load the configuration from the cfg file.
         If apaf's configuration and status directories are not ready, create
         them.
         """
-        # check for directory path
-        if not os.path.exists(conf_dir):
-            os.mkdir(conf_dir)
-        if not os.path.exists(tor_data):
-            os.mkdir(tor_data)
-        if not os.path.exists(config_file):
+        self.defaults = defaults
+        self.config_file = config_file
+
+        if not os.path.exists(self.config_file):
             self.reset()
-        else:
-            # load configuration
-            with open(config_file, 'r') as cfg:
-                for key, value in (yaml.load(cfg) or dict()).iteritems():
-                    setattr(self, key, value)
+        else:    # load configuration
+            self.vars = dict()
+            with open(self.config_file, 'r') as cfg:
+                for key, value in (yaml.safe_load(cfg) or dict()).iteritems():
+                    self[key] = value
 
-    def __setattr__(self, name, value):
-        """
-        Mask the standard setattr method to deny dunder variables assignment.
-        """
-        if not name[0].isalpha():
-            raise ValueError('Configuration variables must start with an ascii'
-                              'lowercase letter.')
-        else:
-            self.__dict__[name] = value
+    def __getitem__(self, name):
+            return self.vars[name]
 
-    def __delattr__(self, name):
+    def __setitem__(self, name, value):
+        """
+        Mask the standard setattr method to deny new configurations or
+        writing different types.
+        """
+        if name not in self.defaults:
+            raise KeyError(name)
+        if value.__class__ != self.defaults[name].__class__:
+            raise TypeError('%s:%s is not of type %s' % (name, value, type(value)))
+        self.vars[name] = value
+
+    def __delitem__(self, name):
         raise AttributeError("Refusing to remove " + name)
 
     def __contains__(self, elt):
-        return elt in vars(self)
+        return elt in self.vars
 
     def __iter__(self):
-        # yield from vars(self).
-        for x in vars(self).iteritems(): yield x
+        return self.vars.iteritems()
 
     def __repl__(self):
-        return repr(dict(self))
+        return '<Config object %s>' % self.vars
 
     def commit(self):
         with open(config_file, 'w') as cfg:
-            yaml.dump(dict(self), stream=cfg)
+            yaml.safe_dump(self.vars, stream=cfg)
         return True
 
     def reset(self):
         """
         Restores default configuration.
         """
-        for key, value in self._defaults.iteritems():
-            setattr(self, key, value)
+        self.vars = deepcopy(self.defaults)
         self.commit()
 
-custom = Config()
+custom = Config(config_file=config_file,
+                defaults=dict(
+                    base_port=4242,
+                    services=list(),    # list of services to be started
+                ))

@@ -138,7 +138,7 @@ class ConfigHandler(PanelHandler):
 
         try:
            for key, value in settings.iteritems():
-               config.custom.key = value
+               config.custom[key] = value
            self.write(self.result(config.custom.commit()))
         except KeyErorr as err:
            self.write(self.error(err))
