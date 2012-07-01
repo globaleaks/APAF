@@ -11,7 +11,6 @@ import tempfile
 
 from twisted.internet import reactor, protocol
 from twisted.internet.endpoints import TCP4ServerEndpoint
-from twisted.web import server, resource
 from twisted.python import log
 import txtorcon
 

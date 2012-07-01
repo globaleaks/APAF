@@ -6,7 +6,6 @@ import os.path
 import sys
 
 from twisted.internet import reactor
-from twisted.web import server, resource, static
 from twisted.python import log
 from zope.interface import implements
 from cyclone import web
