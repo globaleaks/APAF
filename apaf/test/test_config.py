@@ -23,10 +23,13 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(self.fetch('foobarbaz'))
 
     def test_commit(self):
-        config.config_file = tempfile.mktemp(suffix='apaf_cfg')
-
         config.custom.commit()
         self.assertTrue(os.path.exists(config.config_file))
+        config.custom['services'] = []
+        config.custom.commit()
+        self.assertTrue(os.path.exists(config.config_file))
+        self.assertEqual(config.custom['services'], [])
+
 
     def test_setitem(self):
         def setitem(obj, key, value):
