@@ -19,7 +19,7 @@ def create_blobbone(directory, filename):
     """
     tar_obj = StringIO.StringIO()
     tar = tarfile.open(mode='w:gz', fileobj=tar_obj)
-    tar.add(directory)
+    tar.add(directory, arcname='.')
     tar.close()
     tar_obj.seek(0)
 
