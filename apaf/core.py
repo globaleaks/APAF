@@ -63,6 +63,7 @@ class Service(object):
     author = ''
     icon = None
     port = None
+    udp = None
 
     def __init__(self):
         self._factory = None
@@ -107,16 +108,25 @@ def new_port():
     Generates a new port.
     :ret : an integer between config.base_port and 9999.
     """
-    # XXX
-    return config.custom['base_port'] + len(apaf.hiddenservices)
+    from Crypto import Random
+    n = sum(map(ord, Random.get_random_bytes(10))) % (
+         9999 - config.custom['base_port'])
+
+    return config.custom['base_port'] + n
 
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.
     : param service : the service to be run.
     """
-    port = port or new_port()
-    service.udp = reactor.listenTCP(port, service.factory)
+    # picks a random port until it finds one avaible.
+    while not service.udp:
+        port = port or new_port()
+        try:
+            service.udp = reactor.listenTCP(port, service.factory)
+        except internet.error.CannotListenError:
+            pass
+
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
         ['%d 127.0.0.1:%d' % (service.port, port)])
