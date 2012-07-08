@@ -77,6 +77,7 @@ def main():
     #if config.platform == 'darwin':
     #    reactor.interleave(AppHelper.callAfter)
     #else:
+    open_panel_browser()
     reactor.run()
 
 def main_win32():

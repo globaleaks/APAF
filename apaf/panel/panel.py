@@ -47,7 +47,9 @@ class PanelService(Service):
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
 
-        return web.Application(self.handlers, debug=True)
+        return web.Application(self.handlers, debug=True,
+                               cookie_secret=config.custom['cookie_secret'],
+                               login_url='/')
 
 def start_panel(torconfig):
     """
@@ -63,6 +65,6 @@ def start_panel(torconfig):
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
-    start_panel()
+    start_panel(txtorcon.TorConfig())
     reactor.run()
 

@@ -1,4 +1,5 @@
 from functools import partial, wraps
+from hashlib import sha256
 
 import txtorcon
 from twisted.trial import unittest
@@ -95,7 +96,7 @@ class TestConfig(TestPanel):
     def test_get_config(self, response):
         self.assertTrue(response)
         response = json_decode(response)
-        self.assertEqual(dict(config.custom), response)
+        self.assertTrue(all(config.custom[key] == value for key, value in response.iteritems()))
 
     @page('/config', method='PUT',
           headers={'settings': json_encode(dict(base_port=6666))})
@@ -119,19 +120,28 @@ class TestConfig(TestPanel):
 class TestAuth(TestPanel):
     """
     Tests requests:
-        * GET /auth/login
+        * POST /auth/login
         * GET /auth/logout
     """
 
-    @page('/auth/login')
-    def test_login(self, response):
-        pass
-    test_login.skip = 'not implemented'
+    @page('/auth/login', raises=True)
+    def test_get_auth_login(self, error):
+        self.assertEqual(error.value.status, '404')
 
-    @page('/auth/logout')
-    def test_logout(self, response):
-        pass
-    test_logout.skip = 'not implemented'
+    @page('/auth/logout', raises=True, method='POST')
+    def test_post_auth_logout(self, error):
+        self.assertEqual(error.value.status, '404')
+
+    @page('/auth/login', raises=True, method='POST',
+          postdata=json_encode({'passwd':'1234'}))
+    def test_post_auth_login_fail(self, error):
+        print error.value
+
+    @page('/auth/login', method='POST',
+          postdata=json_encode({'passwd':sha256('None').hexdigest()}))
+    def test_post_auth_login(self, response):
+        self.assertEqual(json_decode(response), {'result':True})
+
 
 class TestMiscellanous(TestPanel):
     """

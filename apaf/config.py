@@ -9,7 +9,9 @@ import yaml
 import os
 import os.path
 from copy import deepcopy
+from hashlib import sha256
 
+from Crypto.Random import get_random_bytes
 
 def _get_datadir():
     """
@@ -137,4 +139,6 @@ custom = Config(config_file=config_file,
                 defaults=dict(
                     base_port=4242,
                     services=['staticwebserver'],    # list of services to be started
+                    passwd=sha256('None').hexdigest(),
+                    cookie_secret=get_random_bytes(100),
                 ))

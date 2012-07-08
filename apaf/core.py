@@ -5,7 +5,7 @@ import imp
 import os.path
 
 from twisted.python import log
-from twisted .internet import reactor
+from twisted.internet import reactor, error
 from zope.interface import Interface, Attribute, implements
 import txtorcon
 
@@ -124,7 +124,7 @@ def add_service(torconfig, service, port=None):
         port = port or new_port()
         try:
             service.udp = reactor.listenTCP(port, service.factory)
-        except internet.error.CannotListenError:
+        except error.CannotListenError:
             pass
 
     service.hs = txtorcon.HiddenService(

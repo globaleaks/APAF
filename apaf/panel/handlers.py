@@ -41,6 +41,8 @@ class PanelHandler(web.RequestHandler):
         """
         return json_encode({'result':boolean})
 
+    def get_current_user(self, passwd=None):
+        return (passwd or self.get_secure_cookie('user')) == config.custom['passwd']
 
     def set_default_headers(self):
         """
@@ -60,7 +62,7 @@ class IndexHandler(PanelHandler):
         self.finish('Hello world')
 
 
-class AuthHandler(PanelHandler, auth.OAuthMixin):
+class AuthHandler(PanelHandler):
     """
     Authentication:
         ** shall check if requests come from localhost?
@@ -68,6 +70,7 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
         ***
     """
     _actions = ['login', 'logout']
+    _uid_cookie = 'user'
 
     def initialize(self, action):
         if action not in self._actions:
@@ -75,23 +78,41 @@ class AuthHandler(PanelHandler, auth.OAuthMixin):
         else:
             self.action = action
 
-    @web.asynchronous
+    def post(self):
+        """
+        Processes asyncronous request:
+            * GET /auth/login
+        """
+        if self.action != 'login':
+            raise web.HTTPError(404)
+
+        if self.request.remote_ip == '127.0.0.1':
+            self.set_secure_cookie(self._uid_cookie, config.custom['passwd'])
+            return self.write(self.result(True))
+
+        if not config.custom['remote_login']:
+            raise web.HTTPAuthenticationRequired
+
+        request = json_decode(self.request.body)
+        if 'passwd' not in request:
+            return self.error('invalid request')
+        elif not self.get_current_user(request['passwd']):
+            return self.write(self.error('login failed'))
+        else:
+            self.set_secure_cookie('auth', self.request.body)
+            return self.write(self.result(True))
+
+    @web.authenticated
     def get(self):
-        if self.action == 'login':
-            if self.get_argument("openid.mode", None):
-                self.get_authenticated_user(self._on_auth)
-                return
-            self.authenticate_redirect()
-
-        elif self.action == 'logout':
-            self.clear_cookie('user')
-            return self.result(True)
-
-    def _on_auth(self, user):
-        if not user:
-            raise cyclone.web.HTTPError(500, "Authentication failed")
-        self.set_secure_cookie("user", json_encode(user))
-        self.redirect("/")
+        """
+        Process asycnronous request:
+            * GET /auth/logout
+        """
+        if self.action != 'logout':
+            raise web.HTTPAuthenticationRequired
+        #if not self.user:
+        #    raise HTTPError(403)
+        self.clear_cookie(self._uid_cookie)
 
 
 class ConfigHandler(PanelHandler):
@@ -105,7 +126,10 @@ class ConfigHandler(PanelHandler):
         Return a dictionary item:value for each item configurable from the
         panel.
         """
-        return self.write(json_encode(dict(config.custom)))
+        ret = dict(config.custom)
+        del ret['cookie_secret']
+        del ret['passwd']
+        return self.write(json_encode(ret))
 
     def put(self):
         """
