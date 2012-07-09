@@ -25,32 +25,21 @@ from apaf.utils.osx_support import ApafAppWrapper, TorFinishedLoadNotification
 from AppKit import NSNotificationCenter
 
 import apaf
-from apaf import core
-from apaf import config
+from apaf import core, config
 from apaf.panel import panel
+from apaf.run import base
 
-tor_binary = os.path.join(config.binary_kits, 'tor')
 
 def setup_complete(proto):
-    NSNotificationCenter.defaultCenter().postNotificationName_object_(TorFinishedLoadNotification, None)
+    NSNotificationCenter.defaultCenter().postNotificationName_object_(
+            TorFinishedLoadNotification, None)
 
-    for service in apaf.hiddenservices:
-        log.msg('%s service running at %s' % (service, service.hs.hostname))
+    base.setup_complete(proto)
 
-
-def updates(prog, tag, summary):
-    log.msg("%d%%: %s" % (prog, summary))
 
 def setup_failed(arg):
-    log.err('Setup failed. -%s-' %  arg)
+    base.setup_failed(arg)
     reactor.stop()
-
-def start_tor(torconfig):
-    d = txtorcon.launch_tor(torconfig, reactor,
-                            progress_updates=updates,
-                            tor_binary=tor_binary)
-    d.addCallback(setup_complete)
-    d.addErrback(setup_failed)
 
 def main():
     """
@@ -69,19 +58,7 @@ def start_apaf():
     Start the apaf.
     It gets called asyncronously by ApafAppWrapper didFinishLoading
     """
-    ## start the logger. ##
-    log.startLogging(sys.stdout)
-    torconfig = txtorcon.TorConfig()
-
-    ## start apaf. ##
-    panel.start_panel(torconfig)
-    core.start_services(torconfig)
-
-    torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices]
-    torconfig.save()
-
-    start_tor(torconfig)
-
+    base.main().addCallback(setup_complete).addErrback(setup_failed)
     reactor.interleave(AppHelper.callAfter)
 
 

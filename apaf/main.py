@@ -2,18 +2,20 @@
 from argparse import ArgumentParser
 from apaf import config
 
-parser = ArgumentParser(prog=config.appname, description=config.description)
-parser.add_argument('--debug', action='store_true',  help='Run in debug mode.')
-options = parser.parse_args()
 
 def std_main():
     from apaf.run import base
     from twisted.internet import reactor
 
-    base.main()
+    base.main().addCallback(base.setup_complete).addErrback(base.setup_failed)
+
     base.open_panel_browser()
     reactor.run()
 
+
+parser = ArgumentParser(prog=config.appname, description=config.description)
+parser.add_argument('--debug', action='store_true',  help='Run in debug mode.')
+options = parser.parse_args()
 
 if options.debug:
     main = std_main

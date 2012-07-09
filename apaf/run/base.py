@@ -41,13 +41,6 @@ def setup_failed(arg):
     log.err('Setup failed. -%s-' %  arg)
     reactor.stop()
 
-def start_tor(torconfig):
-    d = txtorcon.launch_tor(torconfig, reactor,
-                            progress_updates=updates,
-                            tor_binary=tor_binary)
-    d.addCallback(setup_complete)
-    d.addErrback(setup_failed)
-
 def open_panel_browser():
     """
     Open the default web browser with the panel service.
@@ -56,9 +49,13 @@ def open_panel_browser():
     # xxx . should open localhost, not the .onion
     webbrowser.open(apaf.hiddenservices[0].hs.hostname)
 
-def main():
+def main(progress_updates=updates):
     """
-    Start the apaf.
+    Start logging, apaf services, and tor.
+
+    :param progress_updates: a callback fired during tor's bootstrap.
+    :ret: a twisted Deferred object for setting up callbacks in case of
+          sucess/errors.
     """
     ## start the logger. ##
     log.startLogging(sys.stdout)
@@ -71,4 +68,7 @@ def main():
     torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices]
     torconfig.save()
 
-    start_tor(torconfig)
+    ## start tor. ##
+    return txtorcon.launch_tor(torconfig, reactor,
+                               progress_updates=progress_updates,
+                               tor_binary=tor_binary)
