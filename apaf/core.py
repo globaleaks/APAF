@@ -25,7 +25,7 @@ class IService(Interface):
 
     hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
                    ' the service class from the apaf.')
-    tcp = Attribute('A twisted.internet.udp.Port instance, reflecting the port'
+    tcp = Attribute('A twisted.internet.tcp.Port instance, reflecting the port'
                     ' on which the service is listening to')
     factory = Attribute('A twisted.internet.protocol.Factory instance running'
                          ' the service.')
@@ -63,7 +63,7 @@ class Service(object):
     author = ''
     icon = None
     port = None
-    udp = None
+    tcp = None
 
     def __init__(self):
         self._factory = None
@@ -98,7 +98,7 @@ class Service(object):
         raise NotImplementedError
 
     def stop(self):
-        return self.udp.stopListening()
+        return self.tcp.stopListening()
 
     def start(self):
         self.upd.startListening()
@@ -120,10 +120,10 @@ def add_service(torconfig, service, port=None):
     : param service : the service to be run.
     """
     # picks a random port until it finds one avaible.
-    while not service.udp:
+    while not service.tcp:
         port = port or new_port()
         try:
-            service.udp = reactor.listenTCP(port, service.factory)
+            service.tcp = reactor.listenTCP(port, service.factory)
         except error.CannotListenError:
             pass
 

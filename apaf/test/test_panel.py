@@ -34,7 +34,6 @@ def page(path, raises=False, **settings):
     return inner
 
 
-
 class TestPanel(unittest.TestCase):
     def setUp(self):
         """
@@ -43,7 +42,7 @@ class TestPanel(unittest.TestCase):
         torconfig = txtorcon.TorConfig()
         self.service = panel.PanelService()
         add_service(torconfig, self.service, 6660)
-        self.addCleanup(self.service.udp.loseConnection)
+        self.addCleanup(self.service.tcp.loseConnection)
 
 class TestServices(TestPanel):
     """
@@ -141,7 +140,6 @@ class TestAuth(TestPanel):
           postdata=json_encode({'passwd':sha256('None').hexdigest()}))
     def test_post_auth_login(self, response):
         self.assertEqual(json_decode(response), {'result':True})
-
 
 class TestMiscellanous(TestPanel):
     """

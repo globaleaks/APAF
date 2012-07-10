@@ -9,7 +9,7 @@ import os.path
 import sys
 import tempfile
 
-from twisted.internet import reactor, protocol
+from twisted.internet import reactor
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.python import log
 import txtorcon
@@ -26,7 +26,6 @@ def setup_complete(proto):
     """
     Callback: fired once tor has been started.
     """
-    apaf.torctl = proto.tor_protocol
     for service in apaf.hiddenservices:
         log.msg('%s service running at %s' % (service, service.hs.hostname))
 
@@ -60,6 +59,9 @@ def main():
     """
     Start the apaf.
     """
+    if not os.path.exists(config.data_dir):
+        from apaf import win32blob  # import the python autoextracter
+
     ## start the logger. ##
     log.startLogging(sys.stdout)
     torconfig = txtorcon.TorConfig()
@@ -125,3 +127,5 @@ if __name__ == '__main__':
         strmain = 'main_'+config.platform
         vars().get(strmain, main)()
 
+    import webbrowser
+    webbrowser.open(apaf.hiddenservices[0].hs.hostname)
