@@ -116,7 +116,7 @@ def add_service(torconfig, service, port=None):
     : param service : the service to be run.
     """
     port = port or new_port()
-    service.udp = reactor.listenTCP(port, service.factory)
+    service.tcp = reactor.listenTCP(port, service.factory)
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
         ['%d 127.0.0.1:%d' % (service.port, port)])

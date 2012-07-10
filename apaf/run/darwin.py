@@ -3,19 +3,10 @@
 The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.
 """
-import functools
-import os
-import os.path
-import sys
-import tempfile
-
 from twisted.internet import _threadedselect
 _threadedselect.install()
 
 from twisted.internet import reactor
-from twisted.internet.endpoints import TCP4ServerEndpoint
-from twisted.web import server, resource
-from twisted.python import log
 import txtorcon
 
 
@@ -33,7 +24,6 @@ from apaf.run import base
 def setup_complete(proto):
     NSNotificationCenter.defaultCenter().postNotificationName_object_(
             TorFinishedLoadNotification, None)
-
     base.setup_complete(proto)
 
 

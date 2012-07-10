@@ -1,7 +1,6 @@
 from distutils.core import Command
 import subprocess
 import objc
-import re
 import os
 
 from Foundation import *
@@ -9,6 +8,7 @@ from AppKit import *
 from AppKit import NSNotificationCenter
 from PyObjCTools import AppHelper
 
+import apaf
 from apaf import config
 
 TorFinishedLoadNotification = 'TorFinishedLoadNotification'
@@ -28,12 +28,14 @@ class OSXPatchCommand(Command):
             log.error("You have to run py2app first")
             return
         # getting Python.framework path
-        process = subprocess.Popen("python-config --includes | awk -F'-I' '{print $2}' | sed 's/\/include.*$//'", shell=True, stdout=subprocess.PIPE)
+        cmd = "python-config --includes | awk -F'-I' '{print $2}' | sed 's/\/include.*$//'"
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         pythonFrameworkPath = process.stdout.read().strip()
         version = pythonFrameworkPath.split("/")[-1]
 
         # folder of the app bundle
-        frameFolder = "dist/%s.app/Contents/Frameworks/Python.framework/Versions/%s" % (config.appname, version)
+        frameFolder = ("dist/%s.app/Contents/Frameworks/Python.framework/Versions/%s"
+                       % (config.appname, version))
 
         # copy it if it does't exists
         if not os.path.exists(frameFolder):
@@ -77,11 +79,11 @@ class ApafAppWrapper(NSObject):
         self.menu = NSMenu.alloc().init()
         self.menu.setAutoenablesItems_(0)
 
-        self.menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Loading...', 'openAdmin:', '')
+        self.menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
+                'Loading...', 'openAdmin:', '')
         self.menu.addItem_(self.menuitem)
 
         self.menuitem.setEnabled_(0)
-        print "is it %d" % self.menuitem.isEnabled()
         # Default event
         quit = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
         self.menu.addItem_(quit)
@@ -99,7 +101,6 @@ class ApafAppWrapper(NSObject):
     def torHasLoaded(self):
         self.menuitem.setTitle_("Open service in browser")
         self.menuitem.setEnabled_(1)
-        pass
 
     def applicationShouldTerminate_(self, sender):
         if self.reactor.running:
@@ -110,6 +111,10 @@ class ApafAppWrapper(NSObject):
         return True
 
     def openAdmin_(self, sender):
-        url = NSURL.URLWithString_(NSString.stringWithUTF8String_("http://localhost:4242"))
+        host = apaf.hiddenservices[0].tcp.getHost()
+        hostname= host.host if not host.host.startswith('0.0') else '127.0.0.1'
+
+        url = NSURL.URLWithString_(NSString.stringWithUTF8String_(
+            "http://%s:%s" % (hostname, host.port)))
         NSWorkspace.sharedWorkspace().openURL_(url)
 
