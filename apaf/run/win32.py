@@ -6,6 +6,7 @@ from twisted.internet import win32eventreactor
 win32eventreactor.install()
 
 from apaf.run import base
+from apaf.utils.win32_support import SysTrayIcon
 
 setup_complete = base.setup_complete    # XXX: notfy the ui.
 

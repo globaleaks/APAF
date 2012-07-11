@@ -1,6 +1,5 @@
 #-*- coding: utf8 -*-
-from twisted.internet import win32eventreactor
-win32eventreactor.install()
+
 
 import os
 import glob
@@ -9,8 +8,6 @@ import itertools
 import win32api
 import win32con
 import win32gui_struct
-
-sys.path.append('C:\Documents and Settings\Gesu Cristo\APAF')
 
 from apaf.run import base
 
