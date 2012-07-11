@@ -95,7 +95,8 @@ class TestConfig(TestPanel):
     def test_get_config(self, response):
         self.assertTrue(response)
         response = json_decode(response)
-        self.assertTrue(all(config.custom[key] == value for key, value in response.iteritems()))
+        self.assertTrue(all(config.custom[key] == value
+                            for key, value in response.iteritems()))
 
     @page('/config', method='PUT',
           headers={'settings': json_encode(dict(base_port=6666))})

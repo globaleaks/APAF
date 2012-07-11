@@ -1,9 +1,7 @@
 #-*- coding: UTF-8 -*-
 
-from twisted.internet import defer
-from twisted.python import log
 from txtorcon import torcontrolprotocol
-from cyclone import web, auth
+from cyclone import web
 from cyclone.escape import json_encode, json_decode
 
 import apaf
@@ -258,7 +256,7 @@ class TorHandler(PanelHandler):
             return self.finish(self.error('Tor is not started.'))
 
         try:
-             apaf.torctl.get_info(sp_keyword).addCallback(
+            apaf.torctl.get_info(sp_keyword).addCallback(
                  lambda infos: self.finish(json_encode(infos)))
         except torcontrolprotocol.TorProtocolError as err:
             if err.code == 552:

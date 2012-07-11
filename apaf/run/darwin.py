@@ -6,18 +6,13 @@ If assolves three tasks: start a tor instance, start the panel, start services.
 from twisted.internet import _threadedselect
 _threadedselect.install()
 
-from twisted.internet import reactor
 import txtorcon
-
-
+from twisted.internet import reactor
 from PyObjCTools import AppHelper
 from AppKit import NSNotificationCenter, NSApplication
 from apaf.utils.osx_support import ApafAppWrapper, TorFinishedLoadNotification
 from AppKit import NSNotificationCenter
 
-import apaf
-from apaf import core, config
-from apaf.panel import panel
 from apaf.run import base
 
 

@@ -40,12 +40,12 @@ def _get_datadir():
     if os.path.exists(vanilladir):
         return vanilladir
 
-    try:
-        import pkg_resources as pkg
-        # eggdir =   ## XXX: the .egg directory.
-    except ImportError:
-        log.err('Unable to import setuptools')
-
+#     try:
+#         import pkg_resources as pkg
+#         # eggdir =   ## XXX: the .egg directory.
+#     except ImportError:
+#         log.err('Unable to import setuptools')
+#
     curdir = os.path.join('datadir', )
     if os.path.exists(curdir):
         return curdir
@@ -97,7 +97,7 @@ class Config(object):
                     self[key] = value
 
     def __getitem__(self, name):
-            return self.vars[name]
+        return self.vars[name]
 
     def __setitem__(self, name, value):
         """
