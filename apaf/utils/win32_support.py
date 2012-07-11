@@ -1,11 +1,16 @@
-from twisted.internet import win32reactor
+#-*- coding: utf8 -*-
+from twisted.internet import win32eventreactor
 win32eventreactor.install()
 
 import os
+import glob
 import sys
+import itertools
 import win32api
 import win32con
 import win32gui_struct
+
+sys.path.append('C:\Documents and Settings\Gesu Cristo\APAF')
 
 from apaf.run import base
 
@@ -19,27 +24,25 @@ class SysTrayIcon(object):
     An object representing the system tray icon for apaf.
     """
 
-    FIRST_ID = 1023
-
     def __init__(self,
                  hover_text,
                  default_menu_index=None,
                  window_class_name=None,):
 
-        self.icon = None # apaf's logo in .ico format
+        self.icon = (glob.glob('*.ico'))[0] # apaf's logo in .ico format
         self.hover_text = hover_text
 
+        self.menu_actions_by_id = dict()
+	self._next_action_id = 0
+	self.SPECIAL_ACTIONS = list()
         self.menu_options = self._add_ids_to_menu_options((
             ('Open Panel service in Browser', None, base.open_panel_browser),
             # services list submenu
-            ('Services', None, (('Fooo', None, simon),
-                                ('bar', None, switch_icon))),
-            ('Quit', None, 'QUIT'),
+            ('Services', None, (('Fooo', None, self.bye),
+                                ('bar', None, self.bye))),
+            ('Quit', None, self.bye),
         ))
-        self.menu_actions_by_id = dict()
 
-
-        self.default_menu_index = (default_menu_index or 0)
         self.window_class_name = window_class_name or "SysTrayIconPy"
 
         message_map = {
@@ -81,15 +84,15 @@ class SysTrayIcon(object):
         for menu_option in menu_options:
             option_text, option_icon, option_action = menu_option
             if callable(option_action) or option_action in self.SPECIAL_ACTIONS:
-                self.menu_actions_by_id.add((self._next_action_id, option_action))
-                result.append(menu_option + (self._next_action_id,))
+                self.menu_actions_by_id[self._next_action_id] = option_action
+                result.append((option_text, option_icon, option_action, self._next_action_id))
             elif non_string_iterable(option_action):
                 result.append((option_text,
                                option_icon,
                                self._add_ids_to_menu_options(option_action),
                                self._next_action_id))
             else:
-                print 'Unknown item', option_text, option_icon, option_action
+                raise ValueError
             self._next_action_id += 1
         return result
 
@@ -118,24 +121,25 @@ class SysTrayIcon(object):
                           self.hover_text)
         win32gui.Shell_NotifyIcon(message, self.notify_id)
 
-    def bye(sysTrayIcon):
+    def bye(self):
         """
         Callback fired when quitting.
         """
         print 'Bye, then.'
+        win32gui.DestroyWindow(self.hwnd)
+
 
     def restart(self, hwnd, msg, wparam, lparam):
         self.refresh_icon()
 
     def destroy(self, hwnd, msg, wparam, lparam):
-        if self.on_quit: self.on_quit(self)
         nid = (self.hwnd, 0)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, nid)
         win32gui.PostQuitMessage(0) # Terminate the app.
 
     def notify(self, hwnd, msg, wparam, lparam):
         if lparam==win32con.WM_LBUTTONDBLCLK:
-            self.execute_menu_option(self.default_menu_index + self.FIRST_ID)
+            self.execute_menu_option(self.default_menu_index)
         elif lparam==win32con.WM_RBUTTONUP:
             self.show_menu()
         elif lparam==win32con.WM_LBUTTONUP:
@@ -160,7 +164,7 @@ class SysTrayIcon(object):
         win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
 
     def create_menu(self, menu, menu_options):
-        for option_text, option_icon, option_action, option_id in menu_options[::-1]:
+        for option_text, option_icon, option_action, option_id in menu_options:
             if option_icon:
                 option_icon = self.prep_menu_icon(option_icon)
 
@@ -206,10 +210,7 @@ class SysTrayIcon(object):
 
     def execute_menu_option(self, id):
         menu_action = self.menu_actions_by_id[id]
-        if menu_action == self.QUIT:
-            win32gui.DestroyWindow(self.hwnd)
-        else:
-            menu_action(self)
+        menu_action()
 
 def non_string_iterable(obj):
     try:
@@ -226,8 +227,7 @@ if __name__ == '__main__':
 
     icons = itertools.cycle(glob.glob('*.ico'))
     hover_text = "SysTrayIcon.py Demo"
-    def hello(sysTrayIcon): print "Hello World."
-    def simon(sysTrayIcon): print "Hello Simon."
+
     def switch_icon(sysTrayIcon):
         sysTrayIcon.icon = icons.next()
         sysTrayIcon.refresh_icon()
