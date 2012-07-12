@@ -1,40 +1,14 @@
-from functools import partial, wraps
 from hashlib import sha256
 
 import txtorcon
 from twisted.trial import unittest
 from twisted.internet import reactor
-from twisted.web import client
 from cyclone.escape import json_decode, json_encode
 
 from apaf.panel import panel
 from apaf.core import add_service
+from apaf.testing import Page
 from apaf import config
-
-class Page(object):
-    def __init__(self, host, port):
-        """
-        Decorator helper for unittest.
-        Uses asyncronous callbacks from twisted to get the page referred with path,
-        and then tests it with the given path.
-        """
-        self.host = host
-        self.port = port
-
-    def __call__(self, path, raises=False, **settings):
-        url =  'http://%s:%d%s' % (self.host, self.port, path)
-
-        def inner(func):
-            @wraps(func)
-            def wrap(self):
-                d = client.getPage(url, **settings)
-                if raises:
-                    d.addErrback(partial(func, self))
-                else:
-                    d.addCallback(partial(func, self))
-                return d
-            return wrap
-        return inner
 
 page = Page('127.0.0.1', 6660)
 
