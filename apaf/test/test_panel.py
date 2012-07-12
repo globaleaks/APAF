@@ -11,28 +11,35 @@ from apaf.panel import panel
 from apaf.core import add_service
 from apaf import config
 
-def page(path, raises=False, **settings):
-    """
-    Decorator helper for unittest.
-    Uses asyncronous callbacks from twisted to get the page referred with path,
-    and then tests it with the given path.
-    """
-    url =  'http://127.0.0.1:%d%s' % (6660, path)
+class Page(object):
+    def __init__(self, host, port):
+        """
+        Decorator helper for unittest.
+        Uses asyncronous callbacks from twisted to get the page referred with path,
+        and then tests it with the given path.
+        """
+        self.host = host
+        self.port = port
 
-    def inner(func):
-        @wraps(func)
-        def wrap(self):
-            d = client.getPage(url, **settings)
-            if raises:
-                d.addErrback(partial(func, self))
-            else:
-                d.addCallback(partial(func, self))
-            return d
-        return wrap
-    return inner
+    def __call__(self, path, raises=False, **settings):
+        url =  'http://%s:%d%s' % (self.host, self.port, path)
 
+        def inner(func):
+            @wraps(func)
+            def wrap(self):
+                d = client.getPage(url, **settings)
+                if raises:
+                    d.addErrback(partial(func, self))
+                else:
+                    d.addCallback(partial(func, self))
+                return d
+            return wrap
+        return inner
+
+page = Page('127.0.0.1', 6660)
 
 class TestPanel(unittest.TestCase):
+
     def setUp(self):
         """
         Set up an asyncronous get trasport.
