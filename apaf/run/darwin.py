@@ -6,7 +6,6 @@ If assolves three tasks: start a tor instance, start the panel, start services.
 from twisted.internet import _threadedselect
 _threadedselect.install()
 
-import txtorcon
 from twisted.internet import reactor
 from PyObjCTools import AppHelper
 from AppKit import NSNotificationCenter, NSApplication

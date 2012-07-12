@@ -5,8 +5,6 @@ import txtorcon
 from twisted.trial import unittest
 from twisted.internet import reactor
 from twisted.web import client
-from twisted.internet import tcp
-from twisted.python import log
 from cyclone.escape import json_decode, json_encode
 
 from apaf.panel import panel

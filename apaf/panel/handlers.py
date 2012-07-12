@@ -11,12 +11,6 @@ class PanelHandler(web.RequestHandler):
     """
     A simple RequestHandler with utils for the panel
     """
-    def get_current_user(self):
-        """
-        Return the current user authenticated.
-        """
-        user_json = self.get_secure_cookie("user")
-        return json_decode(user_json) if user_json else None
 
     def initialize(self, action=None):
         self.action = action
@@ -40,6 +34,9 @@ class PanelHandler(web.RequestHandler):
         return json_encode({'result':boolean})
 
     def get_current_user(self, passwd=None):
+        """
+        Return the current user authenticated.
+        """
         return (passwd or self.get_secure_cookie('user')) == config.custom['passwd']
 
     def set_default_headers(self):

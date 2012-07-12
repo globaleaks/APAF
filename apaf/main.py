@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+"""
+Maain file.
+After detecting the platform on which it is running, launches its relative
+main() from the apaf.run package.
+"""
 from argparse import ArgumentParser
 from apaf import config
 

@@ -3,14 +3,11 @@
 The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.
 """
-import functools
 import os
 import os.path
 import sys
-import tempfile
 
-from twisted.internet import reactor, protocol
-from twisted.internet.endpoints import TCP4ServerEndpoint
+from twisted.internet import reactor
 from twisted.python import log
 import txtorcon
 
