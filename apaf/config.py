@@ -50,7 +50,7 @@ def _get_datadir():
     if os.path.exists(curdir):
         return curdir
     else:
-        import blobbone
+        import apaf.blobbone
         return curdir
 
 
