@@ -8,7 +8,7 @@ import apaf
 from apaf import config
 
 ICONFILE = None
-APP = [os.path.join('apaf', 'run.py')]
+APP = [os.path.join('apaf', 'main.py')]
 
 # static files
 DATA_FILES = [(root, [join(root, file) for file in files])
@@ -90,7 +90,7 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
-    entry_points=dict(console_scripts=['apaf = apaf.run:main']),
+    entry_points=dict(console_scripts=['apaf = apaf.main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]
 )
