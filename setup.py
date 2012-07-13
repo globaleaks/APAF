@@ -49,8 +49,8 @@ PLATFORM_OPTIONS['darwin'] = dict(
 if config.platform == 'win32':
     #Generate the blob module for static files, too.
     from apaf.blobber import create_blobbone
-    create_blobbone(config._datadir,
-                    join(config._root_dir, 'blobbone.py'))
+    create_blobbone(config.datadir,
+                    join(config.package_dir, 'blobbone.py'))
 
 PLATFORM_OPTIONS['win32'] = dict(
     zipfile = None,
