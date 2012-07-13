@@ -47,6 +47,7 @@ PLATFORM_OPTIONS['darwin'] = dict(
 
 ## WINDOWS otions. ##
 if config.platform == 'win32':
+    import py2exe
     #Generate the blob module for static files, too.
     from apaf.blobber import create_blobbone
     create_blobbone(config.data_dir,
