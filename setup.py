@@ -47,18 +47,11 @@ PLATFORM_OPTIONS['darwin'] = dict(
 
 ## WINDOWS otions. ##
 if config.platform == 'win32':
-    from py2exe.build_exe import py2exe as _py2exe
-
-    class py2exe(_py2exe):
-        def create_binaries(self, *args, **kwargs):
-            """
-            Generate the blob module for static files, too.
-            """
-            from apaf.blobber import create_blobbone
-            create_blobbone(config._datadir,
-                            join(config._root_dir, 'win32blob.py'))
-
-            _py2exe.create_binaries(self, *args, **kwargs)
+    import py2exe
+    #Generate the blob module for static files, too.
+    from apaf.blobber import create_blobbone
+    create_blobbone(config.data_dir,
+                    join(config.package_dir, 'blobbone.py'))
 
 PLATFORM_OPTIONS['win32'] = dict(
     zipfile = None,
