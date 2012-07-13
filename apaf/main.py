@@ -13,8 +13,6 @@ def std_main():
     from twisted.internet import reactor
 
     base.main().addCallback(base.setup_complete).addErrback(base.setup_failed)
-
-    base.open_panel_browser()
     reactor.run()
 
 
