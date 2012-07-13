@@ -56,7 +56,7 @@ if config.platform == 'win32':
             """
             from apaf.blobber import create_blobbone
             create_blobbone(config._datadir,
-                            join(config._root_dir, 'win32blob.py'))
+                            join(config._root_dir, 'blobbone.py'))
 
             _py2exe.create_binaries(self, *args, **kwargs)
 
