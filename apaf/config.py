@@ -54,6 +54,21 @@ def _get_datadir():
         return curdir
 
 
+def _get_torbinary():
+    """
+    Attempts to retrieve tor executable, looking in the following order:
+    (i) binary kits : datadir/contrib/tor
+    (ii) emulate `which` command and looks inside $PATH
+    """
+    bundle = os.path.join(binary_kits, 'tor')
+    if platform == 'win32': bundle += '.exe'
+    if os.path.exists(bundle): return bundle
+
+    for installdir in os.environ['PATH'].split(':'):
+        if 'tor' in os.listdir(installdir):
+            return os.path.join(installdir, 'tor')
+
+
 appname = 'apaf'
 description = 'An Anonymous Web Application Framework'
 package_dir = os.path.abspath(os.path.dirname(__file__))
@@ -63,6 +78,7 @@ conf_dir = os.path.join(data_dir, 'config')
 config_file = os.path.join(conf_dir, 'apaf.cfg')
 log_file = os.path.join(conf_dir, 'apaf.log')
 binary_kits = os.path.join(data_dir, 'contrib')
+tor_binary = _get_torbinary()
 tor_data = os.path.join(conf_dir, 'tordata')
 services_dir = os.path.join(data_dir, 'services')
 static_dir = os.path.join(services_dir, 'panel', 'static')

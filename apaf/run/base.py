@@ -16,8 +16,6 @@ from apaf import core
 from apaf import config
 from apaf.panel import panel
 
-tor_binary = (os.path.join(config.binary_kits, 'tor') +
-              ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
     """
@@ -68,4 +66,4 @@ def main(progress_updates=updates):
     ## start tor. ##
     return txtorcon.launch_tor(torconfig, reactor,
                                progress_updates=progress_updates,
-                               tor_binary=tor_binary)
+                               tor_binary=config.tor_binary)
