@@ -46,7 +46,7 @@ def _get_datadir():
 #     except ImportError:
 #         log.err('Unable to import setuptools')
 #
-    curdir = os.path.join('datadir', )
+    curdir = os.path.join(os.getcwd(), 'datadir', )
     if os.path.exists(curdir):
         return curdir
     else:
