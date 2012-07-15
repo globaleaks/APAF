@@ -63,6 +63,7 @@ OPTIONS_PY2EXE = dict(
     bundle_files = 1,
     compressed = True,
     optimize = 2,
+    includes =['apaf.run.win32']
 #   install_requires=['py2exe>=0.6.9', 'pywin32'],
 )
 
