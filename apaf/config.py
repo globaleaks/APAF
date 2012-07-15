@@ -46,7 +46,7 @@ def _get_datadir():
 #     except ImportError:
 #         log.err('Unable to import setuptools')
 #
-    curdir = os.path.join('datadir', )
+    curdir = os.path.join(os.getcwd(), 'datadir', )
     if os.path.exists(curdir):
         return curdir
     else:
@@ -82,6 +82,7 @@ tor_binary = _get_torbinary()
 tor_data = os.path.join(conf_dir, 'tordata')
 services_dir = os.path.join(data_dir, 'services')
 static_dir = os.path.join(services_dir, 'panel', 'static')
+drawable_dir = os.path.join(data_dir, 'drawable')
 
 # check for directory path
 if not os.path.exists(conf_dir):
