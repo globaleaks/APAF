@@ -1,7 +1,6 @@
 #-*- coding: utf8 -*-
-
-
 import os
+import os.path
 import glob
 import sys
 import itertools
@@ -26,7 +25,7 @@ class SysTrayIcon(object):
                  default_menu_index=None,
                  window_class_name=None,):
 
-        self.icon = (glob.glob('*.ico'))[0] # apaf's logo in .ico format
+        self.icon = os.path.join(config.drawable_dir, 'systray.ico')
         self.hover_text = hover_text
 
         self.menu_actions_by_id = dict()
