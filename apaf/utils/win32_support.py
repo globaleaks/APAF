@@ -9,6 +9,7 @@ import win32con
 import win32gui_struct
 
 from apaf.run import base
+from apaf import config
 
 try:
     import winxpgui as win32gui
