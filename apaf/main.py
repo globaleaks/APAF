@@ -5,7 +5,14 @@ After detecting the platform on which it is running, launches its relative
 main() from the apaf.run package.
 """
 from argparse import ArgumentParser
-from apaf import config
+
+try:
+    from apaf import config
+except ImportError:
+    import sys
+    import config
+    import os.path
+    sys.path.append(os.path.join(config.package_dir, '..'))
 
 
 def std_main():
