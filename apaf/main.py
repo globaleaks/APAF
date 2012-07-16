@@ -6,13 +6,22 @@ main() from the apaf.run package.
 """
 from argparse import ArgumentParser
 
+import sys
+import os
+import os.path
 try:
     from apaf import config
 except ImportError:
     import sys
+    import os.path
+    import os
+    if 'RESOURCEPATH' in os.environ:
+        # if we are running on osx put our bundled libraries first in system's
+        # path.
+        sys.path.insert(0, os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python2.7', 'lib-dynload'))
     import config
     import os.path
-    sys.path.append(os.path.join(config.package_dir, '..'))
+    sys.path.insert(0, os.path.join(config.package_dir, '..'))
 
 
 def std_main():
