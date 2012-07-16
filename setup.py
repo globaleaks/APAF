@@ -23,19 +23,18 @@ if config.platform == 'darwin':
     from apaf.utils.osx_support import OSXPatchCommand
 
     # files needed to create app Bundle on os x (icon, status bar icon ...)
-    DATA_FILES = [join('datadir', 'config'), join('datadir', 'contrib'), join('datadir', 'services')]
-    DATA_FILES += reduce(operator.add,
-        [[join(root,file) for file in files]
-         for root, _, files in os.walk(join('datadir', 'osx_bundle'))])
+    DATA_FILES = [join('datadir', 'config'), join('datadir', 'contrib'),
+                  join('datadir', 'services'), join('datadir', 'drawable')]
 else:
     OSXPatchCommand = None
 
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
     iconfile = ICONFILE,
-    plist={
+    plist = {
         'LSUIElement':0, # Agent Only App (No icon in dock)
-    }
+    },
+    includes = ['txtorcon'],
 #    install_requires=['py2app>=0.6.4'],
 )
 
