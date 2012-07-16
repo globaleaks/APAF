@@ -10,7 +10,7 @@ Package: python-apaf
 Architecture: all
 Homepage: http://github.com/mmaker/APAF
 Description: an Anonymous Web Application Framework
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, python-twisted (>= 11.1.0), python-pycryptopp
 XB-Python-Version: ${python:Versions}
 Provides: ${python:Provides}
 

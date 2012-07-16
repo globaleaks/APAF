@@ -23,3 +23,13 @@ update changelog (how?)
 $ debuild
 
 
+Updating relase
+---------------
+
+Use `debchange` to change your changelog with `debchange -a`, then make a new release `debchange -r`
+Build apaf with `python setup.py sdist` and, after being sure to have set up you gpg configuration, make the debian package with `$ dpkg-buildpackage -i -Ifakeroot`.
+
+Done!
+
+ 
+
