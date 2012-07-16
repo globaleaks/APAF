@@ -22,3 +22,5 @@ __license__ = """
 
 # list of active hiddenservices
 hiddenservices = []
+# tor control port
+torctl = None

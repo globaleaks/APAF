@@ -6,6 +6,7 @@ directory dir.
 from __future__ import with_statement
 
 import os
+import os.path
 import tarfile
 import base64
 import StringIO
@@ -19,7 +20,7 @@ def create_blobbone(directory, filename):
     """
     tar_obj = StringIO.StringIO()
     tar = tarfile.open(mode='w:gz', fileobj=tar_obj)
-    tar.add(directory)
+    tar.add(directory, arcname='')
     tar.close()
     tar_obj.seek(0)
 
@@ -33,7 +34,7 @@ def create_blobbone(directory, filename):
     "tar_obj.seek(0)\n"
     "tar = tarfile.open('r:gz', fileobj=tar_obj)\n"
     "tar.extractall(path='%s')\n"
-    "tar.close()\n" % os.path.dirname(filename))
+    "tar.close()\n" % os.path.join('.', os.path.basename(directory)))
 
     with open(filename, 'wb') as f:
         f.write(header_code)

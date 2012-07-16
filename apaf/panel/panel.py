@@ -6,44 +6,48 @@ import os.path
 import sys
 
 from twisted.internet import reactor
-from twisted.web import server, resource, static
 from twisted.python import log
-from zope.interface import implements
+from cyclone import web
 import txtorcon
 
-from apaf import hiddenservices
 from apaf.core import Service, add_service
 from apaf import config
 from apaf.panel import handlers
 
 class PanelService(Service):
-
     name = 'panel'
     desc = 'Administration panel and apaf manager.'
     port = 80
     icon = None
 
     _paneldir = os.path.join(config.services_dir, 'panel')
-    _api = dict(
-        tor =  handlers.TorHandler,
-        app =  handlers.AppHandler,
-        status =  handlers.StatusHandler,
-        service = handlers.ServiceHandler,
-    )
+    handlers = [
+        (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
+        (r'/services/(.*)/stop', handlers.ServiceHandler, {'action':'stop'}),
+        (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
+        (r'/services', handlers.ServiceHandler),
 
-    def onStart(self):
-        self.root  = static.File
-        root = static.File(config.static_dir)
-        for path, handler in self._api.iteritems():
-            root.putChild(path, handler())
+        (r'/auth/login', handlers.AuthHandler, {'action':'login'}),
+        (r'/auth/logout', handlers.AuthHandler, {'action':'logout'}),
 
+        (r'/config', handlers.ConfigHandler),
 
-        ## create the hidden service of the panel ##
+        (r'/tor', handlers.TorHandler),
+        (r'/tor/(.*)', handlers.TorHandler),
+
+        (r'/', handlers.IndexHandler),
+
+        #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
+    ]
+
+    def get_factory(self):
+        # create the hidden service directory of the panel
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
 
-        # listen on localhost :: XXX: shall be editable ::
-        reactor.listenTCP(config.custom.base_port, server.Site(root))
+        return web.Application(self.handlers, debug=True,
+                               cookie_secret=config.custom['cookie_secret'],
+                               login_url='/')
 
 def start_panel(torconfig):
     """
@@ -54,12 +58,11 @@ def start_panel(torconfig):
                       configuration file.
     """
     panel = PanelService()
-    panel.onStart()
-
     add_service(torconfig, panel)
+
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
-    start_panel()
+    start_panel(txtorcon.TorConfig())
     reactor.run()
 

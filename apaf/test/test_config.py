@@ -1,8 +1,10 @@
 import unittest
-import tempfile
 import os
 
 from apaf import config
+
+## change default configutation file
+
 
 class TestConfig(unittest.TestCase):
 
@@ -23,20 +25,20 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(self.fetch('foobarbaz'))
 
     def test_commit(self):
-        config.config_file = tempfile.mktemp(suffix='apaf_cfg')
-
         config.custom.commit()
         self.assertTrue(os.path.exists(config.config_file))
+        config.custom['services'] = []
+        config.custom.commit()
+        self.assertTrue(os.path.exists(config.config_file))
+        self.assertEqual(config.custom['services'], [])
 
 
-    def test_setattr(self):
-        try:
-            config.custom.__foo_bar = 'spam'
-            config.custom._foo = 1
-        except ValueError:
-            pass # as expected
-        else:
-            self.fail('Cannot set items from config.')
+    def test_setitem(self):
+        def setitem(obj, key, value):
+            obj[key] = value
+
+        self.assertRaises(KeyError,  setitem, config.custom, 'foobar', None)
+        self.assertRaises(TypeError, setitem, config.custom, 'services', '')
 
     def test_delattr(self):
         try:

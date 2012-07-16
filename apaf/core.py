@@ -5,6 +5,7 @@ import imp
 import os.path
 
 from twisted.python import log
+from twisted.internet import reactor, error
 from zope.interface import Interface, Attribute, implements
 import txtorcon
 
@@ -20,24 +21,35 @@ class IService(Interface):
     desc = Attribute('A brief description of the service.')
     author = Attribute('The author of the service')
     port = Attribute('the port og which the service wants to be exposed')
-    hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
-                   ' the service class from the apaf.')
-
     icon = Attribute('The service logo')
 
-    def onStart(self):
+    hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
+                   ' the service class from the apaf.')
+    tcp = Attribute('A twisted.internet.tcp.Port instance, reflecting the port'
+                    ' on which the service is listening to')
+    factory = Attribute('A twisted.internet.protocol.Factory instance running'
+                         ' the service.')
+
+    def get_factory(self):
         """
         Called before starting the hidden service.
+        :ret : a twisted.internet.protocol.Factory instance,
+               which will be usd for starting the service.
         """
 
-    def onStop(self):
+    def start(self):
         """
-        Called in case of explicit stop from the user.
+        Callback: called after the hiddenservice starts/resumes.
         """
 
-    def onFailure(self, exception):
+    def stop(self):
         """
-        Called in case of exception.
+        Callback: called in case of explicit stop from the user.
+        """
+
+    def failure(self, exception):
+        """
+        Callback: called in case of exception.
         :param exception: The instance of the exception raised.
         :ret: None.
         """
@@ -51,7 +63,10 @@ class Service(object):
     author = ''
     icon = None
     port = None
-    hs = None
+    tcp = None
+
+    def __init__(self):
+        self._factory = None
 
     def __str__(self):
         return self.name
@@ -70,21 +85,47 @@ class Service(object):
         """
         return self.hs.hostname
 
-    def onStart(self):
+    @property
+    def factory(self):
+        if self._factory is None:
+            self._factory = self.get_factory()
+        return self._factory
+
+    def get_factory(self):
         raise NotImplementedError
 
-    def onStop(self):
-        pass
-
-    def onFailure(self):
+    def failure(self, exc):
         raise NotImplementedError
+
+    def stop(self):
+        return self.tcp.stopListening()
+
+    def start(self):
+        self.upd.startListening()
+
+def new_port():
+    """
+    Generates a new port.
+    :ret : an integer between config.base_port and 9999.
+    """
+    from Crypto import Random
+    n = sum(map(ord, Random.get_random_bytes(10))) % (
+         9999 - config.custom['base_port'])
+
+    return config.custom['base_port'] + n
 
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.
     : param service : the service to be run.
     """
-    port = port or config.custom.base_port + len(apaf.hiddenservices)
+    # picks a random port until it finds one avaible.
+    while not service.tcp:
+        port = port or new_port()
+        try:
+            service.tcp = reactor.listenTCP(port, service.factory)
+        except error.CannotListenError:
+            pass
 
     service.hs = txtorcon.HiddenService(
         torconfig, os.path.join(config.tor_data, service.name),
@@ -99,15 +140,15 @@ def start_services(torconfig):
     :param torconfig: an instance of txtorcon.TorConfig representing the
                       configuration file.
     """
-    for port, service in enumerate(config.custom.services):
+    for service in config.custom['services']:
         # load service
         try:
             service_mod = imp.load_module(
-                    service, *imp.find_module(config.services_dir, ['services']))
+                    service, *imp.find_module(service, [config.services_dir]))
         except ImportError:
-            log.err('Cannot import service %s' % service)
+            return log.err('Cannot import service %s' % service)
         except Exception as e:
-            log.err('Error loading service %s -\n %s' % (service, e))
+            return log.err('Error loading service %s -\n %s' % (service, e))
 
         service = getattr(service_mod, 'ServiceDescriptor', None)
         if not service:
@@ -115,4 +156,4 @@ def start_services(torconfig):
             continue
 
         # create hidden service
-        add_service(torconfig, service)
+        add_service(torconfig, service())
