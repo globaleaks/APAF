@@ -35,7 +35,7 @@ easy_install http://pypi.python.org/packages/source/z/zope.interface/zope.interf
 mkdir src
 cd src
 
-git clone https://github.com/mmaker/txtorcon.git
+git clone https://github.com/meejah/txtorcon.git
 pip install ./txtorcon
 
 #download tor browser to extract executable
