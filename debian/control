@@ -9,7 +9,9 @@ XS-Python-Version: >= 2.6
 Package: python-apaf
 Architecture: all
 Homepage: http://github.com/mmaker/APAF
-Description: an Anonymous Web Application Framework
+Description: Anonymous Web Application Framework
+ APAF is a python application aiming to help people developing and
+ publishing their own python-powered hidden service application.
 Depends: ${misc:Depends}, ${python:Depends}, python-twisted (>= 11.1.0), python-pycryptopp
 XB-Python-Version: ${python:Versions}
 Provides: ${python:Provides}
