@@ -118,3 +118,28 @@ class ApafAppWrapper(NSObject):
             "http://%s:%s" % (hostname, host.port)))
         NSWorkspace.sharedWorkspace().openURL_(url)
 
+
+def embeed_browser():
+    app = AppKit.NSApplication.sharedApplication()
+    rect = Foundation.NSMakeRect(600,400,600,800)
+    win = AppKit.NSWindow.alloc()
+    win.initWithContentRect_styleMask_backing_defer_(
+            rect,
+            AppKit.NSTitledWindowMask |
+            AppKit.NSClosableWindowMask |
+            AppKit.NSResizableWindowMask |
+            AppKit.NSMiniaturizableWindowMask,
+            AppKit.NSBackingStoreBuffered,
+            False)
+    win.display()
+    win.orderFrontRegardless()
+
+    webview = WebKit.WebView.alloc()
+    webview.initWithFrame_(rect)
+
+    pageurl = Foundation.NSURL.URLWithString_("http://vatican.va/")
+    req = Foundation.NSURLRequest.requestWithURL_(pageurl)
+    webview.mainFrame().loadRequest_(req)
+
+    win.setContentView_(webview)
+    app.run()

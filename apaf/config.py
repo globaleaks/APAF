@@ -32,7 +32,7 @@ def _get_datadir():
     if os.path.exists(sysdir):
         return sysdir
 
-    bundledir = os.environ.get('RESOURCEPATH')
+    bundledir = os.path.join(os.environ.get('RESOURCEPATH', ''), 'datadir')
     if bundledir:
         return bundledir
 
@@ -59,6 +59,7 @@ def _get_torbinary():
     Attempts to retrieve tor executable, looking in the following order:
     (i) binary kits : datadir/contrib/tor
     (ii) emulate `which` command and looks inside $PATH
+    (iii) return a simple 'tor' and hope the environment recognises it.
     """
     bundle = os.path.join(binary_kits, 'tor')
     if platform == 'win32': bundle += '.exe'
@@ -67,6 +68,7 @@ def _get_torbinary():
     for installdir in os.environ['PATH'].split(':'):
         if 'tor' in os.listdir(installdir):
             return os.path.join(installdir, 'tor')
+    return 'tor'
 
 
 appname = 'apaf'

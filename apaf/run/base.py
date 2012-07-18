@@ -64,6 +64,10 @@ def main(progress_updates=updates):
     torconfig.save()
 
     ## start tor. ##
-    return txtorcon.launch_tor(torconfig, reactor,
-                               progress_updates=progress_updates,
-                               tor_binary=config.tor_binary)
+    try:
+        return txtorcon.launch_tor(torconfig, reactor,
+                                   progress_updates=progress_updates,
+                                   tor_binary=config.tor_binary)
+    except OSError as exc:
+        print  >> sys.stderr, "Failing to launch tor executable (%s)" % ecx
+        sys.exit(1)  # return error status.
