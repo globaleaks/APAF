@@ -19,8 +19,8 @@ def _get_datadir():
     is avaible. Path checking order:
      (i)   /etc,
      (ii)  ~/.config,
-     (iii) environment variables,
-     (iv)  package path,
+     (iii)  package path,
+     (iv) environment variables,
      (v)   current directory.
     For more informations, see  issue #16.
     """
@@ -32,13 +32,13 @@ def _get_datadir():
     if os.path.exists(sysdir):
         return sysdir
 
-    bundledir = os.path.join(os.environ.get('RESOURCEPATH', ''), 'datadir')
-    if bundledir:
-        return bundledir
-
     vanilladir = os.path.join(package_dir, '..', 'datadir')
     if os.path.exists(vanilladir):
         return vanilladir
+
+    bundledir = os.path.join(os.environ.get('RESOURCEPATH', ''), 'datadir')
+    if bundledir:
+        return bundledir
 
 #     try:
 #         import pkg_resources as pkg

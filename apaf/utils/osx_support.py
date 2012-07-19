@@ -1,11 +1,11 @@
 from distutils.core import Command
 import subprocess
-import objc
 import os
 
-from Foundation import *
-from AppKit import *
-from AppKit import NSNotificationCenter
+import objc
+import AppKit
+import WebKit
+import Foundation
 from PyObjCTools import AppHelper
 
 import apaf
@@ -61,31 +61,31 @@ class ApafAppWrapper(NSObject):
         self.reactor = reactor
 
     def applicationDidFinishLaunching_(self, notification):
-        statusbar = NSStatusBar.systemStatusBar()
+        statusbar = AppKit.NSStatusBar.systemStatusBar()
         # Create the statusbar item
-        self.statusitem = statusbar.statusItemWithLength_(NSVariableStatusItemLength)
+        self.statusitem = statusbar.statusItemWithLength_(AppKit.NSVariableStatusItemLength)
         # set title
-        self.statusitem.setTitle_("apaf")
+        self.statusitem.setTitle_(config.appname)
         # Let it highlight upon clicking
         self.statusitem.setHighlightMode_(1)
         # Set tooltip
-        self.statusitem.setToolTip_('Anonymous Python Application Framework')
+        self.statusitem.setToolTip_(config.description)
         # set status image
-        path = NSBundle.mainBundle().pathForResource_ofType_("status_bar_icon", "png")
-        image = NSImage.alloc().initWithContentsOfFile_(path)
+        path = AppKit.NSBundle.mainBundle().pathForResource_ofType_("status_bar_icon", "png")
+        image = AppKit.NSImage.alloc().initWithContentsOfFile_(path)
         self.statusitem.setImage_(image)
 
         # Build menu
-        self.menu = NSMenu.alloc().init()
+        self.menu = AppKit.NSMenu.alloc().init()
         self.menu.setAutoenablesItems_(0)
 
-        self.menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
+        self.menuitem = AppKit.NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 'Loading...', 'openAdmin:', '')
         self.menu.addItem_(self.menuitem)
 
         self.menuitem.setEnabled_(0)
         # Default event
-        quit = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
+        quit = AppKit.NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
         self.menu.addItem_(quit)
         # Bind it to the status item
         self.statusitem.setMenu_(self.menu)
@@ -93,7 +93,7 @@ class ApafAppWrapper(NSObject):
         # listen for completed notification
         sel = objc.selector(self.torHasLoaded, signature='v@:')
 
-        ns = NSNotificationCenter.defaultCenter()
+        ns = AppKit.NSNotificationCenter.defaultCenter()
         ns.addObserver_selector_name_object_(self, sel, TorFinishedLoadNotification, None)
 
         self.runApaf()
@@ -111,15 +111,19 @@ class ApafAppWrapper(NSObject):
         return True
 
     def openAdmin_(self, sender):
-        host = apaf.hiddenservices[0].tcp.getHost()
-        hostname= host.host if not host.host.startswith('0.0') else '127.0.0.1'
+        """
+        Check if apaf's window is already open, otherwise launch it.
+        XXX. should display also a dock icon.
+        """
+        embeed_browser()
 
-        url = NSURL.URLWithString_(NSString.stringWithUTF8String_(
-            "http://%s:%s" % (hostname, host.port)))
-        NSWorkspace.sharedWorkspace().openURL_(url)
 
+def embeed_browser(host=None):
+    """
+    Open a new window displaying a web page using WebKit.
+    :param host: hostname to view. if not set, uses panel configuration page.
 
-def embeed_browser():
+    """
     app = AppKit.NSApplication.sharedApplication()
     rect = Foundation.NSMakeRect(600,400,600,800)
     win = AppKit.NSWindow.alloc()
@@ -137,8 +141,14 @@ def embeed_browser():
     webview = WebKit.WebView.alloc()
     webview.initWithFrame_(rect)
 
-    pageurl = Foundation.NSURL.URLWithString_("http://vatican.va/")
-    req = Foundation.NSURLRequest.requestWithURL_(pageurl)
+    if not host:
+        host = apaf.hiddenservices[0].tcp.getHost()
+        host = (host.host if not host.host.startswith('0.0') else '127.0.0.1',
+                host.port)
+
+    url = NSURL.URLWithString_(NSString.stringWithUTF8String_(
+        "http://%s:%s" % (hostname, host.port)))
+    req = Foundation.NSURLRequest.requestWithURL_(url)
     webview.mainFrame().loadRequest_(req)
 
     win.setContentView_(webview)
