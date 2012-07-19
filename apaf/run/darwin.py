@@ -10,6 +10,7 @@ from twisted.internet import reactor
 from PyObjCTools import AppHelper
 from AppKit import NSNotificationCenter, NSApplication
 from apaf.utils.osx_support import ApafAppWrapper, TorFinishedLoadNotification
+from apaf.utils import osx_support
 from AppKit import NSNotificationCenter
 
 from apaf.run import base
@@ -18,6 +19,7 @@ from apaf.run import base
 def setup_complete(proto):
     NSNotificationCenter.defaultCenter().postNotificationName_object_(
             TorFinishedLoadNotification, None)
+    osx_support.embeed_browser()
     base.setup_complete(proto)
 
 
