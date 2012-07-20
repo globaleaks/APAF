@@ -45,7 +45,11 @@ class OSXPatchCommand(Command):
             os.system("chmod +x dist/%s.app/Contents/Resources/contrib/tor" % config.appname)
 
 
+<<<<<<< HEAD
 class ApafAppWrapper(Foundation.NSObject):
+=======
+class ApafAppWrapper(AppKit.NSObject):
+>>>>>>> 46a3a3c5828e3a27f19a74ba8ca035792b304bce
     """
     Wrapper around the standard apaf runner;
     creates a new icon around the notification centre and controls the apaf.
@@ -57,7 +61,11 @@ class ApafAppWrapper(Foundation.NSObject):
     menuitem = None
 
     def setMainFunction_andReactor_(self, func, reactor):
+<<<<<<< HEAD
         log.msg('setting up application')
+=======
+        AppKit.NSLog("set app")
+>>>>>>> 46a3a3c5828e3a27f19a74ba8ca035792b304bce
         self.runApaf = func
         self.reactor = reactor
 
@@ -146,9 +154,16 @@ def embeed_browser(host=None):
         host = apaf.hiddenservices[0].tcp.getHost()
         host = (host.host if not host.host.startswith('0.0') else '127.0.0.1',
                 host.port)
+<<<<<<< HEAD
 
     url = Foundation.NSURL.URLWithString_(Foundation.NSString.stringWithUTF8String_(
         "http://%s:%s" % host))
+=======
+    print "http://%s:%s" % (host[0], host[1])
+    url = AppKit.NSURL.URLWithString_(AppKit.NSString.stringWithUTF8String_(
+        "http://%s:%s" % (host[0], host[1])))
+
+>>>>>>> 46a3a3c5828e3a27f19a74ba8ca035792b304bce
     req = Foundation.NSURLRequest.requestWithURL_(url)
     webview.mainFrame().loadRequest_(req)
 

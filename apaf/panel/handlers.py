@@ -236,8 +236,13 @@ class TorHandler(PanelHandler):
     """
     Return informations about the current tor status.
     """
+    allowed = (
+            'version', 'ns/all', 'status/bootstrap-phase',
+
+    )
+
     @web.asynchronous
-    def get(self, sp_keyword='status/...'):
+    def get(self, sp_keyword='status/bootstrap-phase'):
         """
         Processes GET requests:
             * /tor/<sp_keyword>
@@ -251,7 +256,8 @@ class TorHandler(PanelHandler):
 
         if not apaf.torctl:
             return self.finish(self.error('Tor is not started.'))
-
+        if not sp_keyword in self.allowed:
+            return self.finish(self.error('Invalid key %s') % sp_keyword)
         try:
             apaf.torctl.get_info(sp_keyword).addCallback(
                  lambda infos: self.finish(json_encode(infos)))
