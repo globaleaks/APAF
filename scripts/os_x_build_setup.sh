@@ -29,7 +29,7 @@ echo `which python`
 easy_install pyobjc-core
 easy_install pyobjc
 
-pip install psutil py2app twisted six pygeoip ipaddr pyYAML pyCrypto cyclone web.py
+pip install txtorcon py2app twisted pyYAML pyCrypto cyclone
 easy_install http://pypi.python.org/packages/source/z/zope.interface/zope.interface-4.0.0.tar.gz
 
 mkdir src
