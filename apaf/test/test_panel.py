@@ -1,8 +1,10 @@
 from hashlib import sha256
+import sys
 
 import txtorcon
 from twisted.trial import unittest
 from twisted.internet import reactor
+from twisted.python import log
 from cyclone.escape import json_decode, json_encode
 
 from apaf.panel import panel
@@ -11,6 +13,7 @@ from apaf.testing import Page
 from apaf import config
 
 page = Page('127.0.0.1', 6660)
+# log.startLogging(sys.stdout)   # debug information from the backend.
 
 class TestPanel(unittest.TestCase):
 
@@ -114,7 +117,9 @@ class TestAuth(TestPanel):
     @page('/auth/login', raises=True, method='POST',
           postdata=json_encode({'passwd':'1234'}))
     def test_post_auth_login_fail(self, error):
-        print error.value
+        self.assertEqual(error.value.status, '401')
+    test_post_auth_login_fail.skip = ('Must test invalid password from the'
+                                      'outside.')
 
     @page('/auth/login', method='POST',
           postdata=json_encode({'passwd':sha256('None').hexdigest()}))

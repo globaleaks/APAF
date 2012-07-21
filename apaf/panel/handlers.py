@@ -37,7 +37,11 @@ class PanelHandler(web.RequestHandler):
         """
         Return the current user authenticated.
         """
-        return (passwd or self.get_secure_cookie('user')) == config.custom['passwd']
+        if passwd: return passwd == config.custom['passwd']
+        else: return any((
+            self.get_secure_cookie('user') == config.custom['passwd'],
+            self.request.remote_ip == '127.0.0.1',
+        ))
 
     def set_default_headers(self):
         """
@@ -81,9 +85,9 @@ class AuthHandler(PanelHandler):
         if self.action != 'login':
             raise web.HTTPError(404)
 
-        if self.request.remote_ip == '127.0.0.1':
-            self.set_secure_cookie(self._uid_cookie, config.custom['passwd'])
-            return self.write(self.result(True))
+        # if self.request.remote_ip == '127.0.0.1':
+        #     self.set_secure_cookie(self._uid_cookie, config.custom['passwd'])
+        #     return self.write(self.result(True))
 
         if not config.custom['remote_login']:
             raise web.HTTPAuthenticationRequired
@@ -104,7 +108,9 @@ class AuthHandler(PanelHandler):
             * GET /auth/logout
         """
         if self.action != 'logout':
-            raise web.HTTPAuthenticationRequired
+            raise web.HTTPAuthenticationRequired if not self.current_user \
+                  else web.HTTPError(404)
+
         #if not self.user:
         #    raise HTTPError(403)
         self.clear_cookie(self._uid_cookie)
@@ -114,6 +120,8 @@ class ConfigHandler(PanelHandler):
     """
     Controller for editing config.custom.
     """
+
+    @web.authenticated
     def get(self):
         """
         Process GET requests:
@@ -126,6 +134,7 @@ class ConfigHandler(PanelHandler):
         del ret['passwd']
         return self.write(json_encode(ret))
 
+    @web.authenticated
     def put(self):
         """
         Processes PUT requests:
@@ -135,6 +144,7 @@ class ConfigHandler(PanelHandler):
             return self.error('invalid query')
         self._process(json_decode(self.request.headers['Settings']))
 
+    @web.authenticated
     def post(self):
         """
         Processes POST requests:
@@ -215,6 +225,7 @@ class ServiceHandler(PanelHandler):
         else:
             self.finish(self.result(True))
 
+    @web.authenticated
     def get(self, service=None):
         """
         Processes GET requests:
@@ -242,6 +253,7 @@ class TorHandler(PanelHandler):
     )
 
     @web.asynchronous
+    @web.authenticated
     def get(self, sp_keyword='status/bootstrap-phase'):
         """
         Processes GET requests:
