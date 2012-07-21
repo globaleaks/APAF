@@ -21,17 +21,15 @@ class SysTrayIcon(object):
     An object representing the system tray icon for apaf.
     """
 
-    def __init__(self,
-                 hover_text,
-                 default_menu_index=None,
-                 window_class_name=None,):
-
+    def __init__(self, callback):
         self.icon = os.path.join(config.drawable_dir, 'systray.ico')
-        self.hover_text = hover_text
+        self.hover_text = config.description
+        self.window_class_name = config.appname
+        self.default_menu_index=1
 
         self.menu_actions_by_id = dict()
-	self._next_action_id = 0
-	self.SPECIAL_ACTIONS = list()
+	    self._next_action_id = 0
+	    self.SPECIAL_ACTIONS = list()
         self.menu_options = self._add_ids_to_menu_options((
             ('Open Panel service in Browser', None, base.open_panel_browser),
             # services list submenu
@@ -40,7 +38,6 @@ class SysTrayIcon(object):
             ('Quit', None, self.bye),
         ))
 
-        self.window_class_name = window_class_name or "SysTrayIconPy"
 
         message_map = {
                 win32gui.RegisterWindowMessage("TaskbarCreated"): self.restart,
@@ -75,6 +72,9 @@ class SysTrayIcon(object):
         self.refresh_icon()
 
         win32gui.PumpMessages()
+
+        ## finally start the reactor
+        callback()
 
     def _add_ids_to_menu_options(self, menu_options):
         result = []
