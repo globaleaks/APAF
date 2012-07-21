@@ -114,6 +114,10 @@ class Config(object):
             with open(self.config_file, 'r') as cfg:
                 for key, value in (yaml.safe_load(cfg) or dict()).iteritems():
                     self[key] = value
+            # check to have loaded every value
+            if not list(self.vars) == list(self.defaults):
+                # log.err('Partial configuration file, restoring..')
+                self.reset()
 
     def __getitem__(self, name):
         return self.vars[name]
@@ -160,4 +164,5 @@ custom = Config(config_file=config_file,
                     services=['staticwebserver'],    # list of services to be started
                     passwd=sha256('None').hexdigest(),
                     cookie_secret=get_random_bytes(100),
+                    remote_login=True,
                 ))
