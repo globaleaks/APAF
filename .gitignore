@@ -13,6 +13,7 @@ apaf.egg-info/
 
 # private comfiguration files
 datadir/config/
+datadir/contrib/
 
 # virtualenv
 apaf-virtualenv
