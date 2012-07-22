@@ -1,6 +1,6 @@
 from twisted.trial import unittest
 
-from apaf import core
+from apaf import core, config
 
 class TestService(unittest.TestCase):
     def setUp(self):
@@ -25,7 +25,7 @@ class TestService(unittest.TestCase):
         Assert new ports are not so trivial.
         """
         self.assertNotEqual(core.new_port(), core.new_port())
-    test_newport.skip = 'Not implemented'
+        self.assertGreater(core.new_port(), config.custom['base_port'])
 
 
 

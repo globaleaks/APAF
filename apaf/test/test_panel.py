@@ -1,40 +1,22 @@
-from functools import partial, wraps
 from hashlib import sha256
+import sys
 
 import txtorcon
 from twisted.trial import unittest
 from twisted.internet import reactor
-from twisted.web import client
-from twisted.internet import tcp
 from twisted.python import log
 from cyclone.escape import json_decode, json_encode
 
 from apaf.panel import panel
 from apaf.core import add_service
+from apaf.testing import Page
 from apaf import config
 
-def page(path, raises=False, **settings):
-    """
-    Decorator helper for unittest.
-    Uses asyncronous callbacks from twisted to get the page referred with path,
-    and then tests it with the given path.
-    """
-    url =  'http://127.0.0.1:%d%s' % (6660, path)
-
-    def inner(func):
-        @wraps(func)
-        def wrap(self):
-            d = client.getPage(url, **settings)
-            if raises:
-                d.addErrback(partial(func, self))
-            else:
-                d.addCallback(partial(func, self))
-            return d
-        return wrap
-    return inner
-
+page = Page('127.0.0.1', 6660)
+# log.startLogging(sys.stdout)   # debug information from the backend.
 
 class TestPanel(unittest.TestCase):
+
     def setUp(self):
         """
         Set up an asyncronous get trasport.
@@ -95,7 +77,8 @@ class TestConfig(TestPanel):
     def test_get_config(self, response):
         self.assertTrue(response)
         response = json_decode(response)
-        self.assertTrue(all(config.custom[key] == value for key, value in response.iteritems()))
+        self.assertTrue(all(config.custom[key] == value
+                            for key, value in response.iteritems()))
 
     @page('/config', method='PUT',
           headers={'settings': json_encode(dict(base_port=6666))})
@@ -134,7 +117,9 @@ class TestAuth(TestPanel):
     @page('/auth/login', raises=True, method='POST',
           postdata=json_encode({'passwd':'1234'}))
     def test_post_auth_login_fail(self, error):
-        print error.value
+        self.assertEqual(error.value.status, '401')
+    test_post_auth_login_fail.skip = ('Must test invalid password from the'
+                                      'outside.')
 
     @page('/auth/login', method='POST',
           postdata=json_encode({'passwd':sha256('None').hexdigest()}))

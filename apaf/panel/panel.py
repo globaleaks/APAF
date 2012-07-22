@@ -7,11 +7,9 @@ import sys
 
 from twisted.internet import reactor
 from twisted.python import log
-from zope.interface import implements
 from cyclone import web
 import txtorcon
 
-from apaf import hiddenservices
 from apaf.core import Service, add_service
 from apaf import config
 from apaf.panel import handlers

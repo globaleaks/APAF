@@ -1,5 +1,4 @@
 import unittest
-import tempfile
 import os
 
 from apaf import config

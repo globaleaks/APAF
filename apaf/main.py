@@ -1,6 +1,27 @@
 #!/usr/bin/env python
+"""
+Maain file.
+After detecting the platform on which it is running, launches its relative
+main() from the apaf.run package.
+"""
 from argparse import ArgumentParser
-from apaf import config
+
+import sys
+import os
+import os.path
+try:
+    from apaf import config
+except ImportError:
+    import sys
+    import os.path
+    import os
+    if 'RESOURCEPATH' in os.environ:
+        # if we are running on osx put our bundled libraries first in system's
+        # path.
+        sys.path.insert(0, os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python2.7', 'lib-dynload'))
+    import config
+    import os.path
+    sys.path.insert(0, os.path.join(config.package_dir, '..'))
 
 
 def std_main():
@@ -8,8 +29,6 @@ def std_main():
     from twisted.internet import reactor
 
     base.main().addCallback(base.setup_complete).addErrback(base.setup_failed)
-
-    base.open_panel_browser()
     reactor.run()
 
 

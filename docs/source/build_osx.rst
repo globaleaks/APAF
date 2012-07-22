@@ -115,9 +115,7 @@ Install TxTorConn
 -----------------
 Txtorcon is not avaible on the Python Package Index, so you need to install it manually with git.
 
-Additionally there are some bugs (https://github.com/meejah/txtorcon/pull/4) preventing builds, so we must use this fork of txtorcon ::
-
-    $ git clone https://github.com/mmaker/txtorcon.git
+    $ git clone https://github.com/meejah/txtorcon.git
 
 Then install with pip: ::
     python2.7-32 /Library/Frameworks/Python.framework//Versions/2.7/bin/pip-2.7 install ./txtorcon

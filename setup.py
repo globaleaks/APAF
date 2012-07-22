@@ -7,8 +7,7 @@ import os
 import apaf
 from apaf import config
 
-ICONFILE = None
-APP = [os.path.join('apaf', 'run.py')]
+APP = [os.path.join('apaf', 'main.py')]
 
 # static files
 DATA_FILES = [(root, [join(root, file) for file in files])
@@ -22,43 +21,32 @@ if config.platform == 'darwin':
     import py2app
     from apaf.utils.osx_support import OSXPatchCommand
 
-    # files needed to create app Bundle on os x (icon, status bar icon ...)
-    DATA_FILES = [join('datadir', 'config'), join('datadir', 'contrib'), join('datadir', 'services')]
-    DATA_FILES += reduce(operator.add,
-        [[join(root,file) for file in files]
-         for root, _, files in os.walk(join('datadir', 'osx_bundle'))])
 else:
     OSXPatchCommand = None
 
 OPTIONS_PY2APP = dict(
     argv_emulation = True,
-    iconfile = ICONFILE,
-    plist={
-        'LSUIElement':0, # Agent Only App (No icon in dock)
-    }
+    iconfile=join(config.drawable_dir, 'logo.icns'),
+    plist = dict(
+        LSUIElement=True, # Agent Only App (No icon in dock)
+    ),
+    includes = ['txtorcon', 'apaf.run.darwin'],
 #    install_requires=['py2app>=0.6.4'],
 )
 
 PLATFORM_OPTIONS['darwin'] = dict(
     cmdclass={
-        'osx_patch': OSXPatchCommand
+        'osx_patch': OSXPatchCommand,
     },
 )
 
 ## WINDOWS otions. ##
 if config.platform == 'win32':
-    from py2exe.build_exe import py2exe as _py2exe
-
-    class py2exe(_py2exe):
-        def create_binaries(self, *args, **kwargs):
-            """
-            Generate the blob module for static files, too.
-            """
-            from apaf.blobber import create_blobbone
-            create_blobbone(config._datadir,
-                            join(config._root_dir, 'win32blob.py'))
-
-            _py2exe.create_binaries(self, *args, **kwargs)
+    import py2exe
+    #Generate the blob module for static files, too.
+    from apaf.blobber import create_blobbone
+    create_blobbone(config.data_dir,
+                    join(config.package_dir, 'blobbone.py'))
 
 PLATFORM_OPTIONS['win32'] = dict(
     zipfile = None,
@@ -70,6 +58,7 @@ OPTIONS_PY2EXE = dict(
     bundle_files = 1,
     compressed = True,
     optimize = 2,
+    includes =['apaf.run.win32']
 #   install_requires=['py2exe>=0.6.9', 'pywin32'],
 )
 
@@ -90,7 +79,7 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
-    entry_points=dict(console_scripts=['apaf = apaf.run:main']),
+    entry_points=dict(console_scripts=['apaf = apaf.main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]
 )

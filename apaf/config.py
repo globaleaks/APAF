@@ -19,8 +19,8 @@ def _get_datadir():
     is avaible. Path checking order:
      (i)   /etc,
      (ii)  ~/.config,
-     (iii) environment variables,
-     (iv)  package path,
+     (iii)  package path,
+     (iv) environment variables,
      (v)   current directory.
     For more informations, see  issue #16.
     """
@@ -32,26 +32,43 @@ def _get_datadir():
     if os.path.exists(sysdir):
         return sysdir
 
-    bundledir = os.environ.get('RESOURCEPATH')
-    if bundledir:
-        return bundledir
-
     vanilladir = os.path.join(package_dir, '..', 'datadir')
     if os.path.exists(vanilladir):
         return vanilladir
 
-    try:
-        import pkg_resources as pkg
-        # eggdir =   ## XXX: the .egg directory.
-    except ImportError:
-        log.err('Unable to import setuptools')
+    bundledir = os.path.join(os.environ.get('RESOURCEPATH', ''), 'datadir')
+    if bundledir:
+        return bundledir
 
-    curdir = os.path.join('datadir', )
+#     try:
+#         import pkg_resources as pkg
+#         # eggdir =   ## XXX: the .egg directory.
+#     except ImportError:
+#         log.err('Unable to import setuptools')
+#
+    curdir = os.path.join(os.getcwd(), 'datadir', )
     if os.path.exists(curdir):
         return curdir
     else:
-        # import blobbone
+        import apaf.blobbone
         return curdir
+
+
+def _get_torbinary():
+    """
+    Attempts to retrieve tor executable, looking in the following order:
+    (i) binary kits : datadir/contrib/tor
+    (ii) emulate `which` command and looks inside $PATH
+    (iii) return a simple 'tor' and hope the environment recognises it.
+    """
+    bundle = os.path.join(binary_kits, 'tor')
+    if platform == 'win32': bundle += '.exe'
+    if os.path.exists(bundle): return bundle
+
+    for installdir in os.environ['PATH'].split(':'):
+        if 'tor' in os.listdir(installdir):
+            return os.path.join(installdir, 'tor')
+    return 'tor'
 
 
 appname = 'apaf'
@@ -63,9 +80,11 @@ conf_dir = os.path.join(data_dir, 'config')
 config_file = os.path.join(conf_dir, 'apaf.cfg')
 log_file = os.path.join(conf_dir, 'apaf.log')
 binary_kits = os.path.join(data_dir, 'contrib')
+tor_binary = _get_torbinary()
 tor_data = os.path.join(conf_dir, 'tordata')
 services_dir = os.path.join(data_dir, 'services')
 static_dir = os.path.join(services_dir, 'panel', 'static')
+drawable_dir = os.path.join(data_dir, 'drawable')
 
 # check for directory path
 if not os.path.exists(conf_dir):
@@ -95,9 +114,13 @@ class Config(object):
             with open(self.config_file, 'r') as cfg:
                 for key, value in (yaml.safe_load(cfg) or dict()).iteritems():
                     self[key] = value
+            # check to have loaded every value
+            if not list(self.vars) == list(self.defaults):
+                # log.err('Partial configuration file, restoring..')
+                self.reset()
 
     def __getitem__(self, name):
-            return self.vars[name]
+        return self.vars[name]
 
     def __setitem__(self, name, value):
         """
@@ -141,4 +164,5 @@ custom = Config(config_file=config_file,
                     services=['staticwebserver'],    # list of services to be started
                     passwd=sha256('None').hexdigest(),
                     cookie_secret=get_random_bytes(100),
+                    remote_login=True,
                 ))

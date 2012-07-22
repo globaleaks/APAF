@@ -29,13 +29,13 @@ echo `which python`
 easy_install pyobjc-core
 easy_install pyobjc
 
-pip install psutil py2app twisted six pygeoip ipaddr pyYAML
+pip install txtorcon py2app twisted pyYAML pyCrypto cyclone
 easy_install http://pypi.python.org/packages/source/z/zope.interface/zope.interface-4.0.0.tar.gz
 
 mkdir src
 cd src
 
-git clone https://github.com/mmaker/txtorcon.git
+git clone https://github.com/meejah/txtorcon.git
 pip install ./txtorcon
 
 #download tor browser to extract executable

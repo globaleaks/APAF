@@ -3,14 +3,11 @@
 The main file of the apaf.
 If assolves three tasks: start a tor instance, start the panel, start services.
 """
-import functools
 import os
 import os.path
 import sys
-import tempfile
 
-from twisted.internet import reactor, protocol
-from twisted.internet.endpoints import TCP4ServerEndpoint
+from twisted.internet import reactor
 from twisted.python import log
 import txtorcon
 
@@ -19,8 +16,6 @@ from apaf import core
 from apaf import config
 from apaf.panel import panel
 
-tor_binary = (os.path.join(config.binary_kits, 'tor') +
-              ('.exe' if config.platform == 'win32' else ''))
 
 def setup_complete(proto):
     """
@@ -69,6 +64,10 @@ def main(progress_updates=updates):
     torconfig.save()
 
     ## start tor. ##
-    return txtorcon.launch_tor(torconfig, reactor,
-                               progress_updates=progress_updates,
-                               tor_binary=tor_binary)
+    try:
+        return txtorcon.launch_tor(torconfig, reactor,
+                                   progress_updates=progress_updates,
+                                   tor_binary=config.tor_binary)
+    except OSError as exc:
+        print  >> sys.stderr, "Failing to launch tor executable (%s)" % ecx
+        sys.exit(1)  # return error status.

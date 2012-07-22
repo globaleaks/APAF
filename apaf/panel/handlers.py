@@ -1,9 +1,7 @@
 #-*- coding: UTF-8 -*-
 
-from twisted.internet import defer
-from twisted.python import log
 from txtorcon import torcontrolprotocol
-from cyclone import web, auth
+from cyclone import web
 from cyclone.escape import json_encode, json_decode
 
 import apaf
@@ -13,12 +11,6 @@ class PanelHandler(web.RequestHandler):
     """
     A simple RequestHandler with utils for the panel
     """
-    def get_current_user(self):
-        """
-        Return the current user authenticated.
-        """
-        user_json = self.get_secure_cookie("user")
-        return json_decode(user_json) if user_json else None
 
     def initialize(self, action=None):
         self.action = action
@@ -42,7 +34,14 @@ class PanelHandler(web.RequestHandler):
         return json_encode({'result':boolean})
 
     def get_current_user(self, passwd=None):
-        return (passwd or self.get_secure_cookie('user')) == config.custom['passwd']
+        """
+        Return the current user authenticated.
+        """
+        if passwd: return passwd == config.custom['passwd']
+        else: return any((
+            self.get_secure_cookie('user') == config.custom['passwd'],
+            self.request.remote_ip == '127.0.0.1',
+        ))
 
     def set_default_headers(self):
         """
@@ -86,9 +85,9 @@ class AuthHandler(PanelHandler):
         if self.action != 'login':
             raise web.HTTPError(404)
 
-        if self.request.remote_ip == '127.0.0.1':
-            self.set_secure_cookie(self._uid_cookie, config.custom['passwd'])
-            return self.write(self.result(True))
+        # if self.request.remote_ip == '127.0.0.1':
+        #     self.set_secure_cookie(self._uid_cookie, config.custom['passwd'])
+        #     return self.write(self.result(True))
 
         if not config.custom['remote_login']:
             raise web.HTTPAuthenticationRequired
@@ -109,7 +108,9 @@ class AuthHandler(PanelHandler):
             * GET /auth/logout
         """
         if self.action != 'logout':
-            raise web.HTTPAuthenticationRequired
+            raise web.HTTPAuthenticationRequired if not self.current_user \
+                  else web.HTTPError(404)
+
         #if not self.user:
         #    raise HTTPError(403)
         self.clear_cookie(self._uid_cookie)
@@ -119,6 +120,8 @@ class ConfigHandler(PanelHandler):
     """
     Controller for editing config.custom.
     """
+
+    @web.authenticated
     def get(self):
         """
         Process GET requests:
@@ -131,6 +134,7 @@ class ConfigHandler(PanelHandler):
         del ret['passwd']
         return self.write(json_encode(ret))
 
+    @web.authenticated
     def put(self):
         """
         Processes PUT requests:
@@ -140,6 +144,7 @@ class ConfigHandler(PanelHandler):
             return self.error('invalid query')
         self._process(json_decode(self.request.headers['Settings']))
 
+    @web.authenticated
     def post(self):
         """
         Processes POST requests:
@@ -220,6 +225,7 @@ class ServiceHandler(PanelHandler):
         else:
             self.finish(self.result(True))
 
+    @web.authenticated
     def get(self, service=None):
         """
         Processes GET requests:
@@ -241,8 +247,14 @@ class TorHandler(PanelHandler):
     """
     Return informations about the current tor status.
     """
+    allowed = (
+            'version', 'ns/all', 'status/bootstrap-phase',
+
+    )
+
     @web.asynchronous
-    def get(self, sp_keyword='status/...'):
+    @web.authenticated
+    def get(self, sp_keyword='status/bootstrap-phase'):
         """
         Processes GET requests:
             * /tor/<sp_keyword>
@@ -256,9 +268,10 @@ class TorHandler(PanelHandler):
 
         if not apaf.torctl:
             return self.finish(self.error('Tor is not started.'))
-
+        if not sp_keyword in self.allowed:
+            return self.finish(self.error('Invalid key %s') % sp_keyword)
         try:
-             apaf.torctl.get_info(sp_keyword).addCallback(
+            apaf.torctl.get_info(sp_keyword).addCallback(
                  lambda infos: self.finish(json_encode(infos)))
         except torcontrolprotocol.TorProtocolError as err:
             if err.code == 552:

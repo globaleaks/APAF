@@ -1,12 +1,13 @@
 from distutils.core import Command
 import subprocess
-import objc
 import os
 
-from Foundation import *
-from AppKit import *
-from AppKit import NSNotificationCenter
+import objc
+import AppKit
+import WebKit
+import Foundation
 from PyObjCTools import AppHelper
+from twisted.python import log
 
 import apaf
 from apaf import config
@@ -15,7 +16,7 @@ TorFinishedLoadNotification = 'TorFinishedLoadNotification'
 
 class OSXPatchCommand(Command):
     """
-    OSX specific patch command. ## XXX. needed or not just for lion?
+    OSX specific patch command.
     """
     description = "Patch for OS X 10.7 (lion) bug -> Python.framework not copied inside app bundle"
     user_options = []
@@ -44,7 +45,7 @@ class OSXPatchCommand(Command):
             os.system("chmod +x dist/%s.app/Contents/Resources/contrib/tor" % config.appname)
 
 
-class ApafAppWrapper(NSObject):
+class ApafAppWrapper(AppKit.NSObject):
     """
     Wrapper around the standard apaf runner;
     creates a new icon around the notification centre and controls the apaf.
@@ -55,37 +56,37 @@ class ApafAppWrapper(NSObject):
     reactor = None
     menuitem = None
 
-    def setMainFunction_andReactor_(self, func, reactor):
-        NSLog("set app")
-        self.runApaf = func
+    def setMainFunction_andReactor_(self, callback, reactor):
+        log.msg('setting up application')
         self.reactor = reactor
+        self.callback = callback
 
     def applicationDidFinishLaunching_(self, notification):
-        statusbar = NSStatusBar.systemStatusBar()
+        statusbar = AppKit.NSStatusBar.systemStatusBar()
         # Create the statusbar item
-        self.statusitem = statusbar.statusItemWithLength_(NSVariableStatusItemLength)
+        self.statusitem = statusbar.statusItemWithLength_(AppKit.NSVariableStatusItemLength)
         # set title
-        self.statusitem.setTitle_("apaf")
+        self.statusitem.setTitle_(config.appname)
         # Let it highlight upon clicking
         self.statusitem.setHighlightMode_(1)
         # Set tooltip
-        self.statusitem.setToolTip_('Anonymous Python Application Framework')
+        self.statusitem.setToolTip_(config.description)
         # set status image
-        path = NSBundle.mainBundle().pathForResource_ofType_("status_bar_icon", "png")
-        image = NSImage.alloc().initWithContentsOfFile_(path)
+        path = AppKit.NSBundle.mainBundle().pathForResource_ofType_("status_bar_icon", "png")
+        image = AppKit.NSImage.alloc().initWithContentsOfFile_(path)
         self.statusitem.setImage_(image)
 
         # Build menu
-        self.menu = NSMenu.alloc().init()
+        self.menu = AppKit.NSMenu.alloc().init()
         self.menu.setAutoenablesItems_(0)
 
-        self.menuitem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
+        self.menuitem = AppKit.NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 'Loading...', 'openAdmin:', '')
         self.menu.addItem_(self.menuitem)
 
         self.menuitem.setEnabled_(0)
         # Default event
-        quit = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
+        quit = AppKit.NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
         self.menu.addItem_(quit)
         # Bind it to the status item
         self.statusitem.setMenu_(self.menu)
@@ -93,10 +94,10 @@ class ApafAppWrapper(NSObject):
         # listen for completed notification
         sel = objc.selector(self.torHasLoaded, signature='v@:')
 
-        ns = NSNotificationCenter.defaultCenter()
+        ns = AppKit.NSNotificationCenter.defaultCenter()
         ns.addObserver_selector_name_object_(self, sel, TorFinishedLoadNotification, None)
 
-        self.runApaf()
+        self.callback()
 
     def torHasLoaded(self):
         self.menuitem.setTitle_("Open service in browser")
@@ -111,10 +112,45 @@ class ApafAppWrapper(NSObject):
         return True
 
     def openAdmin_(self, sender):
+        """
+        Check if apaf's window is already open, otherwise launch it.
+        XXX. should display also a dock icon.
+        """
+        embeed_browser()
+
+
+def embeed_browser(host=None):
+    """
+    Open a new window displaying a web page using WebKit.
+    :param host: hostname to view. if not set, uses panel configuration page.
+
+    """
+    app = AppKit.NSApplication.sharedApplication()
+    rect = Foundation.NSMakeRect(600,400,600,800)
+    win = AppKit.NSWindow.alloc()
+    win.initWithContentRect_styleMask_backing_defer_(
+            rect,
+            AppKit.NSTitledWindowMask |
+            AppKit.NSClosableWindowMask |
+            AppKit.NSResizableWindowMask |
+            AppKit.NSMiniaturizableWindowMask,
+            AppKit.NSBackingStoreBuffered,
+            False)
+    win.display()
+    win.orderFrontRegardless()
+
+    webview = WebKit.WebView.alloc()
+    webview.initWithFrame_(rect)
+
+    if not host:
         host = apaf.hiddenservices[0].tcp.getHost()
-        hostname= host.host if not host.host.startswith('0.0') else '127.0.0.1'
+        host = (host.host if not host.host.startswith('0.0') else '127.0.0.1',
+                host.port)
 
-        url = NSURL.URLWithString_(NSString.stringWithUTF8String_(
-            "http://%s:%s" % (hostname, host.port)))
-        NSWorkspace.sharedWorkspace().openURL_(url)
+    url = Foundation.NSURL.URLWithString_(Foundation.NSString.stringWithUTF8String_(
+        "http://%s:%s" % host))
+    req = Foundation.NSURLRequest.requestWithURL_(url)
+    webview.mainFrame().loadRequest_(req)
 
+    win.setContentView_(webview)
+    app.run()

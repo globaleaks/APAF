@@ -140,7 +140,7 @@ def start_services(torconfig):
     :param torconfig: an instance of txtorcon.TorConfig representing the
                       configuration file.
     """
-    for port, service in enumerate(config.custom['services']):
+    for service in config.custom['services']:
         # load service
         try:
             service_mod = imp.load_module(
