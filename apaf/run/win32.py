@@ -2,10 +2,13 @@
 The main file of the apaf on Windows.
 """
 
-from twisted.internet import _threadedselect
-_threadedselect.install()
+from twisted.internet import  win32eventreactor
+win32eventreactor.install()
 
 from twisted.internet import reactor
+import win32event
+
+
 from apaf.run import base
 from apaf.utils.win32_support import SysTrayIcon
 
@@ -16,4 +19,3 @@ def main():
 
 def start_apaf():
     base.main().addCallback(setup_complete).addErrback(base.setup_failed)
-    reactor.interleave(lambda: None)

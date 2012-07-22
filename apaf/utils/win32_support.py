@@ -4,6 +4,8 @@ import os.path
 import glob
 import sys
 import itertools
+
+from twisted.python import log
 import win32api
 import win32con
 import win32gui_struct
@@ -21,15 +23,16 @@ class SysTrayIcon(object):
     An object representing the system tray icon for apaf.
     """
 
-    def __init__(self, callback):
+    def __init__(self,  reactor, callback):
         self.icon = os.path.join(config.drawable_dir, 'systray.ico')
         self.hover_text = config.description
         self.window_class_name = config.appname
         self.default_menu_index=1
+        self.reactor = reactor
 
         self.menu_actions_by_id = dict()
-	    self._next_action_id = 0
-	    self.SPECIAL_ACTIONS = list()
+        self._next_action_id = 0
+        self.SPECIAL_ACTIONS = list()
         self.menu_options = self._add_ids_to_menu_options((
             ('Open Panel service in Browser', None, base.open_panel_browser),
             # services list submenu
@@ -71,14 +74,14 @@ class SysTrayIcon(object):
         self.notify_id = None
         self.refresh_icon()
 
-        win32gui.PumpMessages()
-
         ## finally start the reactor
         callback()
+        win32gui.PumpMessages()
+
 
     def _add_ids_to_menu_options(self, menu_options):
         result = []
-        for menu_option in menu_options:
+        for menu_option in reversed(menu_options):
             option_text, option_icon, option_action = menu_option
             if callable(option_action) or option_action in self.SPECIAL_ACTIONS:
                 self.menu_actions_by_id[self._next_action_id] = option_action
@@ -105,7 +108,7 @@ class SysTrayIcon(object):
                                        0,
                                        icon_flags)
         else:
-            print "Can't find icon file - using default."
+            log.msg('Can\'t find icon file - using default.')
             hicon = win32gui.LoadIcon(0, win32con.IDI_APPLICATION)
 
         if self.notify_id: message = win32gui.NIM_MODIFY
@@ -122,7 +125,6 @@ class SysTrayIcon(object):
         """
         Callback fired when quitting.
         """
-        print 'Bye, then.'
         win32gui.DestroyWindow(self.hwnd)
 
 
@@ -217,17 +219,3 @@ def non_string_iterable(obj):
     else:
         return not isinstance(obj, basestring)
 
-# Minimal self test. You'll need a bunch of ICO files in the current working
-# directory in order for this to work...
-if __name__ == '__main__':
-    import itertools, glob
-
-    icons = itertools.cycle(glob.glob('*.ico'))
-    hover_text = "SysTrayIcon.py Demo"
-
-    def switch_icon(sysTrayIcon):
-        sysTrayIcon.icon = icons.next()
-        sysTrayIcon.refresh_icon()
-
-
-    SysTrayIcon(hover_text, default_menu_index=1)
