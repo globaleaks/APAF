@@ -10,7 +10,7 @@ import win32event
 
 
 from apaf.run import base
-from apaf.utils.win32_support import SysTrayIcon
+from apaf.ui.win32 import SysTrayIcon
 
 setup_complete = base.setup_complete    # XXX: notfy the ui.
 
