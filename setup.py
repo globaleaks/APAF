@@ -69,10 +69,10 @@ if config.platform == 'linux2':
 
 
 ## manual page ##
-mandir = join(config.package_dir, '..', 'docs', 'build', 'man')
+mandir = join('docs', 'build', 'man')
 if os.path.exists(join(mandir, 'apaf.1')):
-    DATA_FILES.append((join('share', 'man', 'man1', 'apaf.1'),
-                       join(mandir, 'apaf.1')))
+    DATA_FILES.append((join('share', 'man', 'man1'),
+                       [join(mandir, 'apaf.1')]))
 
 setup(
     name=config.appname,
