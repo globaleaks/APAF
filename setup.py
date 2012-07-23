@@ -19,7 +19,7 @@ PLATFORM_OPTIONS = defaultdict(dict)
 if config.platform == 'darwin':
     import operator
     import py2app
-    from apaf.utils.osx_support import OSXPatchCommand
+    from apaf.ui.darwin import OSXPatchCommand
 
 else:
     OSXPatchCommand = None
@@ -66,6 +66,13 @@ OPTIONS_PY2EXE = dict(
 if config.platform == 'linux2':
     DATA_FILES = [(join('share', config.appname, dest), source)
                   for dest, source in DATA_FILES]
+
+
+## manual page ##
+mandir = join(config.package_dir, '..', 'docs', 'build', 'man')
+if os.path.exists(join(mandir, 'apaf.1')):
+    DATA_FILES.append((join('share', 'man', 'man1', 'apaf.1'),
+                       join(mandir, 'apaf.1')))
 
 setup(
     name=config.appname,
