@@ -1,7 +1,8 @@
 .DS_Store
 
 *.py[oc]
-.*.swp
+.*.sw[op]
+*.db
 
 _trial_temp/
 
