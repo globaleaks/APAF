@@ -5,7 +5,10 @@
 About APAF
 ===========
 
-APAF, aka Anonymous Python Application Framework, is a multi-platform *build system* framework and a *library* for developing Python/Twisted based server applications, exposed as Tor Hidden Service, easy to be installed and managed on multiple platforms (Windows, OSX, Debian) with a particular focus for desktop environments. 
+APAF, aka Anonymous Python Application Framework, is a multi-platform *build system*
+framework and a *library* for developing Python/Twisted based server applications,
+exposed as Tor Hidden Service, easy to be installed and managed on multiple platforms
+(Windows, OSX, Debian) with a particular focus for desktop environments.
 
 
 Metadata
@@ -22,7 +25,7 @@ Further informations:
         - project proposal  http://archives.seul.org/or/dev/Apr-2012/msg00031.html
         - status reports: http://archives.seul.org/or/dev/Jun-2012/msg00014.html
     * wikis and any other huge description of the apaf project
-    
+
 
 References
 ***********
@@ -34,16 +37,24 @@ References
 Features
 ********
 
-**APAF** is a python library based on **twisted** and **txtorcon**. It can be used for launching a standalone web application exposing itself via hidden service, or as server application.
+**APAF** is a python library based on **twisted** and **txtorcon**. It can be
+used for launching a standalone web application exposing itself via hidden
+service, or as server application.
 
 **Multiplatform**. APAF is tested on `Windows XP`, `Ubuntu 12.04` and `Mac OSX`.
 
-**Portable**. Apart from the python package itself, APAF can be built as ``.app``, using `py2app <http://svn.pythonmac.org/py2app/py2app/trunk/doc/index.html>`_,  and ``.exe``, using `py2exe <http://www.py2exe.org>`_ for windows. 
+**Portable**. Apart from the python package itself, APAF can be built as ``.app``,
+using `py2app <http://svn.pythonmac.org/py2app/py2app/trunk/doc/index.html>`_,  and
+``.exe``, using `py2exe <http://www.py2exe.org>`_ for windows.
 
-**Easy**. exposing your application with APAF is as simple as writing a class and 3 clicks (ehi, I am still working on this). A good starting point may be the ``staticfileserver.py`` example.
+**Easy**. exposing your application with APAF is as simple as writing a class
+and 3 clicks (ehi, I am still working on this). A good starting point may be
+the ``staticfileserver.py`` example.
 
 
-**Secure** we *will* guarantee that every outbounding connection will be through tor, and that your application will be not easily recognizable. See the Threat Model page for more informations.
+**Secure** we *will* guarantee that every outbounding connection will be through
+tor, and that your application will be not easily recognizable. See the Threat
+Model page for more informations.
 
 
 Installation
@@ -72,10 +83,10 @@ Follows below the table of libraries.
 
 .. toctree::
    :maxdepth: 2
-    quel
-    porco di
-    dio
-    
+
+   apaf-package
+
+
 
 Indices and tables
 ==================
