@@ -1,4 +1,5 @@
 import os
+import os.path
 import sys
 
 # Environment setup for your Django project files:
@@ -16,29 +17,6 @@ import blog.settings
 PORT = 8000
 
 
-
-def wsgi_resource():
-    pool = threadpool.ThreadPool()
-    pool.start()
-    # Allow Ctrl-C to get you out cleanly:
-    reactor.addSystemEventTrigger('after', 'shutdown', pool.stop)
-    wsgi_resource = wsgi.WSGIResource(reactor, pool, WSGIHandler())
-    return wsgi_resource
-
-
-class Root(resource.Resource):
-
-    def __init__(self, wsgi_resource):
-        resource.Resource.__init__(self)
-        self.wsgi_resource = wsgi_resource
-
-    def getChild(self, path, request):
-        print path, request.prepath, request.postpath
-        path0 = request.prepath.pop(0)
-        request.postpath.insert(0, path0)
-        return self.wsgi_resource
-
-
 class DjangoResource(resource.Resource):
     def __init__(self):
         resource.Resource.__init__(self)
@@ -53,10 +31,30 @@ class DjangoResource(resource.Resource):
         self.putChild('static', staticsrc)
 
     def getChild(self, path, request):
-        print path, request.prepath, request.postpath
-        path0 = request.prepath.pop(0)
-        request.postpath.insert(0, path0)
+        """
+        Forward everything to the relative wsgi resource,
+        and re-build the request with previously processed url.
+        """
+        request.postpath.insert(0, *request.prepath)
         return self.wsgi_resource
+
+class ServiceDescriptor(Service):
+    name = 'zinniablog'
+    desc = 'A simple django blog created using zinnia'
+    author = apaf.__author__
+    port = 80
+    icon = os.path.join(blog.settings.STATIC_ROOT,
+                        'zinnia', 'img', 'favicon.ico')
+
+    config = config.Config(
+            config_file=os.path.join(config.conf_dir, static.cfg),
+            defaults={}
+    )
+
+    def get_factory(self):
+       self.resource = DjangoResource()
+       return server.site(self.resource)
+
 
 
 # Twisted Application Framework setup:
