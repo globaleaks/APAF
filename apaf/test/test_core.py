@@ -18,7 +18,6 @@ class TestService(unittest.TestCase):
         Some fucntions MUST be reimplemented from the service.
         """
         self.assertRaises(NotImplementedError, self.service.get_factory)
-        self.assertRaises(NotImplementedError, self.service.failure, None)
 
     def test_newport(self):
         """

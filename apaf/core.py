@@ -95,7 +95,7 @@ class Service(object):
         raise NotImplementedError
 
     def failure(self, exc):
-        raise NotImplementedError
+        log.err(str(exc))
 
     def stop(self):
         return self.tcp.stopListening()
