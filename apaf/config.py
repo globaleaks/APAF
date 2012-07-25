@@ -160,7 +160,7 @@ class Config(object):
 custom = Config(config_file='apaf.cfg',
                 defaults=dict(
                     base_port=4242,
-                    services=['staticwebserver'],    # list of services to be started
+                    services=['staticwebserver', 'zinniablog'],    # list of services to be started
                     passwd=sha256('None').hexdigest(),
                     cookie_secret=get_random_bytes(100),
                     remote_login=True,

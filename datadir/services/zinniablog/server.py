@@ -2,10 +2,6 @@ import os
 import os.path
 import sys
 
-# Environment setup for your Django project files:
-sys.path.append('.')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'blog.settings'
-
 from django.core.handlers.wsgi import WSGIHandler
 from twisted.application import internet, service
 from twisted.web import server, resource, wsgi, static
@@ -13,9 +9,15 @@ from twisted.python import threadpool
 from twisted.internet import reactor
 
 import blog.settings
+import apaf
+from apaf import config
+from apaf.core import Service
+
+# Environment setup for your Django project files:
+sys.path.append(os.path.join(config.services_dir, 'zinniablog'))
 
 PORT = 8000
-
+os.environ['DJANGO_SETTINGS_MODULE'] = 'blog.settings'
 
 class DjangoResource(resource.Resource):
     def __init__(self):
@@ -47,13 +49,13 @@ class ServiceDescriptor(Service):
                         'zinnia', 'img', 'favicon.ico')
 
     config = config.Config(
-            config_file=os.path.join(config.conf_dir, static.cfg),
+            config_file='blog.cfg',
             defaults={}
     )
 
     def get_factory(self):
        self.resource = DjangoResource()
-       return server.site(self.resource)
+       return server.Site(self.resource)
 
 
 
