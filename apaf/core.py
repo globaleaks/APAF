@@ -2,6 +2,8 @@
 Services logic.
 """
 import imp
+import sys
+import traceback
 import os.path
 
 from twisted.python import log
@@ -148,6 +150,7 @@ def start_services(torconfig):
         except ImportError:
             return log.err('Cannot import service %s' % service)
         except Exception as e:
+            traceback.print_tb(sys.exc_info()[2])
             return log.err('Error loading service %s -\n %s' % (service, e))
 
         service = getattr(service_mod, 'ServiceDescriptor', None)
