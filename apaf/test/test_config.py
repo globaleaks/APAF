@@ -1,10 +1,11 @@
 import unittest
 import os
+import os.path
 
 from apaf import config
 
 ## change default configutation file
-
+config_file = os.path.join(config.conf_dir, 'apaf.cfg')
 
 class TestConfig(unittest.TestCase):
 
@@ -20,16 +21,16 @@ class TestConfig(unittest.TestCase):
         """
         self.assertIsNotNone(self.fetch('platform'))
         self.assertIsNotNone(self.fetch('binary_kits'))
-        self.assertIsNotNone(self.fetch('config_file'))
+        self.assertIsNotNone(self.fetch('conf_dir'))
 
         self.assertIsNone(self.fetch('foobarbaz'))
 
     def test_commit(self):
         config.custom.commit()
-        self.assertTrue(os.path.exists(config.config_file))
+        self.assertTrue(os.path.exists(config_file))
         config.custom['services'] = []
         config.custom.commit()
-        self.assertTrue(os.path.exists(config.config_file))
+        self.assertTrue(os.path.exists(config_file))
         self.assertEqual(config.custom['services'], [])
 
 

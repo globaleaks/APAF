@@ -77,7 +77,6 @@ package_dir = os.path.abspath(os.path.dirname(__file__))
 platform = sys.platform
 data_dir = _get_datadir()
 conf_dir = os.path.join(data_dir, 'config')
-config_file = os.path.join(conf_dir, 'apaf.cfg')
 log_file = os.path.join(conf_dir, 'apaf.log')
 binary_kits = os.path.join(data_dir, 'contrib')
 tor_binary = _get_torbinary()
@@ -105,7 +104,7 @@ class Config(object):
         them.
         """
         self.defaults = defaults
-        self.config_file = config_file
+        self.config_file = os.path.join(conf_dir, config_file)
 
         if not os.path.exists(self.config_file):
             self.reset()
@@ -158,7 +157,7 @@ class Config(object):
         self.commit()
 
 
-custom = Config(config_file=config_file,
+custom = Config(config_file='apaf.cfg',
                 defaults=dict(
                     base_port=4242,
                     services=['staticwebserver'],    # list of services to be started
