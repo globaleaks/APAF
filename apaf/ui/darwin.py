@@ -51,8 +51,6 @@ class ApafAppWrapper(AppKit.NSObject):
     creates a new icon around the notification centre and controls the apaf.
     """
 
-    statusbar = None
-    runApaf = None
     reactor = None
     menuitem = None
 
