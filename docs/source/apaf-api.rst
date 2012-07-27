@@ -16,4 +16,7 @@ Configuration helper
     .. autoclass :: apaf.config.Config
 
 
+Testing decorator
+-----------------
 
+    .. py:module :: apaf.testing
