@@ -45,9 +45,12 @@ class PanelService(Service):
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
 
-        return web.Application(self.handlers, debug=True,
+        return web.Application(self.handlers,
+                               debug=True,
                                cookie_secret=config.custom['cookie_secret'],
-                               login_url='/')
+                               login_url='/',
+                               xsrf_cookies=True,
+        )
 
 def start_panel(torconfig):
     """

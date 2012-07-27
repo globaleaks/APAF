@@ -23,6 +23,10 @@ class TestPanel(unittest.TestCase):
         """
         torconfig = txtorcon.TorConfig()
         self.service = panel.PanelService()
+
+        # for simplicity, disable xrcf cookies
+        self.service.factory.settings['xsrf_cookies'] = False
+
         add_service(torconfig, self.service, 6660)
         self.addCleanup(self.service.tcp.loseConnection)
 
