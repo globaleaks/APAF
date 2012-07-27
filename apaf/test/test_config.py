@@ -1,11 +1,12 @@
 import unittest
 import os
 import os.path
+import tempfile
 
 from apaf import config
 
 ## change default configutation file
-config_file = os.path.join(config.conf_dir, 'apaf.cfg')
+config.conf_dir = tempfile.mkdtemp()
 
 class TestConfig(unittest.TestCase):
 
@@ -27,10 +28,10 @@ class TestConfig(unittest.TestCase):
 
     def test_commit(self):
         config.custom.commit()
-        self.assertTrue(os.path.exists(config_file))
+        self.assertTrue(os.path.exists(config.custom.config_file))
         config.custom['services'] = []
         config.custom.commit()
-        self.assertTrue(os.path.exists(config_file))
+        self.assertTrue(os.path.exists(config.custom.config_file))
         self.assertEqual(config.custom['services'], [])
 
 
