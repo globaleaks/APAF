@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}
-APAF - Configuration
-{% end %}
+{% block title %} Configuration {% end %}
 
 {% block body %}
-<div class="page-header"> APAF configuration </div>
+<div class="page-header">
+    <p> This is the web configuration page of APAF.
+        Feel free to edit this configuration, but be careful when changing
+        red-marked items, they could harm your security! </p>
+</div>
+<div class="span3">
+
+</div>
+
+{% end %}
+
+
+{% block script %}
+<script>
+    document.ready(function () {
+        $get('config', function (data) {
+            console.log(data);
+
+    });
+</script>
 {% end %}

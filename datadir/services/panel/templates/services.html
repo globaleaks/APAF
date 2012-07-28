@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+
 {% block title %}
 APAF - Services Page
 {% end %}
@@ -27,10 +29,9 @@ APAF - Services Page
 
 
 {% block script %}
-<script src="js/jquery-1.7.2.js"></script>
 <script>
   $(document).ready(function() {
-      $.get('service', function(data) {
+      $.get('services', function(data) {
           services = eval( '(' + data + ')' );
           console.log(services);
           for (var i=0; i != services.length; i++)
