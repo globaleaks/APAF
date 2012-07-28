@@ -20,24 +20,40 @@ class PanelService(Service):
     port = 80
     icon = None
 
+    static_dir = os.path.join(config.services_dir, 'panel', 'static')
+    templates_dir = os.path.join(config.services_dir, 'panel', 'templates')
+
     _paneldir = os.path.join(config.services_dir, 'panel')
     handlers = [
+        ## REST API ##
+        # services informations
         (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
         (r'/services/(.*)/stop', handlers.ServiceHandler, {'action':'stop'}),
         (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
         (r'/services', handlers.ServiceHandler),
-
+        # authentication
         (r'/auth/login', handlers.AuthHandler, {'action':'login'}),
         (r'/auth/logout', handlers.AuthHandler, {'action':'logout'}),
-
+        # configuration
         (r'/config', handlers.ConfigHandler),
-
+        # tor controlport
         (r'/tor', handlers.TorHandler),
         (r'/tor/(.*)', handlers.TorHandler),
 
         (r'/', handlers.IndexHandler),
 
-        #(r'/(.*)', web.StaticFileHandler, {'path':config.static_dir}),
+        # Legacy html
+        (r'/index.html', handlers.render('index.html')),
+        (r'/services.html', handlers.render('services.html')),
+        (r'/tor.html', handlers.render('tor.html')),
+        (r'/config.html', handlers.render('config.html')),
+        (r'/about.html', handlers.render('about.html')),
+
+        # JS Application
+        (r'/app.html', handlers.render('index.html')),
+
+        ## STATIC FILES ##
+        (r'/(.*)', web.StaticFileHandler, {'path':static_dir}),
     ]
 
     def get_factory(self):
@@ -50,6 +66,7 @@ class PanelService(Service):
                                cookie_secret=config.custom['cookie_secret'],
                                login_url='/',
                                xsrf_cookies=True,
+                               template_path = self.templates_dir,
         )
 
 def start_panel(torconfig):

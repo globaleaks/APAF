@@ -55,11 +55,23 @@ class IndexHandler(PanelHandler):
         """
         Process GET request:
             * /
-        Returns a simple hello world message.
         """
         self.set_header('Content-Type', 'text/plain')
         self.finish('Hello world')
 
+def render(page, _handler_name=None, **args):
+    """
+    Simple helper function for returning a web.RequestHandler page.
+    :param page: path for html page
+    :param _handler_name: classname for the handler (useful in debugging)
+    :param args: arguments for html
+    """
+    def get(self):
+        self.render(page, **args)
+
+    return type(_handler_name or 'Handler_'+page,
+                (web.RequestHandler, ),
+                {'get': get})
 
 class AuthHandler(PanelHandler):
     """

@@ -6,6 +6,7 @@ from twisted.internet import reactor
 from cyclone import web
 
 from apaf import config
+from apaf.panel import panel
 
 class MockApplication(web.Application):
     def __init__(self):
@@ -14,7 +15,7 @@ class MockApplication(web.Application):
         ]
         settings = dict(
                 debug=True,
-                template_path=config.static_dir,
+                template_path=panel.PanelService.static_dir,
         )
         web.Application.__init__(self, handlers, **settings)
 

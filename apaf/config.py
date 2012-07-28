@@ -82,7 +82,6 @@ binary_kits = os.path.join(data_dir, 'contrib')
 tor_binary = _get_torbinary()
 tor_data = os.path.join(conf_dir, 'tordata')
 services_dir = os.path.join(data_dir, 'services')
-static_dir = os.path.join(services_dir, 'panel', 'static')
 drawable_dir = os.path.join(data_dir, 'drawable')
 
 # check for directory path
