@@ -4,18 +4,26 @@
 
 {% block body %}
 <div class="page-header">
-    <p> This is the web configuration page of APAF.
+    <h4> This is the web configuration page of APAF.
         Feel free to edit this configuration, but be careful when changing
-        red-marked items, they could harm your security! </p>
+        red-marked items, they could harm your security! </h4>
 </div>
-<div class="span3">
-
+<div class="row">
+    <ul class="nav nav-tabs nav-stacked">
+        {% for name, entry in entries.iteritems() %}
+        <li> <div>
+            {{ name }} <input type={{ entry['type'] }}
+                              value={{ entry['value'] }}>
+        </div></li>
+        {% end %}
+    </ul>
+    <button type="submit" onclick=> Submit </button>
 </div>
 
 {% end %}
 
 
-{% block script %}
+<!--
 <script>
     document.ready(function () {
         $get('config', function (data) {
@@ -23,4 +31,4 @@
 
     });
 </script>
-{% end %}
+-->

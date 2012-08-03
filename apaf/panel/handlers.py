@@ -6,6 +6,7 @@ from cyclone.escape import json_encode, json_decode
 
 import apaf
 from apaf import config
+from apaf.panel import controllers
 
 class PanelHandler(web.RequestHandler):
     """
@@ -58,19 +59,6 @@ class IndexHandler(PanelHandler):
         """
         self.set_header('Content-Type', 'text/plain')
         self.finish('Hello world')
-
-def render(page, **args):
-    """
-    Simple helper function for returning a web.RequestHandler page.
-    :param page: path for html page
-    :param _handler_name: classname for the handler (useful in debugging)
-    :param args: arguments for html
-    """
-    def get(self):
-        self.render(page, **args)
-
-    return type('Handler_'+page, (web.RequestHandler,),
-                {'get': get})
 
 
 class AuthHandler(PanelHandler):
@@ -132,6 +120,7 @@ class ConfigHandler(PanelHandler):
     """
     Controller for editing config.custom.
     """
+    controller = controllers.ConfigCtl()
 
     @web.authenticated
     def get(self):
@@ -141,10 +130,7 @@ class ConfigHandler(PanelHandler):
         Return a dictionary item:value for each item configurable from the
         panel.
         """
-        ret = dict(config.custom)
-        del ret['cookie_secret']
-        del ret['passwd']
-        return self.write(json_encode(ret))
+        return self.write(json_encode(controller.get()))
 
     @web.authenticated
     def put(self):
@@ -154,7 +140,11 @@ class ConfigHandler(PanelHandler):
         """
         if not self.request.headers.get('Settings'):
             return self.error('invalid query')
-        self._process(json_decode(self.request.headers['Settings']))
+        try:
+            self.result(controller.set(
+                json_decode(self.request.headers['Settings'])))
+        except ValueError as exc:
+            return self.error(exc)
 
     @web.authenticated
     def post(self):
@@ -168,24 +158,10 @@ class ConfigHandler(PanelHandler):
         """
         if not self.request.body:
             return self.error('invalid query')
-        self._process(json_decode(self.request.body))
-
-
-    def _process(self, settings):
-        """
-        Processes a dictionary key:value, and put it on the configuration file.
-        """
-        if not all(x in config.custom for x in settings):
-            return self.write(self.error('invalid config file'))
-
         try:
-            for key, value in settings.iteritems():
-                config.custom[key] = value
-            self.write(self.result(config.custom.commit()))
-        except KeyError as err:
-            self.write(self.error(err))
-        except TypeError as err:
-            self.write(self.error(err))
+            self.write(json_decode(self.request.body))
+        except ValueError as exc:
+            return self.error(exc)
 
 
 class ServiceHandler(PanelHandler):
@@ -290,3 +266,54 @@ class TorHandler(PanelHandler):
                 raise web.HTTPError(404)
             else:
                 self.finish(self.error('%s (code %d)' % (err.text, err.code)))
+
+
+### Render
+def render(page, **args):
+    """
+    Simple helper function for returning a web.RequestHandler page.
+    :param page: path for html page
+    :param _handler_name: classname for the handler (useful in debugging)
+    :param args: arguments for html
+    """
+    def get(self):
+        self.render(page, **args)
+
+    return type('Handler_'+page, (web.RequestHandler,),
+                {'get': get})
+
+def render_with_controller(page, controller, *args, **kwargs):
+    """
+    Simple factory function for rendering html pages.
+    :param page: path for html page.
+    :param _handler_name: classname for the handler (useful in debugging)
+    :param *args, **kwargs: arguments to the controller.
+    :ret: a web.RequestHandler object.
+    """
+    controller = controller()
+    def get(self):
+        return self.render(page, **controller.get(*args, **kwargs))
+
+    return type('Handler_'+page, (web.RequestHandler, ),
+                {'get': get})
+
+
+
+class ConfigHtmlHandler(web.RequestHandler):
+    controller = controllers.ConfigCtl()
+
+    def parse_type(self, var):
+        if var in (True, False, None):
+            return 'checkbox'
+        elif hasattr(var, 'open') and hasattr(var, 'close'):
+            return 'file'
+        else:
+            return 'text'
+
+    def get(self):
+        return self.render(
+               'config.html',
+               entries=dict((key, {'value':value, 'type':self.parse_type(value)}) for
+                             key, value in self.controller.get().iteritems())
+        )
+

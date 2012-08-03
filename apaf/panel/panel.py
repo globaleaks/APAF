@@ -13,7 +13,9 @@ import txtorcon
 import apaf
 from apaf.core import Service, add_service
 from apaf import config
-from apaf.panel import handlers
+from apaf.panel import handlers, controllers
+
+
 
 class PanelService(Service):
     name = 'panel'
@@ -25,7 +27,7 @@ class PanelService(Service):
     templates_dir = os.path.join(config.services_dir, 'panel', 'templates')
 
     _paneldir = os.path.join(config.services_dir, 'panel')
-    handlers = [
+    urls = [
         ## REST API ##
         # services informations
         (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
@@ -45,10 +47,10 @@ class PanelService(Service):
 
         # Legacy html
         (r'/index.html', handlers.render('index.html')),
-        (r'/services.html', handlers.render('services.html',
-                                            services=apaf.hiddenservices)),
+        (r'/services.html',
+            handlers.render('services.html', services=apaf.hiddenservices)),
         (r'/tor.html', handlers.render('tor.html')),
-        (r'/config.html', handlers.render('config.html')),
+        (r'/config.html', handlers.ConfigHtmlHandler),
         (r'/about.html', handlers.render('about.html')),
         (r'/login.html', handlers.render('login.html')),
 
@@ -64,7 +66,7 @@ class PanelService(Service):
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
 
-        return web.Application(self.handlers,
+        return web.Application(self.urls,
                                debug=True,
                                cookie_secret=config.custom['cookie_secret'],
                                login_url='/',
@@ -88,4 +90,3 @@ if __name__ == '__main__':
     log.startLogging(sys.stdout)
     start_panel(txtorcon.TorConfig())
     reactor.run()
-

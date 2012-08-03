@@ -10,7 +10,16 @@
 
 <!-- Head -->
 <div class="page-header">
-    <h2>This page  shows some informations about the current tor status.</h2>
+    <h4>This page  shows some informations about the current tor status.</h4>
+
+    <div class="row">
+        <div class="span8">
+        Tor version: <code>{{ version }}</code>
+        Bootstrap:   <code>{{ bootstrap }}</code>
+        </div>
+        <button class="btn" href="http://check.torproject.org">
+            Check by yourself!
+        </button>
 </div>
 
 {% end %}}
