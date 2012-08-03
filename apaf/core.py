@@ -22,7 +22,7 @@ class IService(Interface):
     name = Attribute('Name of the hidden service')
     desc = Attribute('A brief description of the service.')
     author = Attribute('The author of the service')
-    port = Attribute('the port og which the service wants to be exposed')
+    port = Attribute('Port on which the service wants to be exposed')
     icon = Attribute('The service logo')
 
     hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
@@ -84,13 +84,22 @@ class Service(object):
     def url(self):
         """
         Return the hidden service url on which the service can be reached.
+        :ret: the hidden service name, if any. None otherwise.
         """
-        return self.hs.hostname
+        return self.hs.hostname if self.active else None
+
+    @property
+    def active(self):
+        """
+        :ret: Return True if the service is up and running, false otherwise.
+        """
+        return bool(self.hs)    # XXX. change with somethin more interesting.
 
     @property
     def factory(self):
         if self._factory is None:
             self._factory = self.get_factory()
+            # XXX. overwrite __repr__ for more debugging informations
         return self._factory
 
     def get_factory(self):
@@ -119,7 +128,7 @@ def new_port():
 def add_service(torconfig, service, port=None):
     """
     Create a new hiddenservice and adds it to the `hiddenservices` list.
-    : param service : the service to be run.
+    :param service: the service to be run.
     """
     # picks a random port until it finds one avaible.
     while not service.tcp:
