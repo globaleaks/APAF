@@ -11,7 +11,6 @@ APAF - Services Page
    <p>This list shows the list of services with a small description of what
       they are doing nad which hidden service they are running on.</p>
     <table class="table table-striped" href='#' id='hstable'>
-      <thead>
         <tr>
           <th>#</th>
           <th>Name</th>
@@ -19,16 +18,22 @@ APAF - Services Page
           <th>Hidden Service Url</th>
           <th>Active</th>
        </tr>
-     </thead>
-     <tbody>
-     </tbody>
+         {% for i, service in enumerate(services) %}
+         <tr>
+             <td> {{ i }}              </td>
+             <td> {{ service.name }}   </td>
+             <td> {{ service.desc }}   </td>
+             <td> {{ service.url }}    </td>
+             <td> {{ service.active }} </td>
+         </tr>
+         {% end %}
    </table>
 
 </div> <!-- /container -->
 {% end %}
 
 
-{% block script %}
+<!--
 <script>
   $(document).ready(function() {
       $.get('services', function(data) {
@@ -45,4 +50,5 @@ APAF - Services Page
   }
   );
 </script>
-{% end %}
+-->
+

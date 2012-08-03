@@ -10,6 +10,7 @@ from twisted.python import log
 from cyclone import web
 import txtorcon
 
+import apaf
 from apaf.core import Service, add_service
 from apaf import config
 from apaf.panel import handlers
@@ -44,10 +45,12 @@ class PanelService(Service):
 
         # Legacy html
         (r'/index.html', handlers.render('index.html')),
-        (r'/services.html', handlers.render('services.html')),
+        (r'/services.html', handlers.render('services.html',
+                                            services=apaf.hiddenservices)),
         (r'/tor.html', handlers.render('tor.html')),
         (r'/config.html', handlers.render('config.html')),
         (r'/about.html', handlers.render('about.html')),
+        (r'/login.html', handlers.render('login.html')),
 
         # JS Application
         (r'/app.html', handlers.render('index.html')),
