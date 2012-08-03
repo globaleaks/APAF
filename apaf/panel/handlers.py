@@ -197,7 +197,7 @@ class ServiceHandler(PanelHandler):
         Return a dictionary service-name:service-class of all instantiated
         services.
         """
-        return {service.name:service for service in apaf.hiddenservices}
+        return dict((service.name, service) for service in apaf.hiddenservices)
 
    # cache decorator here.
     def _get_service(self, name):
@@ -214,7 +214,7 @@ class ServiceHandler(PanelHandler):
         which url is running on.
         """
         keys = ['name', 'desc', 'url']
-        return {name:getattr(service, name, None) for name in keys}
+        return dict((name, getattr(service, name, None)) for name in keys)
 
     def start(self, service):
         """
