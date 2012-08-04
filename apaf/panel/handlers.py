@@ -241,19 +241,15 @@ class TorHandler(PanelHandler):
 
         In case tor is not yet started, return a error message in JSON format.
         """
-
-        if not apaf.torctl:
-            return self.finish(self.error('Tor is not started.'))
-        if not sp_keyword in self.allowed:
-            return self.finish(self.error('Invalid key %s') % sp_keyword)
         try:
-            apaf.torctl.get_info(sp_keyword).addCallback(
+            self.controller.get(sp_keyword).addCallback(
                     lambda infos: self.finish(json_encode(infos)))
-        except torcontrolprotocol.TorProtocolError as err:
-            if err.code == 552:
-                raise web.HTTPError(404)
-            else:
-                self.finish(self.error('%s (code %d)' % (err.text, err.code)))
+        except ValueError:
+            raise web.HTTPError(404)
+        except KeyError as exc:
+            self.finish(self.error(exc))
+        except RuntimeError as exc:
+            return self.finish(self.error(exc))
 
 
 ### Render

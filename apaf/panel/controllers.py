@@ -13,11 +13,21 @@ from apaf import config
 class TorCtl(object):
     allowed = (
             'version', 'ns/all', 'status/bootstrap-phase',
-
     )
 
-    def get(self, name):
-        raise NotImplementedError
+    def get(self, sp_keyword):
+        if not apaf.torctl:
+            raise RuntimeError('Tor is not yet started')
+
+        if sp_keyword not in self.allowed:
+            raise ValueError
+        try:
+            apaf.torctl.get_info(sp_keyword)
+        except torcontrolprotocol.TorProtocolError as err:
+            if err.code == 552:
+                raise ValueError
+            else:
+                raise KeyError('%s (code %d)' % (err.text, err.code))
 
 
 class ConfigCtl(object):
