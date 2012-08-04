@@ -100,7 +100,7 @@ class TestConfig(TestPanel):
           headers={'settings': json_encode(dict(base_port='a string'))})
     def test_put_config_invalid_value(self, response):
         self.assertTrue(response)
-        self.assertIn('error', response)
+        self.assertEqual(json_decode(response), {'result':False})
 
 
 class TestAuth(TestPanel):

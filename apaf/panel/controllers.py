@@ -7,9 +7,10 @@ Panel Controllers:
     #. ```get(self, name[s])``` => retriving items, should return a
                                    dictionary-like object
 """
+import apaf
 from apaf import config
 
-class TorCtlController(object):
+class TorCtl(object):
     allowed = (
             'version', 'ns/all', 'status/bootstrap-phase',
 
@@ -35,9 +36,46 @@ class ConfigCtl(object):
             raise ValueError('Invalid configuration parameters')
 
         try:
-            for key, value in settings.iteritems():
+            for key, value in args.iteritems():
                 config.custom[key] = value
             return True
-        except KeyError or TypeError:
+        except KeyError:
             return False
+        except TypeError:
+            return False
+
+
+class ServicesCtl(object):
+    keys = ['name', 'desc', 'url']
+
+    @property
+    def services(self):
+        """
+        Return a dictionary service-name:service-class of all instantiated
+        services.
+        """
+        return dict((service.name, service) for service in apaf.hiddenservices)
+
+   # cache decorator here.
+    def _get_service(self, name):
+        if not name in self.services:
+            raise ValueError('Not found')
+        else:
+            return self.services[name]
+
+    def get(self, service):
+        if not service:
+            return self.services.keys()
+        else:
+            return dict((name, getattr(service, name, None)) for name in self.keys)
+
+    def set(self, service, state):
+        service = self._get_service(service)
+        if service.name == 'panel': ##panel.PanelService.name:
+            return False
+
+        if state is False:
+            return service.stop()
+        if state is True:
+            return service.start()
 

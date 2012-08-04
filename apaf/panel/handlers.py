@@ -1,6 +1,8 @@
 #-*- coding: UTF-8 -*-
 
 from txtorcon import torcontrolprotocol
+from twisted.internet import defer
+from twisted.python import failure
 from cyclone import web
 from cyclone.escape import json_encode, json_decode
 
@@ -49,6 +51,9 @@ class PanelHandler(web.RequestHandler):
         Panel API is performed entirely via json calls.
         """
         self.set_header('Content-Type', 'application/json')
+
+    def finish_json(self, infos):
+        return self.finish(json_encode(infos))
 
 
 class IndexHandler(PanelHandler):
@@ -118,7 +123,7 @@ class AuthHandler(PanelHandler):
 
 class ConfigHandler(PanelHandler):
     """
-    Controller for editing config.custom.
+    Handler for editing config.custom.
     """
     controller = controllers.ConfigCtl()
 
@@ -130,7 +135,7 @@ class ConfigHandler(PanelHandler):
         Return a dictionary item:value for each item configurable from the
         panel.
         """
-        return self.write(json_encode(controller.get()))
+        return self.write(json_encode(self.controller.get()))
 
     @web.authenticated
     def put(self):
@@ -141,10 +146,10 @@ class ConfigHandler(PanelHandler):
         if not self.request.headers.get('Settings'):
             return self.error('invalid query')
         try:
-            self.result(controller.set(
-                json_decode(self.request.headers['Settings'])))
+            self.write(self.result(self.controller.set(
+                json_decode(self.request.headers['Settings']))))
         except ValueError as exc:
-            return self.error(exc)
+            return self.write(self.error(exc))
 
     @web.authenticated
     def post(self):
@@ -166,21 +171,7 @@ class ConfigHandler(PanelHandler):
 
 class ServiceHandler(PanelHandler):
     _actions = ['state', 'start', 'stop']
-
-    @property
-    def services(self):
-        """
-        Return a dictionary service-name:service-class of all instantiated
-        services.
-        """
-        return dict((service.name, service) for service in apaf.hiddenservices)
-
-   # cache decorator here.
-    def _get_service(self, name):
-        if not name in self.services:
-            raise web.HTTPError(404)
-        else:
-            return self.services[name]
+    controller = controllers.ServicesCtl()
 
     def state(self, service):
         """
@@ -189,8 +180,7 @@ class ServiceHandler(PanelHandler):
         Return a dictionary containig a summary of what the service is and on
         which url is running on.
         """
-        keys = ['name', 'desc', 'url']
-        return dict((name, getattr(service, name, None)) for name in keys)
+        return json_encode(self.controller.get(service))
 
     def start(self, service):
         """
@@ -198,21 +188,20 @@ class ServiceHandler(PanelHandler):
             * /services/<service>/start
         """
 
-    @web.asynchronous
+    @defer.inlineCallbacks
     def stop(self, service):
         """
         Process GET request:
             * /services/<service>/stop
         """
-        if service.name == 'panel':    # xxx. PanelService.name
-            self.finish(self.result(False))
+        try:
+            ret = yield self.controller.set(service, False)
+        except ValueError:
+            raise web.HTTPError(404)
 
-        stop = service.stop()
-        if stop:
-            stop.addCallback(self.finish, self.result(True))
-        else:
-            self.finish(self.result(True))
+        defer.returnValue(self.result(ret))
 
+    @web.asynchronous
     @web.authenticated
     def get(self, service=None):
         """
@@ -222,13 +211,12 @@ class ServiceHandler(PanelHandler):
           * /services/<service>/start
           * /services/<service>/stop
         """
-        if not service:
-            resp = json_encode(self.services.keys())
-        elif self.action in self._actions:
-            service = self._get_service(service)
-            resp = getattr(self, self.action)(service)
-        if resp:
-            return self.finish(json_encode(resp))
+        if self.action not in self._actions:
+            raise web.HTTPError(404)
+
+        ret = defer.maybeDeferred(getattr(self, self.action), service)
+        ret.addCallback(lambda infos: self.finish(infos)
+          ).addErrback(lambda exc: self.send_error(exc.value.status_code))
 
 
 class TorHandler(PanelHandler):
@@ -260,7 +248,7 @@ class TorHandler(PanelHandler):
             return self.finish(self.error('Invalid key %s') % sp_keyword)
         try:
             apaf.torctl.get_info(sp_keyword).addCallback(
-                 lambda infos: self.finish(json_encode(infos)))
+                    lambda infos: self.finish(json_encode(infos)))
         except torcontrolprotocol.TorProtocolError as err:
             if err.code == 552:
                 raise web.HTTPError(404)
