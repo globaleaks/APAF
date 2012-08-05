@@ -44,3 +44,9 @@ class Page(object):
         """
         print exc
 
+
+def start_mock_apaf():
+    """
+    Start the apaf for testing purposes.
+    :ret: None.
+    """
