@@ -47,8 +47,7 @@ class PanelService(Service):
 
         # Legacy html
         (r'/index.html', handlers.render('index.html')),
-        (r'/services.html',
-            handlers.render('services.html', services=apaf.hiddenservices)),
+        (r'/services.html', handlers.ServicesHtmlHandler),
         (r'/tor.html', handlers.render('tor.html')),
         (r'/config.html', handlers.ConfigHtmlHandler),
         (r'/about.html', handlers.render('about.html')),

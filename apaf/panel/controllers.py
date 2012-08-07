@@ -56,7 +56,7 @@ class ConfigCtl(object):
 
 
 class ServicesCtl(object):
-    keys = ['name', 'desc', 'url']
+    keys = ['name', 'desc', 'url', 'active']
 
     @property
     def services(self):
@@ -73,10 +73,11 @@ class ServicesCtl(object):
         else:
             return self.services[name]
 
-    def get(self, service):
+    def get(self, service, _base=True):
         if not service:
-            return self.services.keys()
+            return [self.get(service) for service in self.services.keys()]
         else:
+            service = self._get_service(service)
             return dict((name, getattr(service, name, None)) for name in self.keys)
 
     def set(self, service, state):

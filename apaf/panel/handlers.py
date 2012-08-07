@@ -301,3 +301,11 @@ class ConfigHtmlHandler(web.RequestHandler):
                              key, value in self.controller.get().iteritems())
         )
 
+class ServicesHtmlHandler(web.RequestHandler):
+    controller = controllers.ServicesCtl()
+
+    def get(self):
+        service = self.get_argument('service', None)
+        print self.controller.get(service)
+        return self.render('services.html' if not service else 'serviceinfo.html',
+                           services=self.controller.get(service))

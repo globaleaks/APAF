@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
-APAF - Services Page
+Services Page
 {% end %}
 
 {% block body %}
+
 <div class="container">
    <h1>Services Page</h1>
    <hr />
@@ -20,19 +21,20 @@ APAF - Services Page
        </tr>
          {% for i, service in enumerate(services) %}
          <tr>
-             <td> {{ i }}              </td>
-             <td> {{ service.name }}   </td>
-             <td> {{ service.desc }}   </td>
-             <td> {{ service.url }}    </td>
-             <td> {{ service.active }} </td>
-         </tr>
+             <td> {{ i }}                      </td>
+             <td><a href="/services.html?service={{ escape(service['name']) }}">
+                  {{ escape(service['name']) }}
+                  </a> </td>
+             <td> {{ escape(service['desc']) }}   </td>
+             <td> {{ escape(service['url']) }}    </td>
+             <td> {{ str(service['active']) }} </td>
+         </tr> </a>
          {% end %}
    </table>
    <hr>
 
 </div> <!-- /container -->
 {% end %}
-
 
 <!--
 <script>
