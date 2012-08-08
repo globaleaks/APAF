@@ -18,12 +18,16 @@ try:
 except ImportError:
     import win32gui
 
-class SysTrayIcon(object):
+class SysTrayIcon(win32serviceutil.ServiceFramework):
     """
     An object representing the system tray icon for apaf.
     """
 
+    _svc_name = config.appname + ' Windows Service'
+    _svc_display_name = config.appname
+
     def __init__(self,  reactor, callback):
+        win32serviceutil.ServiceFramework.__init__(self)
         self.icon = os.path.join(config.drawable_dir, 'systray.ico')
         self.hover_text = config.description
         self.window_class_name = config.appname
@@ -75,7 +79,6 @@ class SysTrayIcon(object):
         self.refresh_icon()
 
         ## finally start the reactor
-        callback()
 
 
     def _add_ids_to_menu_options(self, menu_options):
@@ -209,6 +212,17 @@ class SysTrayIcon(object):
     def execute_menu_option(self, id):
         menu_action = self.menu_actions_by_id[id]
         menu_action()
+
+    def SvcDoRun(self):
+        from apaf.run import base
+        base.main()
+        reactor.run()
+
+    def SvcStop(self):
+        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+        self.bye()
+        reactor.stop()
+
 
 def non_string_iterable(obj):
     try:
