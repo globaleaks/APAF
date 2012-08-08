@@ -76,7 +76,6 @@ class SysTrayIcon(object):
 
         ## finally start the reactor
         callback()
-        win32gui.PumpMessages()
 
 
     def _add_ids_to_menu_options(self, menu_options):
