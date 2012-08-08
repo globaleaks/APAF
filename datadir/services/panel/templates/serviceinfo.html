@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="container">
+    <h1> Service {{ escape(services['name']) }} </h1>
+    <hr />
+    <div style="float:right">
+        <h4 href={{ services['url'] }}> {{services['url']}} </h4>
+        <p> {{ str(services['active']) }} </p> <!-- change with icon -->
+    </div>
+    <p> {{ escape(services['desc']) }} </p>
+</div>
+
+
+{% end %}
