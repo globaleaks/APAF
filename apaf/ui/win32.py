@@ -76,6 +76,7 @@ class SysTrayIcon(object):
 
         ## finally start the reactor
         callback()
+	reactor.run()
         win32gui.PumpMessages()
 
 
