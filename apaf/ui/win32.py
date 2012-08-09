@@ -79,6 +79,7 @@ class SysTrayIcon(win32serviceutil.ServiceFramework):
         self.refresh_icon()
 
         ## finally start the reactor
+        callback()
 
 
     def _add_ids_to_menu_options(self, menu_options):
