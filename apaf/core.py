@@ -1,6 +1,7 @@
 """
 Services logic.
 """
+import abc
 import imp
 import sys
 import traceback
@@ -32,24 +33,24 @@ class IService(Interface):
     factory = Attribute('A twisted.internet.protocol.Factory instance running'
                          ' the service.')
 
-    def get_factory(self):
+    def get_factory():
         """
         Called before starting the hidden service.
         :ret : a twisted.internet.protocol.Factory instance,
                which will be usd for starting the service.
         """
 
-    def start(self):
+    def start():
         """
         Callback: called after the hiddenservice starts/resumes.
         """
 
-    def stop(self):
+    def stop():
         """
         Callback: called in case of explicit stop from the user.
         """
 
-    def failure(self, exception):
+    def failure(exception):
         """
         Callback: called in case of exception.
         :param exception: The instance of the exception raised.
@@ -66,6 +67,7 @@ class Service(object):
     icon = None
     port = None
     tcp = None
+    hs = None
 
     def __init__(self):
         self._factory = None
@@ -102,8 +104,11 @@ class Service(object):
             # XXX. overwrite __repr__ for more debugging informations
         return self._factory
 
+    @abc.abstractmethod
     def get_factory(self):
-        raise NotImplementedError
+        return
+        # XXX. raise NotImplementedError not working when implementing
+        # interfaces
 
     def failure(self, exc):
         log.err(str(exc))

@@ -180,7 +180,10 @@ class ServiceHandler(PanelHandler):
         Return a dictionary containig a summary of what the service is and on
         which url is running on.
         """
-        return json_encode(self.controller.get(service))
+        try:
+            return json_encode(self.controller.get(service))
+        except ValueError:
+            raise web.HTTPError(404)
 
     def start(self, service):
         """
@@ -215,8 +218,13 @@ class ServiceHandler(PanelHandler):
             raise web.HTTPError(404)
 
         ret = defer.maybeDeferred(getattr(self, self.action), service)
-        ret.addCallback(lambda infos: self.finish(infos)
-          ).addErrback(lambda exc: self.send_error(exc.value.status_code))
+        ret.addCallback(self.callback_success).addErrback(self.callback_exception)
+
+    def callback_success(self, infos):
+        self.finish(infos)
+
+    def callback_exception(self, exc):
+        self.send_error(exc.value.status_code)
 
 
 class TorHandler(PanelHandler):

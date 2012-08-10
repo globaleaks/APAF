@@ -42,8 +42,8 @@ class TestServices(TestPanel):
     @page('/services/')
     def test_get_services(self, response):
         self.assertTrue(response)
-        # response = json_decode(response)   ## Why return strings? T_T
-        self.assertIn('panel', json_decode(response))
+        response = json_decode(response)
+        self.assertIn('panel', [x['name'] for x in response])
 
     @page('/services/panel')
     def test_get_services_panel(self, response):
