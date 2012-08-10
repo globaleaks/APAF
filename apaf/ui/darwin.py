@@ -2,12 +2,15 @@ from distutils.core import Command
 import subprocess
 import os
 
-import objc
-import AppKit
-import WebKit
-import Foundation
-from PyObjCTools import AppHelper
 from twisted.python import log
+try:
+    import objc
+    import AppKit
+    import WebKit
+    import Foundation
+    from PyObjCTools import AppHelper
+except ImportError:
+   raise RuntimeError('cannot load GUI libraries.')
 
 import apaf
 from apaf import config
