@@ -30,31 +30,31 @@ class PanelService(Service):
     urls = [
         ## REST API ##
         # services informations
-        (r'/services/(.*)/start', handlers.ServiceHandler, {'action':'start'}),
-        (r'/services/(.*)/stop', handlers.ServiceHandler, {'action':'stop'}),
-        (r'/services/(.*)', handlers.ServiceHandler, {'action':'state'}),
-        (r'/services', handlers.ServiceHandler),
+        (r'/services/(.*)/start', handlers.rest.ServiceHandler, {'action':'start'}),
+        (r'/services/(.*)/stop', handlers.rest.ServiceHandler, {'action':'stop'}),
+        (r'/services/(.*)', handlers.rest.ServiceHandler, {'action':'state'}),
+        (r'/services', handlers.rest.ServiceHandler),
         # authentication
-        (r'/auth/login', handlers.AuthHandler, {'action':'login'}),
-        (r'/auth/logout', handlers.AuthHandler, {'action':'logout'}),
+        (r'/auth/login', handlers.rest.AuthHandler, {'action':'login'}),
+        (r'/auth/logout', handlers.rest.AuthHandler, {'action':'logout'}),
         # configuration
-        (r'/config', handlers.ConfigHandler),
+        (r'/config', handlers.rest.ConfigHandler),
         # tor controlport
-        (r'/tor', handlers.TorHandler),
-        (r'/tor/(.*)', handlers.TorHandler),
+        (r'/tor', handlers.rest.TorHandler),
+        (r'/tor/(.*)', handlers.rest.TorHandler),
 
-        (r'/', handlers.IndexHandler),
+        (r'/', handlers.rest.IndexHandler),
 
         # Legacy html
-        (r'/index.html', handlers.render('index.html')),
-        (r'/services.html', handlers.ServicesHtmlHandler),
-        (r'/tor.html', handlers.render('tor.html')),
-        (r'/config.html', handlers.ConfigHtmlHandler),
-        (r'/about.html', handlers.render('about.html')),
-        (r'/login.html', handlers.render('login.html')),
+        (r'/index.html', handlers.html.render('index.html')),
+        (r'/services.html', handlers.html.ServiceHandler),
+        (r'/tor.html', handlers.html.render('tor.html')),
+        (r'/config.html', handlers.html.ConfigHandler),
+        (r'/about.html', handlers.html.render('about.html')),
+        (r'/login.html', handlers.html.render('login.html')),
 
         # JS Application
-        (r'/app.html', handlers.render('index.html')),
+        (r'/app.html', handlers.html.render('index.html')),
 
         ## STATIC FILES ##
         (r'/(.*)', web.StaticFileHandler, {'path':static_dir}),
