@@ -5,8 +5,11 @@ try:
 except ImportError:
     raise RuntimeError('cannot load GUI Libraries.')
 
+from twisted.internet import reactor
+
 from apaf import config
 from apaf.run import base
+
 
 
 class GTKGui:
@@ -24,24 +27,24 @@ class GTKGui:
         self.make_menu(event_button, event_time)
 
     def make_menu(self, event_button, event_time):
-        menu = gtk.Menu()
+        self.menu = gtk.Menu()
 
         panel = gtk.MenuItem('Panel')
         panel.show()
-        menu.append(panel)
+        self.menu.append(panel)
         panel.connect('activate', self.on_panel)
 
         about = gtk.MenuItem('About')
         about.show()
-        menu.append(about)
+        self.menu.append(about)
         about.connect('activate', self.on_about)
 
         quit = gtk.MenuItem('Quit')
         quit.show()
-        menu.append(quit)
+        self.menu.append(quit)
         quit.connect('activate', gtk.main_quit)
 
-        menu.popup(None, None, gtk.status_icon_position_menu,
+        self.menu.popup(None, None, gtk.status_icon_position_self.menu,
                    event_button, event_time, self.tray)
 
     def on_about(self, widget):
