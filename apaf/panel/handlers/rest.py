@@ -9,8 +9,9 @@ from cyclone.escape import json_encode, json_decode
 import apaf
 from apaf import config
 from apaf.panel import controllers
+from base import PanelHandler
 
-class PanelHandler(web.RequestHandler):
+class RestHandler(PanelHandler):
     """
     A simple RequestHandler with utils for the panel
     """
@@ -36,16 +37,6 @@ class PanelHandler(web.RequestHandler):
         """
         return json_encode({'result':boolean})
 
-    def get_current_user(self, passwd=None):
-        """
-        Return the current user authenticated.
-        """
-        if passwd: return passwd == config.custom['passwd']
-        else: return any((
-            self.get_secure_cookie('user') == config.custom['passwd'],
-            self.request.remote_ip == '127.0.0.1',
-        ))
-
     def set_default_headers(self):
         """
         Panel API is performed entirely via json calls.
@@ -56,7 +47,7 @@ class PanelHandler(web.RequestHandler):
         return self.finish(json_encode(infos))
 
 
-class IndexHandler(PanelHandler):
+class IndexHandler(RestHandler):
     def get(self):
         """
         Process GET request:
@@ -66,7 +57,7 @@ class IndexHandler(PanelHandler):
         self.finish('Hello world')
 
 
-class AuthHandler(PanelHandler):
+class AuthHandler(RestHandler):
     """
     Authentication:
         ** shall check if requests come from localhost?
@@ -121,7 +112,7 @@ class AuthHandler(PanelHandler):
         self.clear_cookie(self._uid_cookie)
 
 
-class ConfigHandler(PanelHandler):
+class ConfigHandler(RestHandler):
     """
     Handler for editing config.custom.
     """
@@ -169,7 +160,7 @@ class ConfigHandler(PanelHandler):
             return self.error(exc)
 
 
-class ServiceHandler(PanelHandler):
+class ServiceHandler(RestHandler):
     _actions = ['state', 'start', 'stop']
     controller = controllers.ServicesCtl()
 
@@ -227,7 +218,7 @@ class ServiceHandler(PanelHandler):
         self.send_error(exc.value.status_code)
 
 
-class TorHandler(PanelHandler):
+class TorHandler(RestHandler):
     """
     Return informations about the current tor status.
     """
