@@ -21,12 +21,12 @@ Services Page
        </tr>
          {% for i, service in enumerate(services) %}
          <tr>
-             <td> {{ i }}                      </td>
+             <td> {{ i }} </td>
              <td><a href="/services.html?service={{ escape(service['name']) }}">
                   {{ escape(service['name']) }}
-                  </a> </td>
-             <td> {{ escape(service['desc']) }}   </td>
-             <td> {{ escape(service['url']) }}    </td>
+             </a> </td>
+             <td> {{ escape(service['desc']) }} </td>
+             <td> {{ escape(service['url']) }} </td>
              <td> {{ str(service['active']) }} </td>
          </tr> </a>
          {% end %}

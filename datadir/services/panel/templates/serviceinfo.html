@@ -10,6 +10,20 @@
         <p> {{ str(services['active']) }} </p> <!-- change with icon -->
     </div>
     <p> {{ escape(services['desc']) }} </p>
+    {% if 'config' in services %}
+        <div class="row">
+            <ul class="nav nav-tabs nav-stacked">
+                {% for name, entry in services['config'].iteritems() %}
+                <li> <div>
+                    {{ name }} <input type={{ entry['type'] }}
+                                      value={{ entry['value'] }}>
+                </div></li>
+                {% end %}
+            </ul>
+            <button type="submit" onclick=> Submit </button>
+        </div>
+    {% end %}
+
 </div>
 
 
