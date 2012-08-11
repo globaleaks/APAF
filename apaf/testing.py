@@ -5,6 +5,11 @@ General-purpose utilities for testing.
 from twisted.web import client
 from functools import partial, wraps
 
+import txtorcon
+
+import apaf
+from apaf.panel import panel
+
 class Page(object):
     """
     An asycnronous http client for fetching a predetermined handler.
@@ -44,9 +49,26 @@ class Page(object):
         """
         print exc
 
-
-def start_mock_apaf():
+def start_mock_apaf(tor, *services):
     """
     Start the apaf for testing purposes.
+    XXX. how to handle cleanup? Currently the reactor is left unclean
     :ret: None.
     """
+    torconfig = txtorcon.TorConfig()
+
+    ## start apaf. ##
+    panel.start_panel(torconfig)
+
+    for service in services:
+            service = imp.load_module(
+                      service, *imp.find_module(service, [config.services_dir])
+                      ).ServiceDescriptor
+    torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices]
+    torconfig.save()
+
+
+    if tor:
+        txtorcon.launch_tor(torconfig, reactor,
+                            progress_updates=progress_updates,
+                            tor_binary=config.tor_binary)
