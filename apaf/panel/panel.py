@@ -5,8 +5,6 @@ import os
 import os.path
 import sys
 
-from twisted.internet import reactor
-from twisted.python import log
 from cyclone import web
 import txtorcon
 
@@ -68,9 +66,9 @@ class PanelService(Service):
         return web.Application(self.urls,
                                debug=True,
                                cookie_secret=config.custom['cookie_secret'],
-                               login_url='/',
+                               login_url='/login.html',
                                xsrf_cookies=True,
-                               template_path = self.templates_dir,
+                               template_path=self.templates_dir,
         )
 
 def start_panel(torconfig):
@@ -86,6 +84,9 @@ def start_panel(torconfig):
 
 
 if __name__ == '__main__':
+    from twisted.python import log
+    from twisted.internet import reactor
+
     log.startLogging(sys.stdout)
     start_panel(txtorcon.TorConfig())
     reactor.run()
