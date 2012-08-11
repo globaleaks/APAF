@@ -4,7 +4,7 @@
 {% block title %} Login {% end %}
 {% block body %}
 <form action='/auth/login' method="post" >
-    {{ xsrf_form_html() }}
+    {% raw xsrf_form_html() %}
     <div> Password: <input type="password" name="passwd" > </div>
     <input type="submit" value="post" />
 </form>
