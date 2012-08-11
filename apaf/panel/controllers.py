@@ -78,7 +78,17 @@ class ServicesCtl(object):
             return [self.get(service) for service in self.services.keys()]
         else:
             service = self._get_service(service)
-            return dict((name, getattr(service, name, None)) for name in self.keys)
+            ret = dict((name, getattr(service, name, None)) for name in self.keys)
+            if hasattr(service, 'config'):
+                ret['config'] = get_config(service)
+            return ret
+
+
+    def get_config(service):
+        """
+        Return the configuration of specific service.
+        """
+        return dict(service.config)
 
     def set(self, service, state):
         service = self._get_service(service)
