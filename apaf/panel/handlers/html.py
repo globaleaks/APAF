@@ -66,3 +66,21 @@ class ServiceHandler(PanelHandler):
         service = self.get_argument('service', None)
         return self.render('services.html' if not service else 'serviceinfo.html',
                            services=self.controller.get(service))
+
+
+class LoginHandler(PanelHandler):
+    REDIRECT = '/'
+    def get(self):
+        if not self.get_current_user():
+            return self.render('login.html')
+        else: self.redirect(self.REDIRECT)
+
+    def post(self):
+        request = dict(x.split('=', 1) for x in self.request.body.split('&'))
+
+        if not self.get_current_user(request['passwd']):
+            raise web.HTTPAuthenticationRequired
+        else:
+            self.set_secure_cookie('auth', request['passwd'])
+            return self.redirect(self.REDIRECT)
+
