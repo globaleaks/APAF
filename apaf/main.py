@@ -4,7 +4,7 @@ Maain file.
 After detecting the platform on which it is running, launches its relative
 main() from the apaf.run package.
 """
-from argparse import ArgumentParser
+from optparse import OptionParser
 
 import sys
 import os
@@ -32,9 +32,10 @@ def std_main():
     reactor.run()
 
 
-parser = ArgumentParser(prog=config.appname, description=config.description)
-parser.add_argument('--debug', action='store_true',  help='Run in debug mode.')
-options = parser.parse_args()
+parser = OptionParser(prog=config.appname,
+                      description=config.description)
+parser.add_option('--debug', action='store_true',  help='Run in debug mode.')
+options, args = parser.parse_args()
 
 if options.debug:
     main = std_main
