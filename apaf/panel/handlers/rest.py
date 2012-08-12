@@ -47,16 +47,6 @@ class RestHandler(PanelHandler):
         return self.finish(json_encode(infos))
 
 
-class IndexHandler(RestHandler):
-    def get(self):
-        """
-        Process GET request:
-            * /
-        """
-        self.set_header('Content-Type', 'text/plain')
-        self.finish('Hello world')
-
-
 class AuthHandler(RestHandler):
     """
     Authentication:
@@ -94,7 +84,7 @@ class AuthHandler(RestHandler):
         elif not self.get_current_user(request['passwd']):
             return self.write(self.error('login failed'))
         else:
-            self.set_secure_cookie('auth', self.request.body)
+            self.set_secure_cookie('auth', request['passwd'])
             return self.write(self.result(True))
 
     @web.authenticated

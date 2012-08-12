@@ -41,7 +41,7 @@ class PanelService(Service):
         (r'/tor', handlers.rest.TorHandler),
         (r'/tor/(.*)', handlers.rest.TorHandler),
 
-        (r'/', handlers.rest.IndexHandler),
+        (r'/', handlers.IndexHandler),
 
         # Legacy html
         (r'/index.html', handlers.html.render('index.html')),
@@ -49,7 +49,7 @@ class PanelService(Service):
         (r'/tor.html', handlers.html.render('tor.html')),
         (r'/config.html', handlers.html.ConfigHandler),
         (r'/about.html', handlers.html.render('about.html')),
-        (r'/login.html', handlers.html.render('login.html')),
+        (r'/login.html', handlers.html.LoginHandler),
 
         # JS Application
         (r'/app.html', handlers.html.render('index.html')),
