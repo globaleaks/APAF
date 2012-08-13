@@ -1,4 +1,5 @@
 #-*- coding: UTF-8 -*-
+import urlparse
 
 from txtorcon import torcontrolprotocol
 from twisted.internet import defer
@@ -12,7 +13,7 @@ from apaf.panel import controllers
 
 from base import PanelHandler
 
-def render(page, **args):
+def render(page, _authenticated=False, **args):
     """
     Simple helper function for returning a PanelHandler page.
     :param page: path for html page
@@ -23,7 +24,7 @@ def render(page, **args):
         self.render(page, **args)
 
     return type('Handler_'+page, (PanelHandler,),
-                {'get': get})
+                {'get': get if not _authenticated else web.authenticated(get)})
 
 def render_with_controller(page, controller, *args, **kwargs):
     """
@@ -53,6 +54,7 @@ class ConfigHandler(PanelHandler):
         else:
             return 'text'
 
+    @web.authenticated
     def get(self):
         return self.render(
                'config.html',
@@ -63,6 +65,7 @@ class ConfigHandler(PanelHandler):
 class ServiceHandler(PanelHandler):
     controller = controllers.ServicesCtl()
 
+    @web.authenticated
     def get(self):
         service = self.get_argument('service', None)
         return self.render('services.html' if not service else 'serviceinfo.html',
@@ -78,10 +81,22 @@ class LoginHandler(PanelHandler):
         else: self.redirect(self.REDIRECT)
 
     def post(self):
-        request = dict(x.split('=', 1) for x in self.request.body.split('&'))
+        request, = urlparse.parse_qs(self.requestbody).get('passwd', ['', ])
 
         if not self.auth_login(request['passwd']):
             raise web.HTTPAuthenticationRequired
         else:
             return self.redirect(self.REDIRECT)
 
+
+class TorHandler(PanelHandler):
+    controller = controllers.TorCtl()
+
+    @web.authenticated
+    @defer.inlineCallbacks
+    def get(self):
+        bootstrap = yield self.controller.get('status/bootstrap-phase')
+        self.render('tor.html',
+                    version=apaf.torctl.version,
+                    bootstrap=bootstrap,
+        )
