@@ -4,6 +4,7 @@ from txtorcon import torcontrolprotocol
 from twisted.internet import defer
 from twisted.python import failure
 from cyclone.escape import json_encode, json_decode
+from cyclone import web
 
 import apaf
 from apaf import config
@@ -70,6 +71,7 @@ class ServiceHandler(PanelHandler):
 
 class LoginHandler(PanelHandler):
     REDIRECT = '/'
+
     def get(self):
         if not self.get_current_user():
             return self.render('login.html')
@@ -78,9 +80,8 @@ class LoginHandler(PanelHandler):
     def post(self):
         request = dict(x.split('=', 1) for x in self.request.body.split('&'))
 
-        if not self.get_current_user(request['passwd']):
+        if not self.auth_login(request['passwd']):
             raise web.HTTPAuthenticationRequired
         else:
-            self.set_secure_cookie('auth', request['passwd'])
             return self.redirect(self.REDIRECT)
 

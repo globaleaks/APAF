@@ -1,20 +1,39 @@
+from hashlib import sha256
+
 from cyclone import web
 
 from apaf import config
+from apaf.utils import hashing
 
 class PanelHandler(web.RequestHandler):
     """
     The most basic handler, for all handlers.
     """
-    def get_current_user(self, passwd=None):
+    def get_current_user(self):
         """
         Return the current user authenticated.
         """
-        if passwd: return passwd == config.custom['passwd']
-        else: return any((
-            self.get_secure_cookie('auth') == config.custom['passwd'],
-            self.request.remote_ip == '127.0.0.1',
+        return any((
+            self._check_pass(self.get_secure_cookie('auth') or ''),
+            #self.request.host == '127.0.0.1',
         ))
+
+    def _check_pass(self, passwd):
+        """
+        Return true if passwd is valid, false otherwise.
+        """
+        assert isinstance(passwd, str)
+        assert len(config.custom['passwd']) >= 32
+
+        return hashing.hash(passwd) == config.custom['passwd']
+
+    def auth_login(self, passwd):
+        if not self._check_pass(passwd):
+            return False
+        else:
+            self.set_secure_cookie('auth', passwd)
+            return True
+
 
 
 class IndexHandler(PanelHandler):
