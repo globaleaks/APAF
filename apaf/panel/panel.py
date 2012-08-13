@@ -46,7 +46,7 @@ class PanelService(Service):
         # Legacy html
         (r'/index.html', handlers.html.render('index.html')),
         (r'/services.html', handlers.html.ServiceHandler),
-        (r'/tor.html', handlers.html.render('tor.html')),
+        (r'/tor.html', handlers.html.TorHandler),
         (r'/config.html', handlers.html.ConfigHandler),
         (r'/about.html', handlers.html.render('about.html')),
         (r'/login.html', handlers.html.LoginHandler),
