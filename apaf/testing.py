@@ -15,7 +15,7 @@ class Page(object):
     An asycnronous http client for fetching a predetermined handler.
     """
 
-    def __init__(self, host='127.0.0.1', port=80):
+    def __init__(self, host='127.0.0.1', port=80, **base):
         """
         Decorator helper for unittest.
         Uses asyncronous callbacks from twisted to get the page referred with path,
@@ -25,10 +25,13 @@ class Page(object):
         """
         self.host = host
         self.port = port
+        self.base = base
 
-    def __call__(self, path, raises=False, **settings):
+    def __call__(self, path, raises=False, **_settings):
         url =  'http://%s:%d%s' % (self.host, self.port, path)
 
+        settings = self.base.copy()
+        settings.update(_settings)
         def inner(func):
             @wraps(func)
             def wrap(self):

@@ -12,8 +12,10 @@ from apaf.core import add_service
 from apaf.testing import Page
 from apaf import config
 
-page = Page('127.0.0.1', 6660)
-# log.startLogging(sys.stdout)   # debug information from the backend.
+page = Page('127.0.0.1', 6660,
+        cookies={'auth':"Tm9uZQ==|1345101954|f3dc127e2c36c6947200e937a56f9e25354df77d"},
+)
+#log.startLogging(sys.stdout)   # debug information from the backend.
 
 class TestPanel(unittest.TestCase):
 
