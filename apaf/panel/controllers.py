@@ -31,7 +31,7 @@ class TorCtl(object):
 
 
 class ConfigCtl(object):
-    hidden = ('cookie_secret', 'passwd')
+    hidden = ('cookie_secret')
 
     def get(self):
         return dict((key, value) for key, value in config.custom

@@ -81,9 +81,9 @@ class LoginHandler(PanelHandler):
         else: self.redirect(self.REDIRECT)
 
     def post(self):
-        request, = urlparse.parse_qs(self.requestbody).get('passwd', ['', ])
+        passwd, = urlparse.parse_qs(self.request.body).get('passwd', ['', ])
 
-        if not self.auth_login(request['passwd']):
+        if not self.auth_login(passwd):
             raise web.HTTPAuthenticationRequired
         else:
             return self.redirect(self.REDIRECT)

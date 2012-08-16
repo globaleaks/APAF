@@ -48,9 +48,9 @@ class ServiceDescriptor(Service):
     icon = os.path.join(blog.settings.STATIC_ROOT,
                         'zinnia', 'img', 'favicon.ico')
 
-    config = config.Config(
-            config_file='blog.cfg',
-            defaults={}
+    conf = config.Config(
+        config_file='blog.cfg',
+        defaults={}
     )
 
     def get_factory(self):

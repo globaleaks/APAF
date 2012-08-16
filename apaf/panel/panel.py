@@ -12,6 +12,7 @@ import apaf
 from apaf.core import Service, add_service
 from apaf import config
 from apaf.panel import handlers, controllers
+from apaf.utils import hashing
 
 
 
@@ -20,6 +21,13 @@ class PanelService(Service):
     desc = 'Administration panel and apaf manager.'
     port = 80
     icon = None
+    conf = config.Config('panel.cfg',
+                             defaults=dict(
+                                 remote_login=True,
+                                 passwd=hashing.hash('None'),
+    ))
+
+
 
     static_dir = os.path.join(config.services_dir, 'panel', 'static')
     templates_dir = os.path.join(config.services_dir, 'panel', 'templates')
@@ -63,13 +71,15 @@ class PanelService(Service):
         if not os.path.exists(self._paneldir):
             os.mkdir(self._paneldir)
 
-        return web.Application(self.urls,
+        app = web.Application(self.urls,
                                debug=True,
                                cookie_secret=config.custom['cookie_secret'],
                                login_url='/login.html',
                                xsrf_cookies=True,
                                template_path=self.templates_dir,
         )
+        app.conf = self.conf
+        return app
 
 def start_panel(torconfig):
     """
@@ -81,12 +91,3 @@ def start_panel(torconfig):
     """
     panel = PanelService()
     add_service(torconfig, panel)
-
-
-if __name__ == '__main__':
-    from twisted.python import log
-    from twisted.internet import reactor
-
-    log.startLogging(sys.stdout)
-    start_panel(txtorcon.TorConfig())
-    reactor.run()
