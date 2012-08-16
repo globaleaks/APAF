@@ -17,13 +17,13 @@ class ServiceDescriptor(Service):
     desc = 'A simple static file server.'
     port = 80
 
-    config = config.Config(
+    conf = config.Config(
         config_file=join(config.conf_dir, 'static.cfg'),
         defaults={'dirname':'/tmp'},
     )
 
     def get_factory(self):
-        self.resource = static.File(self.config['dirname'])
+        self.resource = static.File(self.settings['dirname'])
         return server.Site(self.resource)
 
 

@@ -96,7 +96,7 @@ class Config(object):
     """
     __slots__ = ('defaults', 'config_file', 'vars')
 
-    def __init__(self, defaults, config_file):
+    def __init__(self, config_file, defaults):
         """
         Load the configuration from the cfg file.
         If apaf's configuration and status directories are not ready, create
@@ -160,7 +160,5 @@ custom = Config(config_file='apaf.cfg',
                 defaults=dict(
                     base_port=4242,
                     services=['staticwebserver', 'zinniablog'],    # list of services to be started
-                    passwd=sha256('None').hexdigest(),
                     cookie_secret=get_random_bytes(100),
-                    remote_login=True,
-                ))
+ ))

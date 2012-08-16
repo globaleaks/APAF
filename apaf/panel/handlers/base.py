@@ -5,6 +5,7 @@ from cyclone import web
 from apaf import config
 from apaf.utils import hashing
 
+
 class PanelHandler(web.RequestHandler):
     """
     The most basic handler, for all handlers.
@@ -23,9 +24,10 @@ class PanelHandler(web.RequestHandler):
         Return true if passwd is valid, false otherwise.
         """
         assert isinstance(passwd, str)
-        assert len(config.custom['passwd']) >= 32
+        _passwd = self.application.conf['passwd']
+        assert len(_passwd) >= 32
 
-        return hashing.hash(passwd) == config.custom['passwd']
+        return hashing.hash(passwd) == _passwd
 
     def auth_login(self, passwd):
         if not self._check_pass(passwd):

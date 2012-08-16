@@ -25,13 +25,14 @@ class IService(Interface):
     author = Attribute('The author of the service')
     port = Attribute('Port on which the service wants to be exposed')
     icon = Attribute('The service logo')
-
     hs = Attribute('A txtorcon.HiddenService isntance automagically binded to'
                    ' the service class from the apaf.')
     tcp = Attribute('A twisted.internet.tcp.Port instance, reflecting the port'
                     ' on which the service is listening to')
     factory = Attribute('A twisted.internet.protocol.Factory instance running'
                          ' the service.')
+    conf = Attribute('A apaf.config.Config instance containing the'
+                     'configuration files and defaults for the service.')
 
     def get_factory():
         """
@@ -68,6 +69,7 @@ class Service(object):
     port = None
     tcp = None
     hs = None
+    conf = None
 
     def __init__(self):
         self._factory = None
