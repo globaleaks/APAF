@@ -12,7 +12,8 @@ APAF comes with a very simple `file system structure`. ::
      - docs/
 
 Apart from the standard package directory ``apaf/`` , which will be covered
-further in :ref:`APAF utilities <utilities>`, ``datadir`` directory contains
+further in :ref:`APAF utilities <utilities>`, and ``docs/`` that is the
+directory you are currently reading from, ``datadir`` contains
 everything for building a new apaf :class:`apaf.core.Service`.
 
 ``contrib/`` holds every bundles binary provided with the final application. If
