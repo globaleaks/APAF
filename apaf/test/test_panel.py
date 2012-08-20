@@ -1,4 +1,5 @@
 from hashlib import sha256
+from functools import wraps
 import sys
 
 import txtorcon
@@ -9,13 +10,17 @@ from cyclone.escape import json_decode, json_encode
 
 from apaf.panel import panel
 from apaf.core import add_service
-from apaf.testing import Page
+from apaf.testing import Page, json
 from apaf import config
 
-page = Page('127.0.0.1', 6660,
-        cookies={'auth':"Tm9uZQ==|1345101954|f3dc127e2c36c6947200e937a56f9e25354df77d"},
-)
+page = Page('127.0.0.1', 6660)
 #log.startLogging(sys.stdout)   # debug information from the backend.
+
+
+## monkeypatch standard login.
+from apaf.panel import handlers
+handlers.base.PanelHandler.get_current_user = lambda *args: True
+##
 
 class TestPanel(unittest.TestCase):
 
@@ -32,6 +37,7 @@ class TestPanel(unittest.TestCase):
         add_service(torconfig, self.service, 6660)
         self.addCleanup(self.service.tcp.loseConnection)
 
+
 class TestServices(TestPanel):
     """
     Test requests:
@@ -42,25 +48,24 @@ class TestServices(TestPanel):
     """
 
     @page('/services/')
+    @json
     def test_get_services(self, response):
-        self.assertTrue(response)
-        response = json_decode(response)
         self.assertIn('panel', [x['name'] for x in response])
 
     @page('/services/panel')
+    @json
     def test_get_services_panel(self, response):
-        self.assertTrue(response)
-        response = json_decode(response)
         self.assertTrue(isinstance(response, dict))
         self.assertTrue(all(x in response for x in
                         ['name', 'url','desc']))
 
     @page('/services/panel/stop')
+    @json
     def test_get_services_panel_stop(self, response):
         """
         Panel shall not be stoppped.
         """
-        self.assertEquals(json_decode(response), {'result':False})
+        self.assertEquals(response, {'result':False})
 
     def test_get_services_mockpanel_stop(self):
         """
@@ -80,30 +85,40 @@ class TestConfig(TestPanel):
         * PUT /config {settings:{something}}
     """
     @page('/config')
+    @json
     def test_get_config(self, response):
-        self.assertTrue(response)
-        response = json_decode(response)
         self.assertTrue(all(config.custom[key] == value
                             for key, value in response.iteritems()))
 
     @page('/config', method='PUT',
           headers={'settings': json_encode(dict(base_port=6666))})
+    @json
     def test_put_config(self, response):
-        self.assertTrue(response)
-        self.assertEqual(json_decode(response), {'result':True})
+        self.assertEqual(response, {'result':True})
 
     @page('/config', method='PUT',
           headers={'settings': json_encode(dict(cheese='spam'))})
+    @json
     def test_put_config_invalid_key(self, response):
-        self.assertTrue(response)
         self.assertIn('error', response)
 
     @page('/config', method='PUT',
           headers={'settings': json_encode(dict(base_port='a string'))})
+    @json
     def test_put_config_invalid_value(self, response):
-        self.assertTrue(response)
-        self.assertEqual(json_decode(response), {'result':False})
+        self.assertEqual(response, {'result':False})
 
+class TestMiscellanous(TestPanel):
+    """
+    A collection of various tests concerning error handling in Panel.
+    """
+    @page('/foo/bar', raises=True)
+    def test_notfound(self, error):
+        self.assertEqual(error.value.status, '404')
+
+    @page('/services/spamcheesefoobar', raises=True)
+    def test_service_notfound(self, error):
+        self.assertEqual(error.value.status, '404')
 
 class TestAuth(TestPanel):
     """
@@ -132,17 +147,6 @@ class TestAuth(TestPanel):
     def test_post_auth_login(self, response):
         self.assertEqual(json_decode(response), {'result':True})
 
-class TestMiscellanous(TestPanel):
-    """
-    A collection of various tests concerning error handling in Panel.
-    """
-    @page('/foo/bar', raises=True)
-    def test_notfound(self, error):
-        self.assertEqual(error.value.status, '404')
-
-    @page('/services/spamcheesefoobar', raises=True)
-    def test_service_notfound(self, error):
-        self.assertEqual(error.value.status, '404')
 
 
 if __name__ == '__main__':

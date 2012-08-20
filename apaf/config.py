@@ -9,9 +9,7 @@ import yaml
 import os
 import os.path
 from copy import deepcopy
-from hashlib import sha256
 
-from Crypto.Random import get_random_bytes
 
 def _get_datadir():
     """
@@ -155,10 +153,10 @@ class Config(object):
         self.vars = deepcopy(self.defaults)
         self.commit()
 
-
+from utils.hashing import random_bytes
 custom = Config(config_file='apaf.cfg',
                 defaults=dict(
                     base_port=4242,
                     services=['staticwebserver', 'zinniablog'],    # list of services to be started
-                    cookie_secret=get_random_bytes(100),
+                    cookie_secret=random_bytes(100),
  ))

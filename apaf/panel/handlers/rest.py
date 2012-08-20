@@ -75,7 +75,7 @@ class AuthHandler(RestHandler):
         #     self.set_secure_cookie(self._uid_cookie, config.custom['passwd'])
         #     return self.write(self.result(True))
 
-        if not config.custom['remote_login']:
+        if not self.application.conf['remote_login']:
             raise web.HTTPAuthenticationRequired
 
         request = json_decode(self.request.body)
