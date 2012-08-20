@@ -52,7 +52,7 @@ and 3 clicks (ehi, I am still working on this). A good starting point may be
 the ``staticfileserver.py`` example.
 
 
-**Secure** we *will* guarantee that every outbounding connection will be through
+**Secure** we *try to* guarantee that every outbounding connection will be through
 tor, and that your application will be not easily recognizable. See the Threat
 Model page for more informations.
 
