@@ -2,9 +2,10 @@
 General-purpose utilities for testing.
 """
 
-from twisted.web import client
 from functools import partial, wraps
 
+from twisted.web import client
+from cyclone.escape import json_decode
 import txtorcon
 
 import apaf
@@ -52,6 +53,21 @@ class Page(object):
         """
         print exc
 
+
+def json(func):
+    @wraps(func)
+    def inner(self, response):
+        self.assertTrue(response)
+        try:
+            response = json_decode(response)
+        except ValueError: # No json object could be decoded.
+            self.fail('response %s was not json decodable.' % repr(response))
+        else:
+            return func(self, response)
+    return inner
+
+
+
 def start_mock_apaf(tor, *services):
     """
     Start the apaf for testing purposes.
@@ -75,3 +91,4 @@ def start_mock_apaf(tor, *services):
         txtorcon.launch_tor(torconfig, reactor,
                             progress_updates=progress_updates,
                             tor_binary=config.tor_binary)
+
