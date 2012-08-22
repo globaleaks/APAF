@@ -23,7 +23,7 @@ class ServiceDescriptor(Service):
     )
 
     def get_factory(self):
-        self.resource = static.File(self.settings['dirname'])
+        self.resource = static.File(self.conf['dirname'])
         return server.Site(self.resource)
 
 
