@@ -52,9 +52,18 @@ and 3 clicks (ehi, I am still working on this). A good starting point may be
 the ``staticfileserver.py`` example.
 
 
-**Secure** we *try to* guarantee that every outbounding connection will be through
-tor, and that your application will be not easily recognizable. See the Threat
-Model page for more informations.
+**Secure** We make sure that all APAF's outbounding connecction will pass through Tor, and
+that its fingerprint is reduced to a minimum.
+
+
+.. warning:: we *do not guarantee* that the application built with APAF will not
+            leak data outside tor, neither the same application will make APAF
+            easily recognizable.
+            The developer building applications with APAF should properly audit
+            the applications they are packaging to check for possible leaks.
+
+.. seealso:: See the threat model :ref:`page <threat_model>` for further
+             informations.
 
 
 Installation
@@ -85,7 +94,7 @@ Follows below the table of libraries.
    :maxdepth: 2
 
    apaf-package
-
+   threat_model
 
 
 Indices and tables
