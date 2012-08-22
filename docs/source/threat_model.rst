@@ -1,3 +1,6 @@
+.. _threat_model :
+
+
 ============
 Threat Model
 ============
@@ -46,7 +49,7 @@ Attacks
 
  - bruteforce over the login form;
  - the .exe/.app contains, compressed, all the python standard library in pyc
-   format. Replaacing one of these bitcode libraries may lead to the control of
+   format. Replacing one of these bytecode libraries may lead to the control of
    the applciation.
  - denial of service
 
