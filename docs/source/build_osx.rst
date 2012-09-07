@@ -6,8 +6,7 @@ This tutorial winn guide you through the installation of the apaf and its
 dependencies on a Mac Os X 10.6 environment
 
 .. warning ::
-    This tutorial has been tested only on Mac OS X 10.6 .
-    Apaf build currently DOES NOT WORK on Mac OS X 10.7 .
+    This tutorial has been tested only on Mac OS X 10.6 and 10.7 (by mogui) .
 
 .. note ::
     This tutorial will start assuming you are on a clean environment. If you
