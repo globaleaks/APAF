@@ -29,6 +29,9 @@ def _get_datadir():
     sysdir = '/usr/share/apaf/datadir'
     if os.path.exists(sysdir):
         return sysdir
+    sysdir = '/usr/local/share/apaf/datadir'
+    if os.path.exists(sysdir):
+        return sysdir
 
     vanilladir = os.path.join(package_dir, '..', 'datadir')
     if os.path.exists(vanilladir):
