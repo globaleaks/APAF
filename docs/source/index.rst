@@ -72,7 +72,7 @@ Installation
 APAF can be installed using either ``pip`` or ``easy_install``.
 There should be somewhere also builds for debian. ::
 
-$ pip install git+https://github.com/mmaker/APAF.git
+$ pip install git+https://github.com/globaleaks/APAF.git
 
 
 
