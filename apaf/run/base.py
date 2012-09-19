@@ -51,6 +51,11 @@ def main(progress_updates=updates, data_directory=None):
     :param progress_updates: a callback fired during tor's bootstrap.
     :ret: a twisted Deferred object for setting up callbacks in case of
           sucess/errors.
+
+
+    XXX: for versions of txtorcon greater that 0.6 it is possible to set the
+    data_directory argument directly in the toconfig, and removing from
+    launch_tor. See issue #15 of txtorcon and #40 of APAF.
     """
     ## start the logger. ##
     log.startLogging(sys.stdout)
@@ -60,6 +65,7 @@ def main(progress_updates=updates, data_directory=None):
     panel.start_panel(torconfig)
     core.start_services(torconfig)
 
+    # torconfig.DataDirectory = data_directory
     torconfig.HiddenServices = [x.hs for x in apaf.hiddenservices]
     torconfig.save()
 
