@@ -160,6 +160,10 @@ from utils.hashing import random_bytes
 custom = Config(config_file='apaf.cfg',
                 defaults=dict(
                     base_port=4242,
-                    services=['staticwebserver', 'zinniablog'],    # list of services to be started
+                    # list of services to be started
+                    services=[
+                        'staticwebserver',
+                        # 'zinniablog',
+                    ],
                     cookie_secret=random_bytes(100),
  ))
