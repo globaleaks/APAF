@@ -95,6 +95,9 @@ Follows below the table of libraries.
 
    apaf-package
    threat_model
+   build_osx
+   build_debian
+   build_win32
 
 
 Indices and tables
