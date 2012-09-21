@@ -74,6 +74,15 @@ if os.path.exists(join(mandir, 'apaf.1')):
     DATA_FILES.append((join('share', 'man', 'man1'),
                        [join(mandir, 'apaf.1')]))
 
+## Dependencies ##
+f = open('requirements.txt','r')
+requirements = []
+for i in f.readlines():
+    i = i.strip()
+    if i and not i.startswith('#'):
+        requirements.append(i)
+f.close()
+
 setup(
     name=config.appname,
     description=config.description,
@@ -86,9 +95,7 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
-    install_requires=['pyCrypto>=2.6', 'PyYAML>=3.10', 'txtorcon>=0.5',
-                      'psutil', 'ipaddr', 'zope.interface', 'twisted>=12.0.0',
-                      'cyclone', 'pygeoip>=0.2.3'],
+    install_requires=requirements,
     entry_points=dict(console_scripts=['apaf = apaf.main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]
