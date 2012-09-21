@@ -86,6 +86,9 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
+    install_requires=['pyCrypto>=2.6', 'PyYAML>=3.10', 'txtorcon>=0.5',
+                      'psutil', 'ipaddr', 'zope.interface', 'twisted>=12.0.0',
+                      'cyclone', 'pygeoip>=0.2.3'],
     entry_points=dict(console_scripts=['apaf = apaf.main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]
