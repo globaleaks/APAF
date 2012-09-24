@@ -86,6 +86,7 @@ setup(
     options=dict(py2app=OPTIONS_PY2APP,
                  py2exe=OPTIONS_PY2EXE,
     ),
+    install_requires=open('requirements.txt').readlines(),
     entry_points=dict(console_scripts=['apaf = apaf.main']),
     packages=find_packages(exclude=['test']),
     **PLATFORM_OPTIONS[config.platform]

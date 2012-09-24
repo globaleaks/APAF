@@ -5,7 +5,11 @@ Holds global state variables and custom configurations.
 from __future__ import with_statement
 
 import sys
-import yaml
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
 import os
 import os.path
 from copy import deepcopy
@@ -156,8 +160,13 @@ class Config(object):
         self.vars = deepcopy(self.defaults)
         self.commit()
 
-from utils.hashing import random_bytes
-custom = Config(config_file='apaf.cfg',
+try:
+    from utils.hashing import random_bytes
+except ImportError:
+    random_bytes = None
+    # log some error?
+if yaml and random_bytes:
+    custom = Config(config_file='apaf.cfg',
                 defaults=dict(
                     base_port=4242,
                     services=['staticwebserver', 'zinniablog'],    # list of services to be started
