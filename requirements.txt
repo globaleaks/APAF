@@ -1,8 +1,8 @@
 # dependencies form apaf
+twisted>=12.0.0
+txtorcon>=0.6
 pyYAML>=3.10
 pygeoip>=0.2.3
 pyCrypto>=2.6
 # python-gnupg
-twisted>=12.0.0
-#txtorcon>=0.5
 

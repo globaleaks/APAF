@@ -60,6 +60,8 @@ def main(progress_updates=updates, data_directory=None):
     ## start the logger. ##
     log.startLogging(sys.stdout)
     torconfig = txtorcon.TorConfig()
+    if data_directory is not None:
+        config.DataDirectory = data_directory
 
     ## start apaf. ##
     panel.start_panel(torconfig)
@@ -73,7 +75,6 @@ def main(progress_updates=updates, data_directory=None):
     try:
         return txtorcon.launch_tor(torconfig, reactor,
                                    progress_updates=progress_updates,
-                                   data_directory=data_directory,
                                    tor_binary=config.tor_binary,
         )
     except OSError as exc:
