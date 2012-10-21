@@ -2,7 +2,7 @@ from distutils.core import Command
 import subprocess
 import os
 
-from twisted.python import log
+# from twisted.python import log
 try:
     import objc
     import AppKit
@@ -29,7 +29,7 @@ class OSXPatchCommand(Command):
         pass
     def run(self):
         if not os.path.exists("dist/%s.app/" % config.appname):
-            log.error("You have to run py2app first")
+            # log.error("You have to run py2app first")
             return
         # getting Python.framework path
         cmd = "python-config --includes | awk -F'-I' '{print $2}' | sed 's/\/include.*$//'"
@@ -58,7 +58,7 @@ class ApafAppWrapper(AppKit.NSObject):
     menuitem = None
 
     def setMainFunction_andReactor_(self, callback, reactor):
-        log.msg('setting up application')
+        # log.msg('setting up application')
         self.reactor = reactor
         self.callback = callback
 

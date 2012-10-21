@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 from setuptools import setup, find_packages
 from distutils import log
 from collections import defaultdict
@@ -73,6 +75,11 @@ mandir = join('docs', 'build', 'man')
 if os.path.exists(join(mandir, 'apaf.1')):
     DATA_FILES.append((join('share', 'man', 'man1'),
                        [join(mandir, 'apaf.1')]))
+
+## Dependencies ##
+requirements = None
+with open('requirements.txt') as dependencies:
+    requirements = [dependency.strip() for dependency in depencies]
 
 setup(
     name=config.appname,
