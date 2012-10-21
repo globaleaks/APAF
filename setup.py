@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 from setuptools import setup, find_packages
 from distutils import log
 from collections import defaultdict
@@ -75,13 +77,9 @@ if os.path.exists(join(mandir, 'apaf.1')):
                        [join(mandir, 'apaf.1')]))
 
 ## Dependencies ##
-f = open('requirements.txt','r')
-requirements = []
-for i in f.readlines():
-    i = i.strip()
-    if i and not i.startswith('#'):
-        requirements.append(i)
-f.close()
+requirements = None
+with open('requirements.txt') as dependencies:
+    requirements = [dependency.strip() for dependency in depencies]
 
 setup(
     name=config.appname,
