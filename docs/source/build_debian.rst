@@ -10,7 +10,7 @@ http://wiki.debian.org/Python/Packaging
 
 install apaf dependencies
 
-$ apt-get install tor python-twisted python-psutil python-pip
+$ apt-get install tor python-twisted python-pip
 $ pip install pygeoip ipaddr pyYAML
 
 checkout branch debian
@@ -31,5 +31,5 @@ Build apaf with `python setup.py sdist` and, after being sure to have set up you
 
 Done!
 
- 
+
 
