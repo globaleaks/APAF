@@ -1,4 +1,4 @@
-.. _utilities ::
+.. _utilities:
 
 Utility classes
 ================
