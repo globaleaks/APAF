@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Maain file.
+Main file.
 After detecting the platform on which it is running, launches its relative
 main() from the apaf.run package.
 """
@@ -31,19 +31,19 @@ def std_main():
     base.main().addCallback(base.setup_complete).addErrback(base.setup_failed)
     reactor.run()
 
+if __name__ == '__main__':
+    parser = OptionParser(prog=config.appname,
+                          description=config.description)
+    parser.add_option('--debug', action='store_true',  help='Run in debug mode.')
+    options, args = parser.parse_args()
 
-parser = OptionParser(prog=config.appname,
-                      description=config.description)
-parser.add_option('--debug', action='store_true',  help='Run in debug mode.')
-options, args = parser.parse_args()
-
-if options.debug:
-    main = std_main
-else:
-    try:
-        main = __import__('apaf.run.'+config.platform, fromlist=['main']).main
-    except ImportError:
+    if options.debug:
         main = std_main
+    else:
+        try:
+            main = __import__('apaf.run.'+config.platform, fromlist=['main']).main
+        except ImportError:
+            main = std_main
 
-main()
+    main()
 

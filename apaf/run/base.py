@@ -44,7 +44,7 @@ def open_panel_browser():
     # xxx . should open localhost, not the .onion
     webbrowser.open(apaf.hiddenservices[0].hs.hostname)
 
-def main(progress_updates=updates, data_directory=None):
+def main(progress_updates=updates, data_directory=None, connection_creator=None):
     """
     Start logging, apaf services, and tor.
 
@@ -76,6 +76,7 @@ def main(progress_updates=updates, data_directory=None):
         return txtorcon.launch_tor(torconfig, reactor,
                                    progress_updates=progress_updates,
                                    tor_binary=config.tor_binary,
+                                   connection_creator=connection_creator
         )
     except OSError as exc:
         print  >> sys.stderr, "Failing to launch tor executable (%s)" % ecx
