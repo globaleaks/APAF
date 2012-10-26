@@ -84,6 +84,11 @@ $ python apaf/main.py
 
 In case you are not interested in user-experience and similar bullshits, ``--debug`` option could be helpful.
 
+For deploying, use the proper `.tac
+<https://twistedmatrix.com/documents/11.1.0/core/howto/application.html>`_ file : ::
+
+$ twistd apaf/apaf.tac
+
 
 Coding
 ******
