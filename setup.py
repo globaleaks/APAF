@@ -79,7 +79,7 @@ if os.path.exists(join(mandir, 'apaf.1')):
 ## Dependencies ##
 requirements = None
 with open('requirements.txt') as dependencies:
-    requirements = [dependency.strip() for dependency in depencies]
+    requirements = [dependency.strip() for dependency in dependencies]
 
 setup(
     name=config.appname,
