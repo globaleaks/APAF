@@ -67,4 +67,4 @@ class IndexHandler(PanelHandler):
         depending on the browser type
         """
         self.set_header('Content-Type', 'text/plain')
-        self.finish('Hello world')
+        self.redirect('/index.html')
