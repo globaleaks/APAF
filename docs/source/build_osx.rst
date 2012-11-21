@@ -1,6 +1,6 @@
 ============================================
 Setting up the APAF build System on Mac OS X
-===========================================
+============================================
 
 This tutorial winn guide you through the installation of the apaf and its
 dependencies on a Mac Os X 10.6 environment
