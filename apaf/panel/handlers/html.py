@@ -73,12 +73,12 @@ class ServiceHandler(PanelHandler):
 
 
 class LoginHandler(PanelHandler):
-    REDIRECT = '/'
-
     def get(self):
+        redirect = self.get_argument('next', '/')
         if not self.get_current_user():
-            return self.render('login.html')
-        else: self.redirect(self.REDIRECT)
+            return self.render('login.html', next=redirect)
+        else: 
+            return self.redirect(redirect)
 
     def post(self):
         passwd, = urlparse.parse_qs(self.request.body).get('passwd', ['', ])
@@ -86,7 +86,7 @@ class LoginHandler(PanelHandler):
         if not self.auth_login(passwd):
             raise web.HTTPAuthenticationRequired
         else:
-            return self.redirect(self.REDIRECT)
+            return self.redirect(self.get_argument('next', '/'))
 
 
 class TorHandler(PanelHandler):
