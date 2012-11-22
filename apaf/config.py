@@ -5,10 +5,7 @@ Holds global state variables and custom configurations.
 from __future__ import with_statement
 
 import sys
-try:
-    import yaml
-except ImportError:
-    yaml = None
+import yaml
 
 import os
 import os.path
